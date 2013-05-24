@@ -1,0 +1,52 @@
+setGeneric("wilcox.test",
+	wilcox.test
+)
+
+setMethod("wilcox.test", "DVH.list",
+	function(x, y=NULL, alternative=c("two.sided", "greater", "less"), mu=0, paired=FALSE, exact=TRUE, correct=TRUE, conf.level=0.95, ..., type=c("cumulative", "differential"), dose=c("absolute", "relative"), volume=c("relative", "absolute")) {
+		type <- match.arg(type)
+		dose <- match.arg(dose)
+		volume <- match.arg(volume)
+		alternative <- match.arg(alternative)
+		if (class(y) != "DVH.list") {
+			y <- new("DVH.list", y)
+		}
+		x <- new("DVH.list", lapply(x, convert.DVH, type=type, dose=dose, volume=volume))
+		y <- new("DVH.list", lapply(y, convert.DVH, type=type, dose=dose, volume=volume))
+		N.x <- length(x)
+		N.y <- length(y)
+		if (N.x < 1) {
+			stop("not enough 'x' observations")
+		}
+		if (N.y < 1) {
+			stop("not enough 'y' observations")
+		}
+		doses <- var(c(x, y))$dose
+		data.x <- matrix(NA, nrow=length(doses), ncol=N.x)
+		for (i in 1:N.x) {
+			data.x[,i] <- approx(x[[i]]$doses, x[[i]]$volumes, doses, rule=2)$y
+		}
+		data.y <- matrix(NA, nrow=length(doses), ncol=N.y)
+		for (i in 1:N.y) {
+			data.y[,i] <- approx(y[[i]]$doses, y[[i]]$volumes, doses, rule=2)$y
+		}
+		wilcox.x <- wilcox.y <- wilcox.p <- wilcox.conf1 <- wilcox.conf2 <- c()
+		for (i in 1:length(doses)) {
+			w.i <- 1
+			suppressWarnings(try(w.i <- wilcox.test(data.x[i,], data.y[i,], paired=paired, mu=mu, conf.level=conf.level, exact=exact, alternative=alternative, conf.int=TRUE, correct=correct), silent=TRUE))
+			wilcox.x <- c(wilcox.x, median(data.x[i,], na.rm=TRUE))
+			wilcox.y <- c(wilcox.y, median(data.y[i,], na.rm=TRUE))
+			if (identical(w.i, 1)) {
+				wilcox.p <- c(wilcox.p, NA)
+				wilcox.conf1 <- c(wilcox.conf1, NA)
+				wilcox.conf2 <- c(wilcox.conf2, NA)
+			}			
+			else {
+				wilcox.p <- c(wilcox.p, w.i$p.value)
+				wilcox.conf1 <- c(wilcox.conf1, w.i$conf.int[1])
+				wilcox.conf2 <- c(wilcox.conf2, w.i$conf.int[2])
+			}
+		}
+		return(list(dose=doses, x.med=wilcox.x, y.med=wilcox.y, p=wilcox.p, conf.int1=wilcox.conf1, conf.int2=wilcox.conf2))
+	}
+)

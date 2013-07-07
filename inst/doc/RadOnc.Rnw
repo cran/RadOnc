@@ -1,0 +1,271 @@
+% -*- mode: noweb; noweb-default-code-mode: R-mode; -*-
+%\VignetteIndexEntry{Documentation}
+%\VignetteKeywords{Preprocessing}
+%\VignetteDepends{RadOnc}
+%\VignettePackage{RadOnc}
+%documentclass[12pt, a4paper]{article}
+\documentclass[12pt]{article}
+
+\usepackage{amsmath,amscd}
+\usepackage{graphicx, verbatim}
+\usepackage{hyperref}
+\usepackage[authoryear,round]{natbib}
+\usepackage{float}
+\usepackage{lscape}
+
+\textwidth=6.5in
+\textheight=9in
+\oddsidemargin=0in
+\evensidemargin=0in
+\headheight=-.3in
+
+\newcommand{\scscst}{\scriptscriptstyle}
+\newcommand{\scst}{\scriptstyle}
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+
+\begin{document}
+
+\title{Radiation Oncology (RadOnc) Tools}
+\author{Reid F. Thompson}
+
+\maketitle
+\tableofcontents
+%%\newpage
+%%\listoffigures
+\newpage
+\section{Introduction}
+\label{intro}
+The \Rpackage{RadOnc} package provides a number of tools for the import and analysis of dose-volume histogram (DVH) data used routinely in Radiation Oncology clinical practice and research.  Supported formats for data import currently include:
+\begin{itemize}
+\item Varian's Aria/Eclipse platform
+\end{itemize}
+
+The functionality contained herein also enables visualization of dosimetric and volumetric data, and statistical comparison among multiple DVHs. In order to use these tools, you must first load the \Rpackage{RadOnc} package:
+<<echo=TRUE,keep.source=FALSE,results=hide>>=
+library(RadOnc)
+@
+<<echo=FALSE,results=hide>>=
+data.path <- system.file("extdata", package="RadOnc")
+initial.path <- getwd()
+options(width=75)
+@
+
+It is assumed that the reader is already familiar with DVH analysis. If this is not the case, consult the relevant literature for a thorough treatment of the subject \citep{dvh}.
+
+Throughout this vignette, we will be exploring actual data for 2 patients, each possessing a set of 10 structures (including organs at risk and treatment planning volumes).
+
+\newpage
+\section{Changes for \Rpackage{RadOnc} in current BioC release}
+\label{current.version.changes}
+
+\begin{itemize}
+\item This is the first public release of the \Rpackage{RadOnc} package.
+\end{itemize}
+
+
+\newpage
+\section{DVH file import}
+\label{DVH.import}
+The \Rfunction{read.DVH()} function is designed to take an input text file and output a list of DVH data objects containing all relevant data. Supported file types currently include Varian's Aria/Eclipse platform (v.10 and v.11). Other treatment planning systems are not currently supported however will be included in future releases.
+
+For Varian-specific file types, data must be exported directly from the treatment planning system and should include all DVH structures of interest. In Eclipse, this is accomplished via the ``Export DVH in Tabular Format..." option, accessed by right-clicking over DVHs in Plan Evaluation mode. Exported files will adhere to the following form (an example file, 50 lines of which are shown here, is contained within this release of the \Rpackage{RadOnc} package):
+
+<<echo=FALSE,results=verbatim>>=
+temp <- c(readLines(paste(data.path, 'Jane_Doe.dvh', sep='/'),n=50), "...", "...")
+for (i in 1:52) {
+cat(temp[i], "\n")
+}
+@
+
+<<echo=FALSE,results=hide>>=
+johndoe <- read.DVH(file=system.file("extdata/John_Doe.dvh", package="RadOnc"), type="aria10", verbose=TRUE)
+@
+This DVH data may be imported using the \Rfunction{read.DVH()} function, with an example shown here:
+<<echo=TRUE,eval=FALSE,results=hide>>=
+read.DVH(file="Jane_Doe.dvh", type="aria10", verbose=TRUE)
+@
+<<echo=FALSE,results=verbatim>>=
+janedoe <- read.DVH(file=system.file("extdata/Jane_Doe.dvh", package="RadOnc"), type="aria10", verbose=TRUE)
+@
+
+\newpage
+\section{DVH list manipulation}
+\label{DVH.manipulation}
+The \Rfunction{read.DVH()} function returns a DVH list that can be manipulated in multiple ways. Subsets of DVH lists can be obtained using the \Rfunction{[]} modifier, and any number of DVH lists can be combined using the \Rfunction{c()} function. Additionally, single DVH objects can be directly accessed using the \Rfunction{[[]]} modifier, and individual elements of a DVH list may be directly replaced with other DVH objects using the \Rfunction{[[<-} function.
+<<echo=TRUE,results=verbatim>>=
+janedoe[1:4]
+c(janedoe[c("PTV")], johndoe[c("CTV", "DUODENUM")])
+@
+<<echo=FALSE,results=hide>>=
+temp <- janedoe
+@
+<<echo=TRUE,results=verbatim>>=
+johndoe[["CTV"]]
+janedoe[[1]] <- johndoe[["CTV"]]
+janedoe[1:4]
+@
+<<echo=FALSE,results=hide>>=
+janedoe <- temp
+@
+
+
+Other list processing functions may be applied to DVH lists, enabling further data manipulation. The \Rfunction{rev()} function may be used to reverse the order of a DVH list, while the \Rfunction{names()} function may be used to extract (or set) the structure names for each DVH contained within the list. The \Rfunction{length()} function may be used to find the number of DVH objects contained within a DVH list, and the \Rfunction{lapply()} function can be used to perform a customizable set of operations on a DVH list and return a customizable set of values. Here are some examples employing each of these functions:
+
+<<echo=TRUE,results=verbatim>>=
+names(janedoe)[1:4] <- c("A1", "B2", "C3", "D4")
+names(rev(janedoe[1:4]))
+length(johndoe)
+lapply(johndoe, function(DVH) { DVH[c("DMIN", "D50%", "DMAX", "V20%")] })
+@
+<<echo=FALSE,results=hide>>=
+janedoe <- temp
+@
+
+\newpage
+\section{DVH data}
+\label{DVH.data}
+Each DVH structure contains a variety of data related to the structure itself as well as the distribution of radiation dose within the structure volume. Detailed slot list and parameters are described in the \Rfunction{DVH-class} documentation accompanying the \Rpackage{RadOnc} package. Specific parameters can be extracted using the \Rfunction{[]} modifier, which can take as its argument a character string representation of the desired dose/volume parameter. For instance, the volume of duodenum receiving 20Gy or the dose to the top 2.5\% (2.3286cc) of the volume can be extracted from DVH data as follows:
+<<echo=TRUE,results=verbatim>>=
+johndoe[["DUODENUM"]]["V20Gy"]
+johndoe[["DUODENUM"]]["D2.5%"]
+johndoe[["DUODENUM"]]["volume"] * 0.025
+johndoe[["DUODENUM"]]["D2.3286cc"]
+@
+These parameters are entirely flexible and multiple parameters can be requested for a given DVH object at the same time.  This functionality can also be applied to a DVH list using the \Rfunction{\$} modifier.
+<<echo=TRUE,results=verbatim>>=
+johndoe[["DUODENUM"]][c("V5%", "V20Gy", "D2.5%", "D2.3286cc", "Dmax")]
+johndoe[1:4]$"V20Gy,Dmax"
+@
+If an improper parameter is specified however, \Rfunction{NA} results will be returned for the affected parameter(s):
+<<echo=TRUE,results=verbatim>>=
+johndoe[["DUODENUM"]][c("V5", "VGy", "volume", 2.5, "", "Dmax")]
+@
+
+\newpage
+\section{Plotting}
+\label{plot}
+Individual DVH plots can be generated by the \Rfunction{plot()} function, and may be altered to show dose and/or volume as relative or absolute values with DVH shown as cumulative or differential data.
+\begin{figure}[H]
+\begin{center}
+<<label=fig1,fig=TRUE,echo=TRUE>>=
+plot(janedoe[[3]], volume="relative", dose="absolute", type="cumulative")
+@
+\end{center}
+\caption{Standard dose-volume histogram for a single structure (``STOMACH") from patient Jane Doe. Data is shown as cumulative dose versus volume. }
+\label{fig:one}
+\end{figure}
+
+\newpage
+\begin{figure}[H]
+\begin{center}
+<<label=fig2,fig=TRUE,echo=TRUE>>=
+plot(janedoe[1:3], plot.type="i", col=c("red", "green", "blue"), 
+legend="topright", legend.labels=names(janedoe[1:3]))
+@
+\end{center}
+\caption{Standard dose-volume histogram for three structures from a single patient, Jane Doe. Data is shown as cumulative dose versus volume. Legend is displayed in the top right corner of the plot. }
+\label{fig:two}
+\end{figure}
+
+\newpage
+\begin{figure}[H]
+\begin{center}
+<<label=fig3,fig=TRUE,echo=TRUE>>=
+plot(c(johndoe["STOMACH"],janedoe["STOMACH"]), #group 1
+c(janedoe["LIVER"],johndoe["LIVER"]), #group 2
+c(johndoe["DUODENUM"],janedoe["DUODENUM"]), #group 3
+plot.type="g", dose="relative", col=c("blue", "red", "green"), 
+lwd=2, lty="dashed", fill.lty="solid", fill.transparency=0.3)
+@
+\end{center}
+\caption{Mean dose-volume histograms are shown for three groups of DVHs, in this case corresponding to stomach, liver, and duodenum from two different patients (John Doe and Jane Doe). Data is shown as cumulative dose (relative) versus volume (relative). Shading represents the range of the data for each group (note that the width of the shading can be specified to represent other parameters instead of range -- e.g. variance, standard deviation, interquartile range, median absolute deviation). }
+\label{fig:three}
+\end{figure}
+
+\newpage
+\begin{figure}[H]
+\begin{center}
+<<label=fig4,fig=TRUE,echo=TRUE>>=
+group1 <- c("CTV", "PTV")
+group2 <- c("LIVER", "STOMACH", "SMALL_BOWEL")
+plot(c(johndoe[group1],janedoe[group1]), 
+c(janedoe[group2],johndoe[group2]),
+plot.type="t", main="Target v. OAR t-Test", alpha=0.001, 
+col=c("red", "blue"), lty="dashed", fill.lty="solid")
+@
+\end{center}
+\caption{Mean dose-volume histograms are shown for two groups of DVHs, in this case corresponding to CTV/PTV and liver/stomach/small bowel from two different patients (John Doe and Jane Doe). Data is shown as cumulative dose (absolute) versus volume (relative). Shading represents the 99.9\% confidence interval for each group (specified here by \Rfunction{alpha=0.001}). The corresponding p-values are shown in the upper panel, with corresponding significance threshold p<0.001. }
+\label{fig:four}
+\end{figure}
+
+\newpage
+\begin{figure}[H]
+\begin{center}
+<<label=fig5,fig=TRUE,echo=TRUE>>=
+plot(janedoe[2:9], plot.type="b", volume="abs", dose="rel")
+@
+\end{center}
+\caption{Bar representation of dose distributions for eight structures from a single patient (Jane Doe). }
+\label{fig:five}
+\end{figure}
+
+
+\newpage
+\section{DVH statistics}
+\label{DVH.stats}
+Mean or median DVHs can be calculated using the \Rfunction{mean()} and \Rfunction{median()} functions, respectively. These functions take a DVH list as input and return a single object of class \Rfunction{DVH} representing the mean or median dose-volume histogram data calculated from the entire group.
+\begin{figure}[H]
+\begin{center}
+<<label=fig6,fig=TRUE,echo=TRUE>>=
+plot(janedoe)
+plot(median(janedoe), new=FALSE, col="red", lwd=2)
+plot(mean(janedoe), new=FALSE, col="blue", lwd=2, lty="dashed")
+@
+\end{center}
+\caption{Mean and median DVHs are shown in blue dash and red, respectively. }
+\label{fig:six}
+\end{figure}
+
+\newpage
+In routine clinical practice and research, DVH comparisons are often performed at an individual parameter level (e.g. V20Gy from Group A compared to Group B). The \Rpackage{RadOnc} package enables automated comparison throughout the entire DVH. Functions such as \Rfunction{t.test()} and \Rfunction{wilcox.test()} are both enabled for DVH lists.
+<<echo=TRUE,results=verbatim>>=
+groupA <- janedoe[c("LIVER","LEFT_KIDNEY","RIGHT_KIDNEY","CORD")]
+groupB <- janedoe[c("CTV", "PTV")]
+t.test(unlist(groupA$"V20Gy"), unlist(groupB$"V20Gy"))
+@
+\newpage
+\begin{figure}[H]
+\begin{center}
+<<echo=TRUE,eval=FALSE>>=
+AvB <- t.test(groupA, groupB)
+plot(AvB$dose, AvB$p, type="l", log="y", xlab="Dose (cGy)", ylab="p-value")
+@
+<<label=fig7,fig=TRUE,echo=FALSE>>=
+AvB <- t.test(groupA, groupB)
+plot(AvB$dose, AvB$p, type="l", log="y", xlab="Dose (cGy)", ylab="p-value")
+abline(v=2000,col="gray", lty="dashed")
+points(2000,approx(AvB$dose, AvB$p, 2000)$y, col="red")
+text(2000,approx(AvB$dose, AvB$p, 2000)$y, col="red", labels="V20Gy (p=5.347e-05)",pos=4)
+@
+\end{center}
+\caption{p-values from \Rfunction{t.test()} comparison as a function of dose. V20Gy is highlighted and its p-value corresponds closely to values generated from t-test of V20Gy directly. }
+\label{fig:seven}
+\end{figure}
+
+\newpage
+\addcontentsline{toc}{section}{References}
+\bibliographystyle{plainnat}
+\bibliography{RadOnc}
+
+
+\newpage
+\appendix
+\section{Previous Release Notes}
+\label{previous}
+\begin{itemize}
+\item No previous releases to date.
+\end{itemize}
+
+\end{document}

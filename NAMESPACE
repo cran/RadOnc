@@ -1,0 +1,43 @@
+importFrom(graphics, axis, lines, par, plot, points, rect, segments, text)
+
+importFrom(grDevices, col2rgb, rainbow, rgb)
+
+importFrom(methods, new, slot, validObject)
+
+exportClasses(
+	DVH,
+	DVH.list
+)
+
+export(
+	read.DVH
+)
+
+exportMethods(
+	as.list,
+	c,
+	lapply,
+	length,
+	min,
+	max,
+	mad,
+	median,
+	mean,
+	names,
+	plot,
+	print,
+	quantile,
+	range,
+	rev,
+	sd,
+	show,
+	t.test,
+	var,
+	wilcox.test,
+	"names<-",
+	"[",
+	"[[",
+	"[[<-",
+	"$<-",
+	"$"
+)

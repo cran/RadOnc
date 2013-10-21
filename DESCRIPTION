@@ -1,17 +1,18 @@
 Package: RadOnc
 Type: Package
 Title: Analytical Tools for Radiation Oncology
-Version: 1.0.0
-Date: 2013-05-24
+Version: 1.0.1
+Date: 2013-10-21
 Author: Reid F. Thompson <reid.thompson@gmail.com>
 Maintainer: Reid F. Thompson <reid.thompson@gmail.com>
-Imports: graphics, grDevices, methods, stats, utils
-Depends: R (>= 3.0.0), methods
-Description: This package is designed for the import, analysis, and visualization of dosimetric and volumetric data in Radiation Oncology.  The tools herein enable import of DVH information from Varian's Aria/Eclipse platform as well as subsequent visualization and statistical analysis of this data.
+Imports: stats, utils, ptinpoly
+Depends: R (>= 3.0.0), graphics, grDevices, methods, rgl, geometry,
+        oro.dicom
+Description: This package is designed for the import, analysis, and visualization of dosimetric and volumetric data in Radiation Oncology.  The tools herein enable import of DVH information from Varian's Aria/Eclipse platform and 3D structural representations from DICOM-RT files.  These tools also enable subsequent visualization and statistical analysis of this data.
 License: GPL (>= 2)
 LazyData: yes
 LazyLoad: yes
-Packaged: 2013-07-07 16:00:26 UTC; reidt
+Packaged: 2013-10-22 21:05:07 UTC; reidt
 NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2013-07-07 18:03:29
+Date/Publication: 2013-10-23 00:51:21

@@ -2,15 +2,31 @@ importFrom(graphics, axis, lines, par, plot, points, rect, segments, text)
 
 importFrom(grDevices, col2rgb, rainbow, rgb)
 
+importFrom(stats)
+
+importFrom(utils)
+
+importFrom(rgl)
+
+importFrom(geometry)
+
+importFrom(oro.dicom)
+
+importFrom(ptinpoly)
+
 importFrom(methods, new, slot, validObject)
 
 exportClasses(
 	DVH,
-	DVH.list
+	DVH.list,
+	structure3D,
+	structure.list
 )
 
 export(
-	read.DVH
+	read.DVH,
+	read.DICOM.RT,
+	compareStructures
 )
 
 exportMethods(

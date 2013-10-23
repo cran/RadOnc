@@ -361,9 +361,6 @@ plot.DVH.groups <- function(x, ..., col="black", lty ="solid", lwd=1, line.trans
 	type <- match.arg(type)
 	center <- match.arg(center)
 	width <- match.arg(width)
-	if ((width == "mad") & fill) {
-		center <- "median"
-	}
 	legend <- match.arg(legend)
 	groups <- c(list(x), list(...))
 	classes <- unlist(lapply(groups, class))
@@ -435,15 +432,17 @@ plot.DVH.groups <- function(x, ..., col="black", lty ="solid", lwd=1, line.trans
 						polygon(c(DVH.range$dose, rev(DVH.range$dose)), c(pmax(DVH.center$volumes-DVH.range$mad*multiplier, 0), rev(pmin(DVH.center$volumes+DVH.range$mad*multiplier, y.max))), col=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), border=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), angle=angle[i], density=density[i], lty=fill.lty[i])
 					},
 					IQR = {
+						DVH.med <- median(groups[[i]])$volumes
 						DVH.range <- quantile(groups[[i]], probs=c(0.25, 0.75), type=7, na.rm=TRUE)
-						polygon(c(DVH.range$dose, rev(DVH.range$dose)), c(pmax(DVH.range$quantiles[1,], 0), rev(pmin(DVH.range$quantiles[2,], y.max))), col=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), border=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), angle=angle[i], density=density[i], lty=fill.lty[i])
+						polygon(c(DVH.range$dose, rev(DVH.range$dose)), c(pmax(DVH.range$quantiles[1,]-DVH.med+DVH.center$volumes, 0), rev(pmin(DVH.range$quantiles[2,]-DVH.med+DVH.center$volumes, y.max))), col=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), border=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), angle=angle[i], density=density[i], lty=fill.lty[i])
 					},
 					quantile = {
 						if (length(quantile) != 2) {
 							quantile <- c(0.25, 0.75)
 						}
+						DVH.med <- median(groups[[i]])$volumes
 						DVH.range <- quantile(groups[[i]], probs=quantile, type=7, na.rm=TRUE)
-						polygon(c(DVH.range$dose, rev(DVH.range$dose)), c(pmax(DVH.range$quantiles[1,], 0), rev(pmin(DVH.range$quantiles[2,], y.max))), col=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), border=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), angle=angle[i], density=density[i], lty=fill.lty[i])
+						polygon(c(DVH.range$dose, rev(DVH.range$dose)), c(pmax(DVH.range$quantiles[1,]-DVH.med+DVH.center$volumes, 0), rev(pmin(DVH.range$quantiles[2,]-DVH.med+DVH.center$volumes, y.max))), col=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), border=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), angle=angle[i], density=density[i], lty=fill.lty[i])
 					},
 					sd = {
 						DVH.range <- sd(groups[[i]])

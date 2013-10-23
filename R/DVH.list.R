@@ -48,6 +48,13 @@ setMethod("as.list", "DVH.list",
 	}
 )
 
+setAs("DVH", "DVH.list", 
+	function(from) {
+		return(new("DVH.list", structures=from))
+	}
+)
+
+
 setGeneric("lapply",
 	lapply
 )
@@ -151,12 +158,14 @@ setMethod("names<-", "DVH.list",
 		if (length(x) != length(value)) {
 			stop(paste("'names' attribute [", length(value), "] must be the same length as the DVH list [", length(x), "]", sep=""))
 		}
-		return(new("DVH.list", mapply(function(DVH, name) {
+		DVHlist <- new("DVH.list", mapply(function(DVH, name) {
 				DVH$structure.name <- name
 				return(DVH)
 			},
 			x, value
-		)))
+		))
+		names(attr(DVHlist,"structures")) <- value		
+		return(DVHlist)
   	}
 )
 

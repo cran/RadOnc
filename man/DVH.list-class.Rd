@@ -32,7 +32,7 @@
 
 \title{Class \code{"DVH.list"}}
 \description{
-A data structure containing one or more Dose-Volume Histogram (\code{DVH}) objects
+A data structure containing one or more Dose-Volume Histogram (\code{\link[RadOnc:DVH-class]{DVH}}) objects
 }
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("DVH.list", structures, ...)}.
@@ -49,9 +49,9 @@ Objects can be created by calls of the form \code{new("DVH.list", structures, ..
     \item{[[<-}{\code{signature(x = "DVH.list")}: Replace single \code{DVH} object in DVH list }
     \item{[<-}{\code{signature(x = "DVH.list")}: Replace multiple elements of DVH list }
     \item{$}{\code{signature(x = "DVH.list")}: Extract dose or volume parameter(s) from \code{DVH} objects within DVH list. Note that multiple parameters may be specified by use of the comma (e.g. \code{\$"V20Gy,D5\%"}) }
-    \item{c}{\code{signature(x = "DVH.list")}: Combine two or more DVH lists and/or \code{DVH} objects }
-    \item{lapply}{\code{signature(X = "DVH.list")}: Apply function to a list of \code{DVH} objects }
-    \item{length}{\code{signature(x = "DVH.list")}: Extract number of \code{DVH} objects in DVH list }
+    \item{c}{\code{signature(x = "DVH.list")}: Combine two or more DVH lists and/or \code{\link[RadOnc:DVH-class]{DVH}} objects }
+    \item{lapply}{\code{signature(X = "DVH.list")}: Apply function to a list of \code{\link[RadOnc:DVH-class]{DVH}} objects }
+    \item{length}{\code{signature(x = "DVH.list")}: Extract number of \code{\link[RadOnc:DVH-class]{DVH}} objects in DVH list }
     \item{mad}{\code{signature(x = "DVH.list")}: Compute the median absolute deviation (i.e. the median of the absolute deviations from the median) for all doses extracted from \code{DVH} object list }
     \item{max}{\code{signature(x = "DVH.list")}: Compute the maximum dose contained within the DVH list }
     \item{mean}{\code{signature(x = "DVH.list")}: Compute the mean \code{DVH} from all \code{DVH} objects within the list }

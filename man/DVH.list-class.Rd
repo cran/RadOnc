@@ -48,7 +48,7 @@ Objects can be created by calls of the form \code{new("DVH.list", structures, ..
     \item{[[}{\code{signature(x = "DVH.list")}: Extract single \code{DVH} object from DVH list }
     \item{[[<-}{\code{signature(x = "DVH.list")}: Replace single \code{DVH} object in DVH list }
     \item{[<-}{\code{signature(x = "DVH.list")}: Replace multiple elements of DVH list }
-    \item{$}{\code{signature(x = "DVH.list")}: Extract dose or volume parameter(s) from \code{DVH} objects within DVH list. Note that multiple parameters may be specified by use of the comma (e.g. \code{\$"V20Gy,D5\%"}) }
+    \item{$}{\code{signature(x = "DVH.list")}: Extract dose or volume parameter(s) from \code{DVH} objects within DVH list. Note that multiple parameters may be specified by use of the comma (e.g. \code{\$"V20Gy,D5\%"}). See \code{\link[RadOnc:DVH-class]{DVH}} documentation (\code{[]} usage) for additional details. }
     \item{c}{\code{signature(x = "DVH.list")}: Combine two or more DVH lists and/or \code{\link[RadOnc:DVH-class]{DVH}} objects }
     \item{lapply}{\code{signature(X = "DVH.list")}: Apply function to a list of \code{\link[RadOnc:DVH-class]{DVH}} objects }
     \item{length}{\code{signature(x = "DVH.list")}: Extract number of \code{\link[RadOnc:DVH-class]{DVH}} objects in DVH list }

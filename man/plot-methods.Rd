@@ -78,6 +78,22 @@
 		}
 	}
 }
+\section{Additional Parameters}{
+	\describe{
+		\item{\code{type}}{
+			Value specifying type of dose-volume histogram to plot (must be one of \code{"cumulative"} or \code{"default"}).
+		}
+		\item{\code{dose}}{
+			Value specifying dose scale (must be one of \code{"relative"} or \code{"absolute"}).
+		}
+		\item{\code{dose.units}}{
+			Value specifying dose units (must be one of \code{"cGy"} or \code{"Gy"}).
+		}
+		\item{\code{volume}}{
+			Value specifying volume scale (must be one of \code{"relative"} or \code{"absolute"}).
+		}
+	}
+}
 \details{
 	More details about each plotting subtype here . . .
 }

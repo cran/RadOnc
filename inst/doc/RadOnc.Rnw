@@ -41,7 +41,7 @@
 \label{intro}
 The \Rpackage{RadOnc} package provides a number of tools for the import and analysis of dose-volume histogram (DVH) data used routinely in Radiation Oncology clinical practice and research.  Supported formats for data import currently include:
 \begin{itemize}
-\item Varian's Aria/Eclipse platform
+\item Varian's Aria/Eclipse platform (v.10 and v.11)
 \item DICOM-RT files
 \end{itemize}
 
@@ -148,9 +148,9 @@ These parameters are entirely flexible and multiple parameters can be requested 
 johndoe[["DUODENUM"]][c("V5%", "V20Gy", "D2.5%", "D2.3286cc", "Dmax")]
 johndoe[1:4]$"V20Gy,Dmax"
 @
-If an improper parameter is specified however, \Rfunction{NA} results will be returned for the affected parameter(s):
+Note that specific parameter keywords include: \Rfunction{"Dmax"} (maximum dose), \Rfunction{"Dmin"} (minimum dose), \Rfunction{"Dmean"} (mean dose), \Rfunction{"Dintegral"} (estimated integral dose), \Rfunction{"DRx"} (prescription dose), and \Rfunction{"volume"} (total structure volume). If an improper parameter is specified however, \Rfunction{NA} results will be returned for the affected parameter(s):
 <<echo=TRUE,results=verbatim>>=
-johndoe[["DUODENUM"]][c("V5", "VGy", "volume", 2.5, "", "Dmax")]
+johndoe[["DUODENUM"]][c("V5", "VGy", "volume", 2.5, "", "Dmax%")]
 @
 
 \newpage
@@ -387,6 +387,7 @@ teeth <- temp
 \section{Previous Release Notes}
 \label{previous}
 \begin{itemize}
+\item Last release (v1.0.1) on 2013-10-23
 \item Initial release (v1.0.0) on 2013-07-07
 \end{itemize}
 

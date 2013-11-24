@@ -25,7 +25,7 @@
 A data structure containing Dose-Volume Histogram (\code{DVH}) data and associated parameters for a single structure
 }
 \section{Objects from the Class}{
-Objects can be created by calls of the form \code{new("DVH", structure.name, structure.volume, type, dose.max, dose.min, dose.mean, dose.median, dose.mode, dose.STD, conf.index, equiv.sphere, gradient, dose.rx, dose.fx, doses, dose.type, volumes, volume.type, ...)}.
+Objects can be created by calls of the form \code{new("DVH", structure.name, structure.volume, type, dose.max, dose.min, dose.mean, dose.median, dose.mode, dose.STD, conf.index, equiv.sphere, gradient, dose.rx, dose.fx, doses, dose.type, dose.units, volumes, volume.type, ...)}.
 }
 \section{Slots}{
   \describe{
@@ -41,17 +41,18 @@ Objects can be created by calls of the form \code{new("DVH", structure.name, str
     \item{\code{conf.index}:}{Conformality index}
     \item{\code{equiv.sphere}:}{Equivalent sphere (diameter in centimeters)}
     \item{\code{gradient}:}{Dose gradient (in centimeters)}
-    \item{\code{dose.rx}:}{Prescription dose (in cGy)}
-    \item{\code{dose.fx}:}{Fractional dose (in cGy)}
+    \item{\code{dose.rx}:}{Prescription dose (in units specified by \code{dose.units})}
+    \item{\code{dose.fx}:}{Fractional dose (in units specified by \code{dose.units})}
     \item{\code{doses}:}{List of doses corresponding to \code{"volumes"} }
     \item{\code{dose.type}:}{A character string specifying the dose type (must be one of \code{"relative"} or \code{"absolute"})}
+    \item{\code{dose.units}:}{A character string specifying the dose units (must be one of \code{"cGy"} or \code{"Gy"})}
     \item{\code{volumes}:}{List of volumes corresponding to \code{"doses"} }
     \item{\code{volume.type}:}{A character string specifying the volume type (must be one of \code{"relative"} or \code{"absolute"})}
   }
 }
 \section{Methods}{
   \describe{
-    \item{[}{\code{signature(x = "DVH")}: Extract dose or volume parameter(s) from \code{DVH} object }
+    \item{[}{\code{signature(x = "DVH")}: Extract dose or volume parameter(s) from \code{DVH} object. Only one parameter may be specified at a time. Parameter specification should be of the form \code{["<A><B><C>"]}: \code{<A>} is equivalent to \code{"V"} or \code{"D"}, representing a volume or dose, respectively; \code{<B>} usually denotes a numerical value specifying the dose or volume; and \code{<C>} represents the dose or volume units (\code{"cGy"}, \code{"Gy"}, \code{"\%"}, or \code{"cc"}). An example would be \code{["V20Gy"]} which represents the volume of the structure receiving at least 20Gy dose. Specialized dosimetric keywords may also be used:  \code{"Dmax"} (maximum dose), \code{"Dmin"} (minimum dose), \code{"Dmean"} (mean dose), \code{"Dintegral"} (estimated integral dose), \code{"DRx"} (prescription dose), and \code{"volume"} (total structure volume).  If an improper parameter is specified however, \code{NA} results will be returned. See package documentation (vignette) for more details. }
     \item{$}{\code{signature(x = "DVH")}: ... }
     \item{$<-}{\code{signature(x = "DVH")}: ... }
     \item{c}{\code{signature(x = "DVH")}: Combine multiple \code{DVH} objects into a single list }

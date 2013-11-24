@@ -188,4 +188,8 @@ setMethod("show", "structure3D",
 	}
 )
 
-
+setMethod("dim", "structure3D",
+	function (x) {
+		return(c(dim(attr(x,"vertices"))[1], length(attr(x,"closed.polys"))))
+	}
+)

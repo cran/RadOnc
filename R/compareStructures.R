@@ -1,9 +1,17 @@
 compareStructures <- function(structures, method=c("grid", "surface", "hausdorff"), hausdorff.method=c("mean", "median", "absolute"), verbose=TRUE, plot=TRUE, pixels=100) {
 	if (class(structures) != "structure.list") {
-		stop("Input 'structures' must be of class 'structure.list'")
+		warning("Input 'structures' must be of class 'structure.list'")
+		return()
 	}
-	if (length(structures) < 2) {
-		stop("Need at least 2 structures to perform comparison")
+	empty <- unlist(lapply(structures, function(struct) {return(dim(struct)[1] <= 0)}))
+	if (any(empty)) {
+		warning(paste("Skipping empty structure(s): ", paste(names(structures[empty]), collapse=", ", sep=""), sep=""))
+		structures <- structures[!empty]
+	}
+	N <- length(structures)
+	if (N < 2) {
+		warning("Need at least 2 structures to perform comparison")
+		return()
 	}
 	method <- match.arg(method)
 	switch(method,
@@ -16,18 +24,30 @@ compareStructures <- function(structures, method=c("grid", "surface", "hausdorff
 		par(mar=c(0, 0, 0, 0))
 		N.z <- length(unique(contours[,3]))
 		layout(matrix(c(1:N.z*2, 1:N.z*2-1), nrow=N.z, ncol=2), widths=c(1, 10), heights=1)
+		levels <- 0:N
 		for (i in 1:N.z) {
-			z.i <- unique(contours[,3])[i]
+			z.i <- sort(unique(contours[,3]))[i]
 			contours.i <- contours[which(contours[,3] == z.i), ]
-			sum.i <- apply(contours.i[, 4:(dim(contours.i)[2])], 1, sum)
+			sum.i <- apply(contours.i[, 4:(dim(contours.i)[2])], 1, sum, na.rm=TRUE)
 			x <- unique(contours.i[, 1])
 			y <- unique(contours.i[, 2])
 			lvl.i <- matrix(sum.i, nrow=length(x), ncol=length(y))
-			lvl.i <- contourLines(x=x, y=y, z=lvl.i)
+			if (dim(lvl.i)[1] < 1) {
+				plot(1,type="n",xaxt="n",yaxt="n")
+				text(1, labels=i)
+				next
+				##### this test is probably not right . . . have not tested why lvl.i should be 0x0 dimensions!!!! -- it should not be
+			}
+			lvl.i <- contourLines(x=x, y=y, z=lvl.i, levels=levels)
 			plot(range(x), range(y), type="n", xaxt="n", yaxt="n")
+			if (length(lvl.i) < 1) {
+				plot(1,type="n",xaxt="n",yaxt="n")
+				text(1, labels=i)
+				next
+			}
 			for (j in 1:length(lvl.i)) {
 				cl.j <- lvl.i[[j]]
-				polygon(cl.j$x, cl.j$y, rep(z.i, length(cl.j$x)), col=rev(heat.colors(length(structures)*2+1))[cl.j$level*2], border=NA)
+				polygon(cl.j$x, cl.j$y, rep(z.i, length(cl.j$x)), col=rev(heat.colors(N+1))[which(levels == cl.j$level)], border=NA, density=NA)
 			}
 			plot(1,type="n",xaxt="n",yaxt="n")
 			text(1, labels=i)
@@ -114,7 +134,7 @@ compareStructures.grid <- function (structures, pixels=100) {
 	
 	N <- length(structures)
 	z <- as.list(rep(NA, N))
-	bounds <- range(structures)
+	bounds <- range(structures, na.rm=TRUE)
 	x.coords <- seq(from=bounds[1,1], to=bounds[2,1], length.out=pixels)
 	y.coords <- seq(from=bounds[1,2], to=bounds[2,2], length.out=pixels)
 	for (i in 1:N) {

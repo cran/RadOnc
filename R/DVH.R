@@ -16,6 +16,7 @@ setClass("DVH",
 		dose.fx = "numeric",
 		doses = "numeric",
 		dose.type = "character",
+		dose.units = "character",
 		volumes = "numeric",
 		volume.type = "character"
 	),
@@ -36,6 +37,7 @@ setClass("DVH",
 		dose.fx = numeric(),
 		doses = numeric(),
 		dose.type = character(),
+		dose.units = character(),
 		volumes = numeric(),
 		volume.type = character()
 	)
@@ -60,12 +62,13 @@ setMethod("initialize",
 		dose.fx = numeric(),
 		doses = numeric(),
 		dose.type = c("absolute", "relative"),
+		dose.units = c("cGy", "Gy"),
 		volumes = numeric(),
 		volume.type = c("relative", "absolute"),
 		...
 	) {
 		.Object@structure.name <- as.character(structure.name)
-		.Object@structure.volume <- as.numeric(structure.volume)
+		.Object@structure.volume <- max(0, as.numeric(structure.volume), na.rm=TRUE)
 		.Object@type <- match.arg(type)
 		if (length(doses) > 0) {
 			if (is.na(dose.max)) dose.max <- range(doses)[2]
@@ -87,6 +90,7 @@ setMethod("initialize",
 		.Object@dose.rx <- max(0, dose.rx, na.rm=TRUE)
 		.Object@dose.fx <- max(0, dose.fx, na.rm=TRUE)
 		.Object@dose.type <- match.arg(dose.type)
+		.Object@dose.units <- match.arg(dose.units)
 		.Object@volume.type <- match.arg(volume.type)
 		if (length(volumes) > 0) {
 			.Object@volumes <- as.numeric(volumes)
@@ -188,8 +192,8 @@ setMethod("[", "DVH",
 			if (any(volume)) {
 				type[volume] <- "VOLUME"
 			}
-			value <- sub("[VD]([.0-9]+|MAX|MIN|MEAN|RX)[^0-9]*", "\\1", i)
-			type2 <- sub("[VD]([.0-9]+|MAX|MIN|MEAN|RX)([%]|GY|CGY|CC)$", "\\2", i)
+			value <- sub("[VD]([.0-9]+|MAX|MIN|MEAN|RX|INTEGRAL)[^0-9]*", "\\1", i)
+			type2 <- sub("[VD]([.0-9]+|MAX|MIN|MEAN|RX|INTEGRAL)([%]|GY|CGY|CC)$", "\\2", i)
 			for (count in 1:length(i)) {
 				switch(type[count],
 					VOLUME = {
@@ -208,9 +212,9 @@ setMethod("[", "DVH",
 								switch(x@dose.type,
 									absolute = {
 										switch(type2[count],
-											CGY = TRUE,
+											CGY = if (x@dose.units == "cGy") { TRUE } else { value[count] <- as.numeric(value[count]) / 100 },
 											"%" = value[count] <- as.numeric(value[count]) * x@dose.rx / 100,
-											GY = value[count] <- as.numeric(value[count]) * 100,
+											GY = if (x@dose.units == "Gy") { TRUE } else { value[count] <- as.numeric(value[count]) * 100 },
 											CC = value[count] <- NA,
 											value[count] <- NA
 										)
@@ -218,8 +222,8 @@ setMethod("[", "DVH",
 									relative = {
 										switch(type2[count],
 											"%" = TRUE,
-											GY = value[count] <- (as.numeric(value[count]) * 100 / x@dose.rx) * 100,
-											CGY = value[count] <- (as.numeric(value[count]) / x@dose.rx) * 100,
+											GY = if (x@dose.units == "Gy") { value[count] <- (as.numeric(value[count]) / x@dose.rx) * 100 } else { value[count] <- (as.numeric(value[count]) * 100 / x@dose.rx) * 100 },
+											CGY = if (x@dose.units == "cGy") { value[count] <- (as.numeric(value[count]) / x@dose.rx) * 100 } else { value[count] <- as.numeric(value[count]) / x@dose.rx },
 											CC = value[count] <- NA,
 											value[count] <- NA
 										)
@@ -256,16 +260,23 @@ setMethod("[", "DVH",
 									)
 									if (type2[count] == "%") {
 										result <- c(result, 100 * as.numeric(value[count]) / x@dose.rx)
+										result.units <- c(result.units, "%")
 									}
 									else {
 										result <- c(result, as.numeric(value[count]))
+										result.units <- c(result.units, x@dose.units)
 									}
-									if ((x@dose.type == "absolute") & (type2[count] != "%")) {
-										result.units <- c(result.units, "Gy")								
-									}
-									else {
-										result.units <- c(result.units, "%")
-									}
+									next
+								}
+								else if (value[count] == "INTEGRAL") {
+									x <- convert.DVH(x, type="differential", volume="absolute", dose="absolute", dose.units="Gy")
+									result <- c(result,
+										integrate(function(dose) {
+											return(approx(x@doses, x@volumes, dose, yleft=0, yright=0)$y)
+											}, 0, Inf, stop.on.error=FALSE
+										)$value
+									)
+									result.units <- c(result.units, paste(x@dose.units, "*cc", sep=""))
 									next
 								}
 								value[count] <- suppressWarnings(as.numeric(value[count]))
@@ -303,7 +314,7 @@ setMethod("[", "DVH",
 									result <- c(result, approx(x@volumes, x@doses, value.count)$y)			
 								}
 								if (x@dose.type == "absolute") {
-									result.units <- c(result.units, "cGy")
+									result.units <- c(result.units, x@dose.units)
 								}
 								else {
 									result.units <- c(result.units, "%")										
@@ -348,8 +359,8 @@ setGeneric("print",
 
 setMethod("print", "DVH",
 	function (x, ...) {
-		if (x@dose.type == "relative") { dose.type <- "%" } else { dose.type <- "cGy" }
-		print(paste("Structure: ", x@structure.name, " (", x@structure.volume, " cc), Dose: ", x@dose.min, "-", x@dose.max, dose.type, " (", x@dose.rx, "cGy prescribed), DVH: ", x@type, ", Volume: ", x@volume.type, sep=""))	
+		if (x@dose.type == "relative") { dose.type <- "%" } else { dose.type <- x@dose.units }
+		print(paste("Structure: ", x@structure.name, " (", x@structure.volume, " cc), Dose: ", x@dose.min, "-", x@dose.max, dose.type, " (", x@dose.rx, x@dose.units, " prescribed), DVH: ", x@type, ", Volume: ", x@volume.type, sep=""))
 	}
 )
 
@@ -359,10 +370,11 @@ setMethod("show", "DVH",
 	}
 )
 
-convert.DVH <- function(..., type=c("cumulative", "differential"), dose=c("absolute", "relative"), volume=c("relative", "absolute")) {
+convert.DVH <- function(..., type=c("cumulative", "differential"), dose=c("absolute", "relative"), volume=c("relative", "absolute"), dose.units=c("cGy", "Gy")) {
 	type <- match.arg(type)
 	dose <- match.arg(dose)
 	volume <- match.arg(volume)
+	dose.units <- match.arg(dose.units)
 	arglist <- c(...)
 	arglist <- arglist[unlist(lapply(arglist, function(arg) { ((class(arg)[1] == "DVH") & validObject(arg)) }))]
 	N <- length(arglist)
@@ -375,22 +387,10 @@ convert.DVH <- function(..., type=c("cumulative", "differential"), dose=c("absol
 		if (dose != x@dose.type) {
 			if (dose == "absolute") {
 				x@doses <- x@doses * x@dose.rx / 100
-				x@dose.max <- x@dose.max * x@dose.rx / 100
-				x@dose.min <- x@dose.min * x@dose.rx / 100
-				x@dose.mean <- x@dose.mean * x@dose.rx / 100
-				x@dose.median <- x@dose.median * x@dose.rx / 100
-				x@dose.mode <- x@dose.mode * x@dose.rx / 100
-				x@dose.STD <- x@dose.STD * x@dose.rx / 100
 				x@dose.type <- "absolute"
 			}
 			else {
 				x@doses <- 100 * x@doses / x@dose.rx
-				x@dose.max <- 100 * x@dose.max / x@dose.rx
-				x@dose.min <- 100 * x@dose.min / x@dose.rx
-				x@dose.mean <- 100 * x@dose.mean / x@dose.rx
-				x@dose.median <- 100 * x@dose.median / x@dose.rx
-				x@dose.mode <- 100 * x@dose.mode / x@dose.rx
-				x@dose.STD <- 100 * x@dose.STD / x@dose.rx
 				x@dose.type <- "relative"
 			}
 		}
@@ -421,6 +421,27 @@ convert.DVH <- function(..., type=c("cumulative", "differential"), dose=c("absol
 				x@doses <- x@doses[1:(length(x@doses)-1)] + diff(x@doses)/2
 				x@type <- "differential"
 			}
+		}
+		if ((dose.units != x@dose.units) & (x@dose.type == "absolute")) {
+			if (dose.units == "cGy") {
+				x@doses <- x@doses * 100
+				x@dose.max <- x@dose.max * 100
+				x@dose.min <- x@dose.min * 100
+				x@dose.mean <- x@dose.mean * 100
+				x@dose.median <- x@dose.median * 100
+				x@dose.mode <- x@dose.mode * 100
+				x@dose.STD <- x@dose.STD * 100
+			}
+			else {
+				x@doses <- x@doses / 100
+				x@dose.max <- x@dose.max / 100
+				x@dose.min <- x@dose.min / 100
+				x@dose.mean <- x@dose.mean / 100
+				x@dose.median <- x@dose.median / 100
+				x@dose.mode <- x@dose.mode / 100
+				x@dose.STD <- x@dose.STD / 100
+			}
+			x@dose.units <- dose.units
 		}
 		arglist[[i]] <- x
 	}

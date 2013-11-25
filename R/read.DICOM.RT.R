@@ -13,6 +13,7 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 		cat("Reading ", length(filenames), " DICOM files from path: '", path, "' ... ", sep="")
 	}
 	DICOMs <- readDICOM(path, verbose=FALSE, exclude=exclude, recursive=recursive, ...)
+	
 	if (verbose) {
 		cat("FINISHED\nExtracting CT data ... ", sep="")
 	}
@@ -30,6 +31,7 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 		cat("FINISHED\n")
 	}
 	first <- TRUE
+	data.old <- data <- list(set=NULL, name=NULL, points=NULL)
 	for (i in as.numeric(which(modalities == "RTSTRUCT"))) {
 		if (verbose) {
 			cat("Reading structure set from file: '", filenames[i], "' ... ", sep="")
@@ -49,15 +51,31 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 		if (length(structureset) == 0) {
 			structureset <- as.character(DICOM.i[which(DICOM.i[,"name"] == "StructureSetLabel"), "value"])
 		}
+		if (N < 1) {
+			if (verbose) {
+				warning("Empty structure set")
+				cat("ERROR\n")
+			}			
+			next
+		}
 		if (verbose) {
 			cat("(", N, " structures identified) ", sep="")
 		}
 		structure.IDs <- as.numeric(structures[1:N*2-1, "value"])
 		names(structure.IDs) <- structures[1:N*2, "value"]
-		colors <- as.numeric(which(DICOM.i[,"name"] == "ROIDisplayColor"))
+		colors <- as.numeric(which(DICOM.i[,"name"] %in% c("ROIDisplayColor")))
 		col <- c()
-		structures <- as.numeric(which(DICOM.i[,"name"] == "ReferencedROINumber")[1:N])
+#		structures <- as.numeric(which((DICOM.i[,"name"] == "ReferencedROINumber") & (DICOM.i[,"sequence"] == "(3006,0039)")))
+		structures <- as.numeric(which(DICOM.i[,"name"] == "ReferencedROINumber"))
+		contour.seq <- as.numeric(which(DICOM.i[,"name"] == "ContourSequence"))
 		contours <- as.numeric(which(DICOM.i[,"name"] == "ContourData"))
+		if (length(contour.seq) < 1) {
+			if (verbose) {
+				warning(paste("Structure set from file '", filenames[i], "' is empty", sep=""))
+				cat("ERROR\n")
+			}			
+			next			
+		}
 		if (!first) {
 			data.old$set <- c(data.old$set, data$set)
 			data.old$name <- c(data.old$name, list(data$name))
@@ -68,19 +86,34 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 			first <- FALSE
 		}
 		data <- list(set=structureset, name=names(structure.IDs), points=vector("list", N))
-		for (j in 1:N) {
-			data.j <- strsplit(DICOM.i[intersect(colors[j]:structures[j], contours), "value"], " ")
+		N.ROIs <- length(structures)
+		used <- c()
+#		print(contour.seq)
+#		print(structures)
+		for (j in 1:length(contour.seq)) {
+			structures.j <- structures[which(structures > contour.seq[j])]
+			structure.j <- structures.j[which.min(structures.j)]
+#			print(c(j, ":", contour.seq[j], structure.j))
+			data.j <- strsplit(DICOM.i[intersect(contour.seq[j]:structure.j, contours), "value"], " ")
+			struct.ID.j <- which(structure.IDs == as.numeric(DICOM.i[structure.j, "value"]))
+			used <- c(used, struct.ID.j)
+##		for (j in 1:min(N, N.ROIs)) {
+##			data.j <- strsplit(DICOM.i[intersect(structures.ordered[j]:structures.ordered[j+1], contours), "value"], " ")
 			if (length(data.j) < 1) {
-				warning(paste("Structure '", names(structure.IDs)[j], "' is empty", sep=""))
-				data$points[[which(structure.IDs == as.numeric(DICOM.i[structures[j], "value"]))]] <- NA
-				col <- c(col, DICOM.i[colors[j], "value"])
+##				warning(paste("Structure '", names(structure.IDs)[j], "' is empty", sep=""))
+				warning(paste("Structure '", names(structure.IDs)[struct.ID.j], "' is empty", sep=""))
+				data$points[[struct.ID.j]] <- NA
+##				data$points[[which(structure.IDs == as.numeric(DICOM.i[structures[j], "value"]))]] <- NA
+##				used <- c(used, which(structure.IDs == as.numeric(DICOM.i[structures[j], "value"])))
+##				col <- c(col, DICOM.i[colors[j], "value"])
 				next
 			}
 			data.j <- lapply(data.j,
 				function(x) {
 					x <- as.numeric(x)
 					if (length(x) < 3) {
-						warning(paste("Structure '", names(structure.IDs)[j], "' is missing slices", sep=""))
+##						warning(paste("Structure '", names(structure.IDs)[j], "' is missing slices", sep=""))
+						warning(paste("Structure '", names(structure.IDs)[struct.ID.j], "' is missing slices", sep=""))
 						return(NA)
 					}
 					x <- cbind(x[1:(length(x)/3)*3-2], x[1:(length(x)/3)*3-1], x[1:(length(x)/3)*3])
@@ -88,8 +121,16 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 					return(x)
 				}
 			)			
-			data$points[[which(structure.IDs == as.numeric(DICOM.i[structures[j], "value"]))]] <- data.j
-			col <- c(col, DICOM.i[colors[j], "value"])
+			data$points[[struct.ID.j]] <- data.j
+##			data$points[[which(structure.IDs == as.numeric(DICOM.i[structures[j], "value"]))]] <- data.j
+##			used <- c(used, which(structure.IDs == as.numeric(DICOM.i[structures[j], "value"])))
+##			col <- c(col, DICOM.i[colors[j], "value"])
+		}
+		if (length(setdiff(1:N, used)) > 0) {
+			warning(paste("Structure(s) ", paste("'", names(structure.IDs)[setdiff(1:N, used)], "'", collapse=", ", sep=""), " are empty", sep=""))
+			for (k in setdiff(1:N, used)) {
+				data$points[[k]] <- NA
+			}
 		}
 		if (verbose) {
 			cat("FINISHED\n")
@@ -99,10 +140,17 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 	data$name <- c(data.old$name, list(data$name))
 	data$points <- c(data.old$points, list(data$points))
 
-#	return(list(structures=list(col=col, data=data), DICOM=DICOMs))
 
-	if (verbose) {
-		cat("Processing (", length(unlist(data$name)), ") structures:\n", sep="")
+#return(DICOMs)
+
+	if (length(unlist(data$name)) >= 1) {
+		if (verbose) {
+			cat("Processing (", length(unlist(data$name)), ") structures:\n", sep="")
+		}		
+	}
+	else {
+		## THIS IS AN ERROR CASE WITH NO STRUCTURES TO IMPORT . . . SHOULD NESt EVERYTHING BELOW INTO IF COMMAND SO CAN SKIP IT IF NEEDED . . . FIX THIS!!
+		return(list(DICOM=DICOMs))
 	}
 	N <- length(data$name)
 	struct.list <- new("structure.list")
@@ -166,7 +214,7 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 
 #	return(list(structures=list(col=col, data=data), DICOM=DICOMs, struct.list=struct.list))
 	return(struct.list)
-	## FOR OTHER FILES LOAD SPECIFIC DICOM files with skipSequwnce=FALSE and re-store hdr info in DICOM list!
+	## FOR OTHER FILES LOAD SPECIFIC DICOM files with skipSequence=FALSE and re-store hdr info in DICOM list!
 
 }
 

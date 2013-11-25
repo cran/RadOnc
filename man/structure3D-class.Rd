@@ -5,6 +5,7 @@
 \alias{$,structure3D-method}
 \alias{$<-,structure3D-method}
 \alias{c,structure3D-method}
+\alias{dim,structure3D-method}
 \alias{names,structure3D-method}
 \alias{names<-,structure3D-method}
 \alias{plot,structure3D,ANY-method}
@@ -38,6 +39,7 @@ Objects can be created by calls of the form \code{new("structure3D", name, volum
     \item{$}{\code{signature(x = "structure3D")}: ... }
     \item{$<-}{\code{signature(x = "structure3D")}: ... }
     \item{c}{\code{signature(x = "structure3D")}: Combine multiple \code{structure3D} objects into a single \code{structure.list} }
+    \item{dim}{\code{signature(x = "structure3D")}: Extract dimensions (number of vertices and axial slices) from \code{structure3D} object }
     \item{names}{\code{signature(x = "structure3D")}: Extract structure name from \code{structure3D} object  }
     \item{names<-}{\code{signature(x = "structure3D")}: Assign structure name to \code{structure3D} object }
     \item{plot}{\code{signature(x = "structure3D", y = "ANY")}: ... }

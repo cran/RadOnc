@@ -168,4 +168,3 @@ setMethod("names<-", "DVH.list",
 		return(DVHlist)
   	}
 )
-

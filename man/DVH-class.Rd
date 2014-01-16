@@ -19,6 +19,7 @@
 \alias{print,DVH-method}
 \alias{range,DVH-method}
 \alias{show,DVH-method}
+\alias{sum,DVH-method}
 
 \title{Class \code{"DVH"}}
 \description{
@@ -67,6 +68,7 @@ Objects can be created by calls of the form \code{new("DVH", structure.name, str
     \item{print}{\code{signature(x = "DVH")}: Display summary of \code{DVH} object }
     \item{range}{\code{signature(x = "DVH")}: Extract dose range from \code{DVH} object }
     \item{show}{\code{signature(x = "DVH")}: Display summary of \code{DVH} object }
+    \item{sum}{\code{signature(x = "DVH")}: Compute the total (summed) \code{DVH} from two or more \code{DVH} objects. \emph{Note that structures are assumed to be non-overlapping; any overlaps in structure volumes may generate inaccurate dose summation.} }
 	 }
 }
 \author{

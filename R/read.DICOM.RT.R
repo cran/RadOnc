@@ -36,11 +36,16 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 		if (verbose) {
 			cat("Reading structure set from file: '", filenames[i], "' ... ", sep="")
 		}
-		DICOMs$hdr[[i]] <- DICOM.i <- readDICOMFile(filenames[i], skipSequence=FALSE)$hdr
+		DICOMs$hdr[[i]] <- DICOM.i <- rereadDICOMFile(filenames[i], skipSequence=FALSE)$hdr
 			
 		structures <- DICOM.i[which(DICOM.i[,"name"] %in% c("ROIName", "ROINumber")),]
 		N <- dim(structures)[1]/2
-		if (frame.ref.CT != as.character(DICOM.i[which(DICOM.i[,"name"] == "FrameOfReferenceUID"), "value"])) {
+		frame.ref.CT.i <- as.character(DICOM.i[which(DICOM.i[,"name"] == "FrameOfReferenceUID"), "value"])
+		if (length(frame.ref.CT.i) < 1) {
+			frame.ref.CT.i <- frame.ref.CT
+			warning("No reference frame in structure set file")
+		}
+		if (frame.ref.CT != frame.ref.CT.i) {
 			if (verbose) {
 				warning("Reference frame mismatch")
 				cat("ERROR\n")
@@ -96,11 +101,14 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 #			print(c(j, ":", contour.seq[j], structure.j))
 			data.j <- strsplit(DICOM.i[intersect(contour.seq[j]:structure.j, contours), "value"], " ")
 			struct.ID.j <- which(structure.IDs == as.numeric(DICOM.i[structure.j, "value"]))
+			if (length(struct.ID.j) < 1) {
+				warning(paste("Expected structure not matched in DICOM file", sep=""))
+				next
+			}
 			used <- c(used, struct.ID.j)
 ##		for (j in 1:min(N, N.ROIs)) {
 ##			data.j <- strsplit(DICOM.i[intersect(structures.ordered[j]:structures.ordered[j+1], contours), "value"], " ")
 			if (length(data.j) < 1) {
-##				warning(paste("Structure '", names(structure.IDs)[j], "' is empty", sep=""))
 				warning(paste("Structure '", names(structure.IDs)[struct.ID.j], "' is empty", sep=""))
 				data$points[[struct.ID.j]] <- NA
 ##				data$points[[which(structure.IDs == as.numeric(DICOM.i[structures[j], "value"]))]] <- NA

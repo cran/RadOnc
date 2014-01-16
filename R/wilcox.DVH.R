@@ -30,7 +30,7 @@ setMethod("wilcox.test", "DVH.list",
 		for (i in 1:N.y) {
 			data.y[,i] <- approx(y[[i]]$doses, y[[i]]$volumes, doses, rule=2)$y
 		}
-		wilcox.x <- wilcox.y <- wilcox.p <- wilcox.conf1 <- wilcox.conf2 <- c()
+		wilcox.x <- wilcox.y <- wilcox.p <- wilcox.conf1 <- wilcox.conf2 <- wilcox.est <- c()
 		for (i in 1:length(doses)) {
 			w.i <- 1
 			suppressWarnings(try(w.i <- wilcox.test(data.x[i,], data.y[i,], paired=paired, mu=mu, conf.level=conf.level, exact=exact, alternative=alternative, conf.int=TRUE, correct=correct), silent=TRUE))
@@ -40,13 +40,15 @@ setMethod("wilcox.test", "DVH.list",
 				wilcox.p <- c(wilcox.p, NA)
 				wilcox.conf1 <- c(wilcox.conf1, NA)
 				wilcox.conf2 <- c(wilcox.conf2, NA)
+				wilcox.est <- c(wilcox.est, NA)
 			}			
 			else {
 				wilcox.p <- c(wilcox.p, w.i$p.value)
 				wilcox.conf1 <- c(wilcox.conf1, w.i$conf.int[1])
 				wilcox.conf2 <- c(wilcox.conf2, w.i$conf.int[2])
+				wilcox.est <- c(wilcox.est, w.i$estimate)
 			}
 		}
-		return(list(dose=doses, x.med=wilcox.x, y.med=wilcox.y, p=wilcox.p, conf.int1=wilcox.conf1, conf.int2=wilcox.conf2))
+		return(list(dose=doses, x.med=wilcox.x, y.med=wilcox.y, p=wilcox.p, conf.int1=wilcox.conf1, conf.int2=wilcox.conf2, estimate=wilcox.est))
 	}
 )

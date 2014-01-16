@@ -3,11 +3,12 @@ setGeneric("mean",
 )
 
 setMethod("mean", "DVH.list",
-	function (x, ..., type=c("cumulative", "differential"), dose=c("absolute", "relative"), volume=c("relative", "absolute"), weighted=FALSE) {
+	function (x, ..., type=c("cumulative", "differential"), dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), weighted=FALSE) {
 		type <- match.arg(type)
 		dose <- match.arg(dose)
+		dose.units <- match.arg(dose.units)
 		volume <- match.arg(volume)
-		x <- new("DVH.list", lapply(x, convert.DVH, type=type, dose=dose, volume=volume))
+		x <- new("DVH.list", lapply(x, convert.DVH, type=type, dose=dose, dose.units=dose.units, volume=volume))
 		N <- length(x)
 		structure.name <- paste("mean(", paste(names(x), collapse=", ", sep=""), ")", sep="")
 		structure.volumes <- as.numeric(lapply(x, slot, "structure.volume"))
@@ -33,9 +34,30 @@ setMethod("mean", "DVH.list",
 		else {
 			volumes.new <- apply(volume.matrix, 1, mean, na.rm=TRUE)
 		}
-		new("DVH", type=type, dose.type=dose, volume.type=volume, structure.name=structure.name, structure.volume=mean(structure.volumes), dose.min=dose.min, dose.rx=dose.rx, dose.max=dose.max, dose.mean=dose.mean, doses=doses.new, volumes=volumes.new)
+		new("DVH", type=type, dose.type=dose, volume.type=volume, structure.name=structure.name, structure.volume=mean(structure.volumes), dose.min=dose.min, dose.rx=dose.rx, dose.max=dose.max, dose.mean=dose.mean, doses=doses.new, dose.units=dose.units, volumes=volumes.new)
 	}
 )
+
+
+setMethod("mean", "DVH",
+	function (x, na.rm=TRUE) {
+		if (is.na(x@dose.mean)) {
+			if (x@type == "cumulative") {
+				x <- convert.DVH(x, type="differential", dose=x@dose.type, volume="absolute", dose.units=x@dose.units)
+			}
+			return(sum(x@doses*x@volumes, na.rm=na.rm)/sum(x@volumes, na.rm=na.rm))
+		}
+		else {
+			if (x@dose.type == "absolute") {
+				return(x@dose.mean)
+			}
+			else {
+				return(100*x@dose.mean/x@dose.rx)
+			}
+		}
+	}
+)
+
 
 setGeneric("median",
 	median
@@ -56,10 +78,14 @@ setMethod("median", "DVH.list",
 		if (length(unique(unlist(lapply(x, slot, "volume.type")))) > 1) {
 			stop("'volume.type' parameter must be the same for all DVH data (e.g. absolute or relative)")
 		}
+		if (length(unique(unlist(lapply(x, slot, "dose.units")))) > 1) {
+			stop("'dose.units' parameter must be the same for all DVH data (e.g. cGy or Gy)")
+		}
 		structure.name <- paste("median(", paste(names(x), collapse=", ", sep=""), ")", sep="")
 		structure.volume <- median(as.numeric(lapply(x, slot, "structure.volume")), na.rm=na.rm)
 		structure.means <- as.numeric(lapply(x, slot, "dose.mean"))
 		dose.mean <- median(structure.means, na.rm=na.rm)
+		dose.units <- slot(x[[1]], "dose.units")
 		size <- ceiling(mean(as.numeric(lapply(x, function(DVH) { length(DVH@doses) })), na.rm=TRUE))
 		dose.min <- min(x)
 		dose.max <- max(x)
@@ -70,7 +96,7 @@ setMethod("median", "DVH.list",
 			volume.matrix[,i] <- approx(x[[i]]$doses, x[[i]]$volumes, doses.new, rule=2)$y
 		}
 		volumes.new <- apply(volume.matrix, 1, median, na.rm=na.rm)
-		new("DVH", type=x[[1]]$type, dose.type=x[[1]]$dose.type, volume.type=x[[1]]$volume.type, structure.name=structure.name, structure.volume=structure.volume, dose.rx=dose.rx, dose.min=dose.min, dose.max=dose.max, dose.mean=dose.mean, doses=doses.new, volumes=volumes.new)
+		new("DVH", type=x[[1]]$type, dose.type=x[[1]]$dose.type, volume.type=x[[1]]$volume.type, structure.name=structure.name, structure.volume=structure.volume, dose.rx=dose.rx, dose.min=dose.min, dose.max=dose.max, dose.mean=dose.mean, doses=doses.new, dose.units=dose.units, volumes=volumes.new)
 	}
 )
 
@@ -93,6 +119,9 @@ setMethod("mad", "DVH.list",
 		}
 		if (length(unique(unlist(lapply(x, slot, "volume.type")))) > 1) {
 			stop("'volume.type' parameter must be the same for all DVH data (e.g. absolute or relative)")
+		}
+		if (length(unique(unlist(lapply(x, slot, "dose.units")))) > 1) {
+			stop("'dose.units' parameter must be the same for all DVH data (e.g. cGy or Gy)")
 		}
 		size <- ceiling(mean(as.numeric(lapply(x, function(DVH) { length(DVH@doses) })), na.rm=TRUE))
 		dose.min <- min(x)
@@ -129,6 +158,9 @@ setMethod("quantile", "DVH.list",
 		if (length(unique(unlist(lapply(x, slot, "volume.type")))) > 1) {
 			stop("'volume.type' parameter must be the same for all DVH data (e.g. absolute or relative)")
 		}
+		if (length(unique(unlist(lapply(x, slot, "dose.units")))) > 1) {
+			stop("'dose.units' parameter must be the same for all DVH data (e.g. cGy or Gy)")
+		}
 		size <- ceiling(mean(as.numeric(lapply(x, function(DVH) { length(DVH@doses) })), na.rm=TRUE))
 		dose.min <- min(x)
 		dose.max <- max(x)
@@ -159,6 +191,9 @@ setMethod("var", "DVH.list",
 		}
 		if (length(unique(unlist(lapply(x, slot, "volume.type")))) > 1) {
 			stop("'volume.type' parameter must be the same for all DVH data (e.g. absolute or relative)")
+		}
+		if (length(unique(unlist(lapply(x, slot, "dose.units")))) > 1) {
+			stop("'dose.units' parameter must be the same for all DVH data (e.g. cGy or Gy)")
 		}
 		size <- ceiling(mean(as.numeric(lapply(x, function(DVH) { length(DVH@doses) })), na.rm=TRUE))
 		dose.min <- min(x)
@@ -193,6 +228,9 @@ setMethod("sd", "DVH.list",
 		}
 		if (length(unique(unlist(lapply(x, slot, "volume.type")))) > 1) {
 			stop("'volume.type' parameter must be the same for all DVH data (e.g. absolute or relative)")
+		}
+		if (length(unique(unlist(lapply(x, slot, "dose.units")))) > 1) {
+			stop("'dose.units' parameter must be the same for all DVH data (e.g. cGy or Gy)")
 		}
 		size <- ceiling(mean(as.numeric(lapply(x, function(DVH) { length(DVH@doses) })), na.rm=TRUE))
 		dose.min <- min(x)
@@ -279,5 +317,39 @@ setMethod("range", "DVH",
 				return(100*c(x@dose.min, x@dose.max)/x@dose.rx)				
 			}
 		}
+	}
+)
+
+
+setMethod("sum", "DVH.list",
+	function (x, ..., type=c("cumulative", "differential"), dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), na.rm = TRUE) {
+		x <- c(x, ...)
+		N <- length(x)
+		if (N < 2) {
+			warning("DVH list must contain at least 2 DVH objects in order to generate a sum")
+			return(x)
+		}
+		type <- match.arg(type)
+		dose <- match.arg(dose)
+		dose.units <- match.arg(dose.units)
+		volume <- match.arg(volume)
+		x <- new("DVH.list", lapply(x, convert.DVH, type="differential", dose="absolute", dose.units=dose.units, volume="absolute"))
+		structure.name <- paste("sum(", paste(names(x), collapse=", ", sep=""), ")", sep="")
+		structure.volumes <- as.numeric(lapply(x, slot, "structure.volume"))
+		volume.sum <- sum(structure.volumes, na.rm=TRUE)
+		dose.max <- max(x, na.rm=na.rm)
+		dose.min <- min(x, na.rm=na.rm)
+		dose.mean <- as.numeric(lapply(x, slot, "dose.mean"))
+		dose.mean <- sum(dose.mean * structure.volumes, na.rm=TRUE)/volume.sum
+		dose.rx <- max(unlist(lapply(x, slot, "dose.rx")), na.rm=TRUE)
+		size <- ceiling(mean(as.numeric(lapply(x, function(DVH) { length(DVH@doses) })), na.rm=TRUE))
+		doses.new <- unique(unlist(lapply(x, slot, "doses")))
+		volume.matrix <- matrix(NA, ncol=N, nrow=size)
+		for (i in 1:N) {
+			volume.matrix[,i] <- approx(x[[i]]$doses, x[[i]]$volumes, doses.new, rule=2)$y
+		}
+		volumes.new <- apply(volume.matrix, 1, sum, na.rm=na.rm)
+		x <- new("DVH", type="differential", dose.type="absolute", volume.type="absolute", structure.name=structure.name, structure.volume=volume.sum, dose.min=dose.min, dose.rx=dose.rx, dose.max=dose.max, dose.mean=dose.mean, doses=doses.new, dose.units=dose.units, volumes=volumes.new)
+		return(convert.DVH(x, type=type, dose=dose, dose.units=dose.units, volume=volume))
 	}
 )

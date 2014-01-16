@@ -26,6 +26,7 @@
 \alias{rev,DVH.list-method}
 \alias{sd,DVH.list-method}
 \alias{show,DVH.list-method}
+\alias{sum,DVH.list-method}
 \alias{t.test,DVH.list-method}
 \alias{var,DVH.list-method}
 \alias{wilcox.test,DVH.list-method}
@@ -64,9 +65,10 @@ Objects can be created by calls of the form \code{new("DVH.list", structures, ..
     \item{rev}{\code{signature(x = "DVH.list")}: Return a DVH list whose \code{DVH} objects are in reverse order}
     \item{sd}{\code{signature(x = "DVH.list")}: Compute the standard deviation for all doses extracted from \code{DVH} object list }
     \item{show}{\code{signature(x = "DVH.list")}: Display summary of DVH list }
-    \item{t.test}{\code{signature(x = "DVH.list")}: Apply Student's t-Test to compare two DVH lists }
+    \item{sum}{\code{signature(x = "DVH.list")}: Compute the total (summed) \code{DVH} from all \code{DVH} objects within the list. \emph{Note that structures are assumed to be non-overlapping; any overlaps in structure volumes may generate inaccurate dose summation.} }
+    \item{t.test}{\code{signature(x = "DVH.list")}: Apply Student's t-Test to compare two DVH lists  (see also \code{\link{t.test}})}
     \item{var}{\code{signature(x = "DVH.list")}: Compute the variance for all doses extracted from \code{DVH} object list }
-    \item{wilcox.test}{\code{signature(x = "DVH.list")}: Apply Wilcoxon Rank Sum and Signed Rank Tests to compare two DVH lists }
+    \item{wilcox.test}{\code{signature(x = "DVH.list")}: Apply Wilcoxon Rank Sum and Signed Rank Tests to compare two DVH lists (see also \code{\link{wilcox.test}}) }
 	 }
 }
 \author{

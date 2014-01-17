@@ -24,16 +24,21 @@ exportClasses(
 )
 
 export(
+	compareStructures,
+	gEUD,
+	LQE,
 	read.DVH,
-	read.DICOM.RT,
-	compareStructures
+	read.DICOM.RT
 )
 
 exportMethods(
 	as.list,
 	c,
+	dim,
+	gEUD,
 	lapply,
 	length,
+	LQE,
 	min,
 	max,
 	mad,
@@ -47,6 +52,7 @@ exportMethods(
 	rev,
 	sd,
 	show,
+	sum,
 	t.test,
 	var,
 	wilcox.test,

@@ -23,14 +23,6 @@ setGeneric("plot",
 	plot
 )
 
-#setGeneric("plot", 
-#	function(x, y, ...) {
-#		standardGeneric("plot")
-#	}
-#)
-
-#setGenericImplicit("plot")
-
 setMethod("plot", c("DVH", "missing"),
 	function(x, ...) {
 		plot.DVH(new("DVH.list",list(x)), ...)
@@ -64,6 +56,7 @@ setMethod("plot", c("DVH.list", "ANY"),
 
 plot.DVH.ttest <- function(x, y, ..., paired=FALSE, col="black", lty="solid", lwd=1, alpha=0.05, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), main="", line.transparency=1, fill.transparency=line.transparency/2, angle=45, density=NULL, fill.lty=lty, fill=TRUE, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, new=TRUE, highlight="lightyellow") {
 	dose <- match.arg(dose)
+	dose.units <- match.arg(dose.units)
 	volume <- match.arg(volume)
 	type <- match.arg(type)
 	legend <- match.arg(legend)
@@ -113,7 +106,7 @@ plot.DVH.ttest <- function(x, y, ..., paired=FALSE, col="black", lty="solid", lw
 		par(mar=c(4.1, 4.1, 0.5, 2.1))
 		plot(NULL, xlim=range(doses), ylim=if (volume == "relative") {c(0, 100)} else {range(unlist(lapply(c(x, y), slot, "volumes")), na.rm=TRUE)}, xlab=if (dose == "absolute") {"Dose (cGy)"} else {"Dose %"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main="")
 	}
-	conf.int <- abs(data.ttest$conf.int1 - (data.ttest$x.mean - data.ttest$y.mean))
+	conf.int <- abs(data.ttest$conf.int1 - (data.ttest$x.mean - data.ttest$y.mean))/2
 	conf.int[which(is.na(conf.int))] <- 0
 	var.x <- var(x)
 	var.x <- approx(var.x$dose, var.x$var, doses, yright=0, yleft=0)$y
@@ -166,6 +159,7 @@ plot.DVH.ttest <- function(x, y, ..., paired=FALSE, col="black", lty="solid", lw
 
 plot.DVH.wilcox <- function(x, y, ..., alternative=c("two.sided", "greater", "less"), mu=0, paired=FALSE, exact=TRUE, correct=TRUE, alpha=0.05, col="black", lty="solid", lwd=1, line.transparency=1, fill.transparency=line.transparency/2, angle=45, density=NULL, fill=TRUE, fill.lty=lty, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), main="", legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, new=TRUE, highlight="lightyellow") {
 	dose <- match.arg(dose)
+	dose.units <- match.arg(dose.units)
 	volume <- match.arg(volume)
 	type <- match.arg(type)
 	alternative <- match.arg(alternative)
@@ -213,20 +207,20 @@ plot.DVH.wilcox <- function(x, y, ..., alternative=c("two.sided", "greater", "le
 		par(mar=c(4.1, 4.1, 0.5, 2.1))
 		plot(NULL, xlim=range(doses), ylim=if (volume == "relative") {c(0, 100)} else {range(unlist(lapply(c(x, y), slot, "volumes")), na.rm=TRUE)}, xlab=if (dose == "absolute") {"Dose (cGy)"} else {"Dose %"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main="")
 	}
-	conf.int <- abs(data.wilcox$conf.int1 - (data.wilcox$x.med - data.wilcox$y.med))
+	conf.int <- abs(data.wilcox$conf.int2 - data.wilcox$conf.int1)/2
 	conf.int[which(is.na(conf.int))] <- 0
-	var.x <- var(x)
-	var.x <- approx(var.x$dose, var.x$var, doses, yright=0, yleft=0)$y
-	var.y <- var(y)
-	var.y <- approx(var.y$dose, var.y$var, doses, yright=0, yleft=0)$y
-	sum.var <- var.x + var.y
-	var.x[which(sum.var != 0)] <- (var.x / sum.var)[which(sum.var != 0)]
-	var.y[which(sum.var != 0)] <- (var.y / sum.var)[which(sum.var != 0)]
+	mad.x <- mad(x)
+	mad.x <- approx(mad.x$dose, mad.x$mad, doses, yright=0, yleft=0)$y
+	mad.y <- mad(y)
+	mad.y <- approx(mad.y$dose, mad.y$mad, doses, yright=0, yleft=0)$y
+	sum.mad <- mad.x + mad.y
+	mad.x[which(sum.mad != 0)] <- (mad.x / sum.mad)[which(sum.mad != 0)]
+	mad.y[which(sum.mad != 0)] <- (mad.y / sum.mad)[which(sum.mad != 0)]
 	y.max <- par("usr")[3]+par("usr")[4]
-	x.upper <- pmin(data.wilcox$x.med+conf.int * var.x, y.max)
-	x.lower <- pmax(data.wilcox$x.med-conf.int * var.x, 0)
-	y.upper <- pmin(data.wilcox$y.med+conf.int * var.y, y.max)
-	y.lower <- pmax(data.wilcox$y.med-conf.int * var.y, 0)
+	x.upper <- pmin(data.wilcox$x.med+conf.int * mad.x, y.max)
+	x.lower <- pmax(data.wilcox$x.med-conf.int * mad.x, 0)
+	y.upper <- pmin(data.wilcox$y.med+conf.int * mad.y, y.max)
+	y.lower <- pmax(data.wilcox$y.med-conf.int * mad.y, 0)
 	points(doses, x.upper, type="l",col=rgb(col.x[1],col.x[2],col.x[3],fill.transparency[1]), lty=fill.lty[1])
 	points(doses, x.lower, type="l",col=rgb(col.x[1],col.x[2],col.x[3],fill.transparency[1]), lty=fill.lty[1])
 	points(doses, y.upper, type="l",col=rgb(col.y[1],col.y[2],col.y[3],fill.transparency[2]), lty=fill.lty[2])
@@ -268,6 +262,7 @@ plot.DVH.wilcox <- function(x, y, ..., alternative=c("two.sided", "greater", "le
 
 plot.DVH.bars <- function(x, ..., new=TRUE, legend=TRUE, legend.labels=NULL, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), main="", col=rev(rainbow(n=10, start=0, end=2/3))) {
 	dose <- match.arg(dose)
+	dose.units <- match.arg(dose.units)
 	volume <- match.arg(volume)
 	x <- c(x, ...)
 	x <- new("DVH.list", lapply(x, convert.DVH, type="differential", dose=dose, dose.units=dose.units, volume=volume))
@@ -322,6 +317,7 @@ plot.DVH.bars <- function(x, ..., new=TRUE, legend=TRUE, legend.labels=NULL, dos
 
 plot.DVH.individual <- function(x, ..., col="black", lty ="solid", lwd=1, line.transparency=1, new=TRUE, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), main="") {
 	dose <- match.arg(dose)
+	dose.units <- match.arg(dose.units)
 	volume <- match.arg(volume)
 	type <- match.arg(type)
 	legend <- match.arg(legend)
@@ -355,12 +351,13 @@ plot.DVH.individual <- function(x, ..., col="black", lty ="solid", lwd=1, line.t
 	}
 }
 
-plot.DVH.groups <- function(x, ..., col="black", lty ="solid", lwd=1, line.transparency=1, fill.transparency=line.transparency/2, new=TRUE, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), center=c("mean", "median"), width=c("range", "mad", "IQR", "quantile", "var", "sd"), main="", multiplier=1, quantile=c(0.25, 0.75), fill=TRUE, angle=45, density=NULL, fill.lty=lty) {
+plot.DVH.groups <- function(x, ..., col="black", lty ="solid", lwd=1, line.transparency=1, fill.transparency=line.transparency/2, new=TRUE, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), width=c("range", "mad", "IQR", "quantile", "var", "sd"), main="", multiplier=1, quantile=c(0.25, 0.75), fill=TRUE, angle=45, density=NULL, fill.lty=lty) {
 	dose <- match.arg(dose)
+	dose.units <- match.arg(dose.units)
 	volume <- match.arg(volume)
 	type <- match.arg(type)
-	center <- match.arg(center)
 	width <- match.arg(width)
+	multiplier <- max(0, multiplier, na.rm=TRUE)
 	legend <- match.arg(legend)
 	groups <- c(list(x), list(...))
 	classes <- unlist(lapply(groups, class))
@@ -413,42 +410,39 @@ plot.DVH.groups <- function(x, ..., col="black", lty ="solid", lwd=1, line.trans
 	for (i in 1:N) {
 		col.i <- col2rgb(col[i])/255
 		if (classes[i] == "DVH.list") {
-			switch(center,
-				mean = {
-					DVH.center <- mean(groups[[i]], type=type, dose=dose, volume=volume)
-				},
-				median = {
-					DVH.center <- median(groups[[i]])
-				}
-			)
 			if (fill) {
 				switch(width,
 					range = {
+						DVH.center <- mean(groups[[i]], type=type, dose=dose, volume=volume)
 						DVH.range <- quantile(groups[[i]], probs=c(0, 1), type=7, na.rm=TRUE)
 						polygon(c(DVH.range$dose, rev(DVH.range$dose)), c(pmax(DVH.range$quantiles[1,], 0), rev(pmin(DVH.range$quantiles[2,], y.max))), col=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), border=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), angle=angle[i], density=density[i], lty=fill.lty[i])
 					},
 					mad = {
+						DVH.center <- median(groups[[i]])
 						DVH.range <- mad(groups[[i]])
 						polygon(c(DVH.range$dose, rev(DVH.range$dose)), c(pmax(DVH.center$volumes-DVH.range$mad*multiplier, 0), rev(pmin(DVH.center$volumes+DVH.range$mad*multiplier, y.max))), col=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), border=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), angle=angle[i], density=density[i], lty=fill.lty[i])
 					},
 					IQR = {
-						DVH.med <- median(groups[[i]])$volumes
+						DVH.center <- median(groups[[i]])
 						DVH.range <- quantile(groups[[i]], probs=c(0.25, 0.75), type=7, na.rm=TRUE)
-						polygon(c(DVH.range$dose, rev(DVH.range$dose)), c(pmax(DVH.range$quantiles[1,]-DVH.med+DVH.center$volumes, 0), rev(pmin(DVH.range$quantiles[2,]-DVH.med+DVH.center$volumes, y.max))), col=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), border=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), angle=angle[i], density=density[i], lty=fill.lty[i])
+						polygon(c(DVH.range$dose, rev(DVH.range$dose)), c(pmax(DVH.range$quantiles[1,], 0), rev(pmin(DVH.range$quantiles[2,], y.max))), col=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), border=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), angle=angle[i], density=density[i], lty=fill.lty[i])
 					},
 					quantile = {
 						if (length(quantile) != 2) {
 							quantile <- c(0.25, 0.75)
 						}
-						DVH.med <- median(groups[[i]])$volumes
+						DVH.center <- quantile(groups[[i]], probs=mean(quantile), type=7, na.rm=TRUE)
+						names(DVH.center) <- c("doses", "volumes")
 						DVH.range <- quantile(groups[[i]], probs=quantile, type=7, na.rm=TRUE)
-						polygon(c(DVH.range$dose, rev(DVH.range$dose)), c(pmax(DVH.range$quantiles[1,]-DVH.med+DVH.center$volumes, 0), rev(pmin(DVH.range$quantiles[2,]-DVH.med+DVH.center$volumes, y.max))), col=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), border=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), angle=angle[i], density=density[i], lty=fill.lty[i])
+						polygon(c(DVH.range$dose, rev(DVH.range$dose)), c(pmax(DVH.range$quantiles[1,], 0), rev(pmin(DVH.range$quantiles[2,], y.max))), col=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), border=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), angle=angle[i], density=density[i], lty=fill.lty[i])
 					},
 					sd = {
+						DVH.center <- mean(groups[[i]], type=type, dose=dose, volume=volume)
 						DVH.range <- sd(groups[[i]])
 						polygon(c(DVH.range$dose, rev(DVH.range$dose)), c(pmax(DVH.center$volumes-DVH.range$sd*multiplier, 0), rev(pmin(DVH.center$volumes+DVH.range$sd*multiplier, y.max))), col=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), border=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), angle=angle[i], density=density[i], lty=fill.lty[i])
 					},
 					var = {
+						DVH.center <- mean(groups[[i]], type=type, dose=dose, volume=volume)
 						DVH.range <- var(groups[[i]])
 						polygon(c(DVH.range$dose, rev(DVH.range$dose)), c(pmax(DVH.center$volumes-DVH.range$var*multiplier, 0), rev(pmin(DVH.center$volumes+DVH.range$var*multiplier, y.max))), col=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), border=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), angle=angle[i], density=density[i], lty=fill.lty[i])
 					}

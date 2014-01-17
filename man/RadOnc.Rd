@@ -31,7 +31,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
-  .. .. .. ..@ dose.fx         : num 0
+  .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ doses           : num [1:1026] 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ...
   .. .. .. ..@ dose.type       : chr "relative"
   .. .. .. ..@ volumes         : num [1:1026] 1367 414 392 378 368 ...
@@ -50,7 +50,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
-  .. .. .. ..@ dose.fx         : num 0
+  .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ doses           : num [1:1026] 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ...
   .. .. .. ..@ dose.type       : chr "relative"
   .. .. .. ..@ volumes         : num [1:1026] 206.2 43.1 39.5 37.4 35.8 ...
@@ -69,7 +69,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
-  .. .. .. ..@ dose.fx         : num 0
+  .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ doses           : num [1:1026] 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ...
   .. .. .. ..@ dose.type       : chr "relative"
   .. .. .. ..@ volumes         : num [1:1026] 93.1 93.1 93 93 92.9 ...
@@ -88,7 +88,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
-  .. .. .. ..@ dose.fx         : num 0
+  .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ doses           : num [1:1026] 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ...
   .. .. .. ..@ dose.type       : chr "relative"
   .. .. .. ..@ volumes         : num [1:1026] 303.6 78 71.5 67.8 65.1 ...
@@ -107,7 +107,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
-  .. .. .. ..@ dose.fx         : num 0
+  .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ doses           : num [1:1026] 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ...
   .. .. .. ..@ dose.type       : chr "relative"
   .. .. .. ..@ volumes         : num [1:1026] 88.4 88.4 88.4 88.4 88.4 ...
@@ -126,7 +126,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
-  .. .. .. ..@ dose.fx         : num 0
+  .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ doses           : num [1:1026] 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ...
   .. .. .. ..@ dose.type       : chr "relative"
   .. .. .. ..@ volumes         : num [1:1026] 156 156 156 156 156 ...
@@ -145,7 +145,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
-  .. .. .. ..@ dose.fx         : num 0
+  .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ doses           : num [1:1026] 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ...
   .. .. .. ..@ dose.type       : chr "relative"
   .. .. .. ..@ volumes         : num [1:1026] 17666 3424 3290 3206 3143 ...
@@ -164,7 +164,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
-  .. .. .. ..@ dose.fx         : num 0
+  .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ doses           : num [1:1026] 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ...
   .. .. .. ..@ dose.type       : chr "relative"
   .. .. .. ..@ volumes         : num [1:1026] 154.2 48.3 46.4 45.3 44.4 ...
@@ -183,7 +183,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
-  .. .. .. ..@ dose.fx         : num 0
+  .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ doses           : num [1:1026] 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ...
   .. .. .. ..@ dose.type       : chr "relative"
   .. .. .. ..@ volumes         : num [1:1026] 155 134 132 130 129 ...
@@ -202,7 +202,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
-  .. .. .. ..@ dose.fx         : num 0
+  .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ doses           : num [1:1026] 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ...
   .. .. .. ..@ dose.type       : chr "relative"
   .. .. .. ..@ volumes         : num [1:1026] 40.7 23 22.7 22.4 22.2 ...
@@ -227,7 +227,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
-  .. .. .. ..@ dose.fx         : num 0
+  .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ doses           : num [1:1133] 0 5 10 15 20 25 30 35 40 45 ...
   .. .. .. ..@ dose.type       : chr "absolute"
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 ...
@@ -246,7 +246,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
-  .. .. .. ..@ dose.fx         : num 0
+  .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ doses           : num [1:1133] 0 5 10 15 20 25 30 35 40 45 ...
   .. .. .. ..@ dose.type       : chr "absolute"
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 100 100 100 100 100 ...
@@ -265,7 +265,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
-  .. .. .. ..@ dose.fx         : num 0
+  .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ doses           : num [1:1133] 0 5 10 15 20 25 30 35 40 45 ...
   .. .. .. ..@ dose.type       : chr "absolute"
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 100 100 100 100 100 ...
@@ -284,7 +284,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
-  .. .. .. ..@ dose.fx         : num 0
+  .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ doses           : num [1:1133] 0 5 10 15 20 25 30 35 40 45 ...
   .. .. .. ..@ dose.type       : chr "absolute"
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 100 100 100 100 100 ...
@@ -303,7 +303,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
-  .. .. .. ..@ dose.fx         : num 0
+  .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ doses           : num [1:1133] 0 5 10 15 20 25 30 35 40 45 ...
   .. .. .. ..@ dose.type       : chr "absolute"
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 100 100 100 100 100 ...
@@ -322,7 +322,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
-  .. .. .. ..@ dose.fx         : num 0
+  .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ doses           : num [1:1133] 0 5 10 15 20 25 30 35 40 45 ...
   .. .. .. ..@ dose.type       : chr "absolute"
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 100 100 100 100 100 ...
@@ -341,7 +341,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
-  .. .. .. ..@ dose.fx         : num 0
+  .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ doses           : num [1:1133] 0 5 10 15 20 25 30 35 40 45 ...
   .. .. .. ..@ dose.type       : chr "absolute"
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 100 100 100 100 100 ...
@@ -360,7 +360,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
-  .. .. .. ..@ dose.fx         : num 0
+  .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ doses           : num [1:1133] 0 5 10 15 20 25 30 35 40 45 ...
   .. .. .. ..@ dose.type       : chr "absolute"
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 100 100 100 100 100 ...
@@ -379,7 +379,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
-  .. .. .. ..@ dose.fx         : num 0
+  .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ doses           : num [1:1133] 0 5 10 15 20 25 30 35 40 45 ...
   .. .. .. ..@ dose.type       : chr "absolute"
   .. .. .. ..@ volumes         : num [1:1133] 100 98.5 95.9 93.8 90.8 ...
@@ -398,7 +398,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
-  .. .. .. ..@ dose.fx         : num 0
+  .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ doses           : num [1:1133] 0 5 10 15 20 25 30 35 40 45 ...
   .. .. .. ..@ dose.type       : chr "absolute"
   .. .. .. ..@ volumes         : num [1:1133] 100 77.7 75.1 73 71.3 ...

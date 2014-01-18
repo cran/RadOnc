@@ -3,6 +3,48 @@
 \title{ RadOnc News }
 \encoding{UTF-8}
 
+\section{CHANGES IN VERSION 1.0.4}{
+
+  \subsection{NEW FEATURES}{
+    \itemize{
+      \item Expanded \code{read.DICOM.RT()} functionality to include import of DVHs from dose file where relevant.
+      \item Expanded \code{plot()} functionality to include display of a \code{structure.list} object containing multiple structures.
+      \item Function \code{compareStructures(..., method="axial")} can now process structures that contain one or more holes (e.g. a hollow sphere)
+      \item New wrapper class \code{RTdata} to store a corresponding CT image, dose grid, and structure set.
+      \item New functions to support interaction with \code{RTdata} class.
+   }
+  }
+
+  \subsection{BUG FIXES}{
+    \itemize{
+      \item Updated DVH parameter extraction to return maximal dose in cases where extrapolated dose exceeds actual maximum dose.
+      \item DVH methods previously failed without graceful warning or exit in cases where prescription dose was not specified (e.g. plan sum DVH data from Eclipse).
+    }
+  }
+
+  \subsection{DEPRECATED AND DEFUNCT}{
+    \itemize{
+      \item Method \code{compareStructures(..., method="grid")} has been renamed to \code{compareStructures(..., method="axial")}. Code still supports call using "grid" method, however it now generates a warning to use the preferred "axial" method.
+    }
+  }
+
+  \subsection{OTHER UPDATES}{
+    \itemize{
+      \item Added plotting support for \code{structure3D} objects without pre-specified triangulation; previously a call to \code{plot()} would generate an empty plotting window.
+      \item Updated \code{gEUD()} calculation to improve performance for large values of tissue-specific parameter 'a'.
+      \item Added slot \code{rx.isodose} to class \code{DVH} to enable application of prescription dose to variable isodose lines (relevant in select cases).
+    }
+   }
+
+  \subsection{ACKNOWLEDGEMENTS}{
+    \itemize{
+      \item Thanks to Daniel Wollschlaeger for identifying the bug in DVH dose extraction as well as for his suggestion regarding variable prescription isodose lines.
+      \item Thanks to Brandon Whitcher for his phenomenal and generous support regarding the \code{oro.dicom} pacakge.
+   }
+  }
+
+ }
+
 \section{CHANGES IN VERSION 1.0.3}{
   \subsection{NEW FEATURES}{
     \itemize{
@@ -38,6 +80,7 @@
       \item Added version requirement for \code{oro.dicom} package (must be >= 0.4.1) in order to appropriately import high-resolution structure sets.
       \item DVH list method for \code{wilcox.test()} now updated to include \code{estimate} parameter in returned values.
       \item Confidence interval display updated in DVH list methods \code{plot(..., plot.type="ttest")} and \code{plot(..., plot.type="wilcox")}.
+      \item Added slot \code{dose.fx} to class \code{DVH} to enable specification of dose fractionation (relevant in select cases).
     }
    }
   

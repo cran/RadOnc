@@ -61,7 +61,7 @@ read.DVH.Aria10 <- function (file, verbose=TRUE) {
 		return()
     }
     else if (length(struct.start) == 1) {
-    	structures <- list(data[struct.start:struct.end])
+   	 	structures <- list(data[struct.start:struct.end])
     }
     else {
 	    structures <- mapply(function(start, end) list(data[start:end]), struct.start, struct.end)
@@ -83,6 +83,7 @@ read.DVH.Aria10 <- function (file, verbose=TRUE) {
 	# EXTRACT PRESCRIPTION DOSE AND DOSE UNITS
 	dose.rx <- header[grep("^Prescribed dose.*: ", header, ignore.case=TRUE, perl=TRUE)]
     dose.units <- toupper(sub("^.*[[](.*)[]].*", "\\1", dose.rx, perl=TRUE))
+
 	if (dose.units == "GY") {
 		dose.units <- "Gy"
 	}
@@ -90,10 +91,12 @@ read.DVH.Aria10 <- function (file, verbose=TRUE) {
 		dose.units <- "cGy"
 	}
 	dose.rx <- suppressWarnings(as.numeric(sub("^Prescribed dose.*: ", "", dose.rx, ignore.case=TRUE, perl=TRUE)))
+    rx.isodose <- as.numeric(sub(".*: ", "", header[grep("^[%] for dose.*: ", header, ignore.case=TRUE, perl=TRUE)]))
+    
 	if (verbose) {
 		cat("[exported on ", date, "]\n", sep="")
 		cat("  Patient: ", patient, " (", ID, ")\n", sep="")
-		cat("  Plan: ", plan, "\n  Dose: ", dose.rx, dose.units, "\n", sep="")		
+		cat("  Plan: ", plan, "\n  Dose: ", if (is.na(dose.rx)) {"NOT SPECIFIED"} else {paste(dose.rx, dose.units, " (at ", rx.isodose, "% isodose line)", sep="")}, "\n", sep="")		
 	}
 
 	# EXTRACT DVH DATA FOR EACH STRUCTURE
@@ -161,7 +164,7 @@ read.DVH.Aria10 <- function (file, verbose=TRUE) {
 				data.dose <- c(temp.doses, (2*data.dose - temp.doses)[length(temp.doses)])
 				data <- diffinv(-data, xi=sum(data))
 			}
-			return(new("DVH", dose.min=dose.min, dose.max=dose.max, dose.mean=dose.mean, dose.mode=dose.mode, dose.median=dose.median, dose.STD=dose.STD, equiv.sphere=equiv.sphere, conf.index=conf.ind, gradient=gradient, dose.rx=dose.rx, structure.name=name, structure.volume=volume, doses=data.dose, volumes=data, type="cumulative", dose.type=dose.type, dose.units=dose.units, volume.type=volume.type))	
+			return(new("DVH", dose.min=dose.min, dose.max=dose.max, dose.mean=dose.mean, dose.mode=dose.mode, dose.median=dose.median, dose.STD=dose.STD, equiv.sphere=equiv.sphere, conf.index=conf.ind, gradient=gradient, dose.rx=dose.rx, rx.isodose=rx.isodose, structure.name=name, structure.volume=volume, doses=data.dose, volumes=data, type="cumulative", dose.type=dose.type, dose.units=dose.units, volume.type=volume.type))	
 		}
 	)
 	
@@ -486,6 +489,9 @@ read.DVH.CadPlan <- function(file, verbose=TRUE) {
 				dose.units <- "cGy"
 			}
 			dose.rx <- suppressWarnings(as.numeric(sub("^Prescr[.] dose.*:\\s*", "", dose.rx, ignore.case=TRUE, perl=TRUE)))
+			if (is.na(dose.rx)) {
+				warning("Prescription dose not specified")
+			}
 
 		    name <- sub("^.*:\\s*(.+$)", "\\1", data[grep("^Histogram.*:\\s*", data, ignore.case=TRUE, perl=TRUE)])
 		    if (length(name) < 1) {

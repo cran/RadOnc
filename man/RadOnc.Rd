@@ -32,8 +32,10 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
+  .. .. .. ..@ rx.isodose      : num 100
   .. .. .. ..@ doses           : num [1:1026] 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ...
   .. .. .. ..@ dose.type       : chr "relative"
+  .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. ..@ volumes         : num [1:1026] 1367 414 392 378 368 ...
   .. .. .. ..@ volume.type     : chr "absolute"
   .. ..$ SMALL_BOWEL :Formal class 'DVH' [package "RadOnc"] with 18 slots
@@ -51,8 +53,10 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
+  .. .. .. ..@ rx.isodose      : num 100
   .. .. .. ..@ doses           : num [1:1026] 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ...
   .. .. .. ..@ dose.type       : chr "relative"
+  .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. ..@ volumes         : num [1:1026] 206.2 43.1 39.5 37.4 35.8 ...
   .. .. .. ..@ volume.type     : chr "absolute"
   .. ..$ DUODENUM    :Formal class 'DVH' [package "RadOnc"] with 18 slots
@@ -70,8 +74,10 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
+  .. .. .. ..@ rx.isodose      : num 100
   .. .. .. ..@ doses           : num [1:1026] 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ...
   .. .. .. ..@ dose.type       : chr "relative"
+  .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. ..@ volumes         : num [1:1026] 93.1 93.1 93 93 92.9 ...
   .. .. .. ..@ volume.type     : chr "absolute"
   .. ..$ STOMACH     :Formal class 'DVH' [package "RadOnc"] with 18 slots
@@ -89,8 +95,10 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
+  .. .. .. ..@ rx.isodose      : num 100
   .. .. .. ..@ doses           : num [1:1026] 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ...
   .. .. .. ..@ dose.type       : chr "relative"
+  .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. ..@ volumes         : num [1:1026] 303.6 78 71.5 67.8 65.1 ...
   .. .. .. ..@ volume.type     : chr "absolute"
   .. ..$ CTV         :Formal class 'DVH' [package "RadOnc"] with 18 slots
@@ -108,8 +116,10 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
+  .. .. .. ..@ rx.isodose      : num 100
   .. .. .. ..@ doses           : num [1:1026] 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ...
   .. .. .. ..@ dose.type       : chr "relative"
+  .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. ..@ volumes         : num [1:1026] 88.4 88.4 88.4 88.4 88.4 ...
   .. .. .. ..@ volume.type     : chr "absolute"
   .. ..$ PTV         :Formal class 'DVH' [package "RadOnc"] with 18 slots
@@ -127,8 +137,10 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
+  .. .. .. ..@ rx.isodose      : num 100
   .. .. .. ..@ doses           : num [1:1026] 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ...
   .. .. .. ..@ dose.type       : chr "relative"
+  .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. ..@ volumes         : num [1:1026] 156 156 156 156 156 ...
   .. .. .. ..@ volume.type     : chr "absolute"
   .. ..$ BODY        :Formal class 'DVH' [package "RadOnc"] with 18 slots
@@ -146,8 +158,10 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
+  .. .. .. ..@ rx.isodose      : num 100
   .. .. .. ..@ doses           : num [1:1026] 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ...
   .. .. .. ..@ dose.type       : chr "relative"
+  .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. ..@ volumes         : num [1:1026] 17666 3424 3290 3206 3143 ...
   .. .. .. ..@ volume.type     : chr "absolute"
   .. ..$ LEFT_KIDNEY :Formal class 'DVH' [package "RadOnc"] with 18 slots
@@ -165,8 +179,10 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
+  .. .. .. ..@ rx.isodose      : num 100
   .. .. .. ..@ doses           : num [1:1026] 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ...
   .. .. .. ..@ dose.type       : chr "relative"
+  .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. ..@ volumes         : num [1:1026] 154.2 48.3 46.4 45.3 44.4 ...
   .. .. .. ..@ volume.type     : chr "absolute"
   .. ..$ RIGHT_KIDNEY:Formal class 'DVH' [package "RadOnc"] with 18 slots
@@ -184,8 +200,10 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
+  .. .. .. ..@ rx.isodose      : num 100
   .. .. .. ..@ doses           : num [1:1026] 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ...
   .. .. .. ..@ dose.type       : chr "relative"
+  .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. ..@ volumes         : num [1:1026] 155 134 132 130 129 ...
   .. .. .. ..@ volume.type     : chr "absolute"
   .. ..$ CORD        :Formal class 'DVH' [package "RadOnc"] with 18 slots
@@ -203,8 +221,10 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
+  .. .. .. ..@ rx.isodose      : num 100
   .. .. .. ..@ doses           : num [1:1026] 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 ...
   .. .. .. ..@ dose.type       : chr "relative"
+  .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. ..@ volumes         : num [1:1026] 40.7 23 22.7 22.4 22.2 ...
   .. .. .. ..@ volume.type     : chr "absolute"
 }
@@ -228,8 +248,10 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
+  .. .. .. ..@ rx.isodose      : num 100
   .. .. .. ..@ doses           : num [1:1133] 0 5 10 15 20 25 30 35 40 45 ...
   .. .. .. ..@ dose.type       : chr "absolute"
+  .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 ...
   .. .. .. ..@ volume.type     : chr "relative"
   .. ..$ LEFT_KIDNEY :Formal class 'DVH' [package "RadOnc"] with 18 slots
@@ -247,8 +269,10 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
+  .. .. .. ..@ rx.isodose      : num 100
   .. .. .. ..@ doses           : num [1:1133] 0 5 10 15 20 25 30 35 40 45 ...
   .. .. .. ..@ dose.type       : chr "absolute"
+  .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 100 100 100 100 100 ...
   .. .. .. ..@ volume.type     : chr "relative"
   .. ..$ STOMACH     :Formal class 'DVH' [package "RadOnc"] with 18 slots
@@ -266,8 +290,10 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
+  .. .. .. ..@ rx.isodose      : num 100
   .. .. .. ..@ doses           : num [1:1133] 0 5 10 15 20 25 30 35 40 45 ...
   .. .. .. ..@ dose.type       : chr "absolute"
+  .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 100 100 100 100 100 ...
   .. .. .. ..@ volume.type     : chr "relative"
   .. ..$ DUODENUM    :Formal class 'DVH' [package "RadOnc"] with 18 slots
@@ -285,8 +311,10 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
+  .. .. .. ..@ rx.isodose      : num 100
   .. .. .. ..@ doses           : num [1:1133] 0 5 10 15 20 25 30 35 40 45 ...
   .. .. .. ..@ dose.type       : chr "absolute"
+  .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 100 100 100 100 100 ...
   .. .. .. ..@ volume.type     : chr "relative"
   .. ..$ RIGHT_KIDNEY:Formal class 'DVH' [package "RadOnc"] with 18 slots
@@ -304,8 +332,10 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
+  .. .. .. ..@ rx.isodose      : num 100
   .. .. .. ..@ doses           : num [1:1133] 0 5 10 15 20 25 30 35 40 45 ...
   .. .. .. ..@ dose.type       : chr "absolute"
+  .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 100 100 100 100 100 ...
   .. .. .. ..@ volume.type     : chr "relative"
   .. ..$ CTV         :Formal class 'DVH' [package "RadOnc"] with 18 slots
@@ -323,8 +353,10 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
+  .. .. .. ..@ rx.isodose      : num 100
   .. .. .. ..@ doses           : num [1:1133] 0 5 10 15 20 25 30 35 40 45 ...
   .. .. .. ..@ dose.type       : chr "absolute"
+  .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 100 100 100 100 100 ...
   .. .. .. ..@ volume.type     : chr "relative"
   .. ..$ PTV         :Formal class 'DVH' [package "RadOnc"] with 18 slots
@@ -342,8 +374,10 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
+  .. .. .. ..@ rx.isodose      : num 100
   .. .. .. ..@ doses           : num [1:1133] 0 5 10 15 20 25 30 35 40 45 ...
   .. .. .. ..@ dose.type       : chr "absolute"
+  .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 100 100 100 100 100 ...
   .. .. .. ..@ volume.type     : chr "relative"
   .. ..$ SMALL_BOWEL :Formal class 'DVH' [package "RadOnc"] with 18 slots
@@ -361,8 +395,10 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
+  .. .. .. ..@ rx.isodose      : num 100
   .. .. .. ..@ doses           : num [1:1133] 0 5 10 15 20 25 30 35 40 45 ...
   .. .. .. ..@ dose.type       : chr "absolute"
+  .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 100 100 100 100 100 ...
   .. .. .. ..@ volume.type     : chr "relative"
   .. ..$ CORD        :Formal class 'DVH' [package "RadOnc"] with 18 slots
@@ -380,8 +416,10 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
+  .. .. .. ..@ rx.isodose      : num 100
   .. .. .. ..@ doses           : num [1:1133] 0 5 10 15 20 25 30 35 40 45 ...
   .. .. .. ..@ dose.type       : chr "absolute"
+  .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. ..@ volumes         : num [1:1133] 100 98.5 95.9 93.8 90.8 ...
   .. .. .. ..@ volume.type     : chr "relative"
   .. ..$ BODY        :Formal class 'DVH' [package "RadOnc"] with 18 slots
@@ -399,8 +437,10 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ gradient        : num 0
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
+  .. .. .. ..@ rx.isodose      : num 100
   .. .. .. ..@ doses           : num [1:1133] 0 5 10 15 20 25 30 35 40 45 ...
   .. .. .. ..@ dose.type       : chr "absolute"
+  .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. ..@ volumes         : num [1:1133] 100 77.7 75.1 73 71.3 ...
   .. .. .. ..@ volume.type     : chr "relative"
 }
@@ -535,8 +575,10 @@ Formal class 'structure3D' [package "RadOnc"] with 9 slots
   .. .. ..@ gradient        : num 0
   .. .. ..@ dose.rx         : num 0
   .. .. ..@ dose.fx         : num 0
+  .. .. ..@ rx.isodose      : num 100
   .. .. ..@ doses           : num(0) 
   .. .. ..@ dose.type       : chr "absolute"
+  .. .. ..@ dose.units      : chr "cGy"
   .. .. ..@ volumes         : num(0) 
   .. .. ..@ volume.type     : chr "relative"
 }
@@ -671,8 +713,10 @@ Formal class 'structure3D' [package "RadOnc"] with 9 slots
   .. .. ..@ gradient        : num 0
   .. .. ..@ dose.rx         : num 0
   .. .. ..@ dose.fx         : num 0
+  .. .. ..@ rx.isodose      : num 100
   .. .. ..@ doses           : num(0) 
   .. .. ..@ dose.type       : chr "absolute"
+  .. .. ..@ dose.units      : chr "cGy"
   .. .. ..@ volumes         : num(0) 
   .. .. ..@ volume.type     : chr "relative"
 }
@@ -729,8 +773,10 @@ Formal class 'structure.list' [package "RadOnc"] with 1 slots
   .. .. .. .. .. ..@ gradient        : num 0
   .. .. .. .. .. ..@ dose.rx         : num 0
   .. .. .. .. .. ..@ dose.fx         : num 0
+  .. .. .. .. .. ..@ rx.isodose      : num 100
   .. .. .. .. .. ..@ doses           : num(0) 
   .. .. .. .. .. ..@ dose.type       : chr "absolute"
+  .. .. .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. .. .. ..@ volumes         : num(0) 
   .. .. .. .. .. ..@ volume.type     : chr "relative"
   .. ..$ Tooth #2:Formal class 'structure3D' [package "RadOnc"] with 9 slots
@@ -782,8 +828,10 @@ Formal class 'structure.list' [package "RadOnc"] with 1 slots
   .. .. .. .. .. ..@ gradient        : num 0
   .. .. .. .. .. ..@ dose.rx         : num 0
   .. .. .. .. .. ..@ dose.fx         : num 0
+  .. .. .. .. .. ..@ rx.isodose      : num 100
   .. .. .. .. .. ..@ doses           : num(0) 
   .. .. .. .. .. ..@ dose.type       : chr "absolute"
+  .. .. .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. .. .. ..@ volumes         : num(0) 
   .. .. .. .. .. ..@ volume.type     : chr "relative"
   .. ..$ Tooth #3:Formal class 'structure3D' [package "RadOnc"] with 9 slots
@@ -835,8 +883,10 @@ Formal class 'structure.list' [package "RadOnc"] with 1 slots
   .. .. .. .. .. ..@ gradient        : num 0
   .. .. .. .. .. ..@ dose.rx         : num 0
   .. .. .. .. .. ..@ dose.fx         : num 0
+  .. .. .. .. .. ..@ rx.isodose      : num 100
   .. .. .. .. .. ..@ doses           : num(0) 
   .. .. .. .. .. ..@ dose.type       : chr "absolute"
+  .. .. .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. .. .. ..@ volumes         : num(0) 
   .. .. .. .. .. ..@ volume.type     : chr "relative"
 }

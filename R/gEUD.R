@@ -39,11 +39,13 @@ setMethod("gEUD", c("DVH", "numeric"),
 		else if (a == -Inf) {
 			return(x$dose.min)
 		}
-		res <- sum(x$volumes * (x$doses ** a), na.rm=TRUE) / x$structure.volume
+		res <- sum((x$volumes * (x$doses ** a) / x$structure.volume)[x$volumes > 0], na.rm=TRUE)
 		if ((res == Inf) & (a > 0)) {
+			warning("Calculation exceeded machine's numerical precision")
 			return(x$dose.max)
 		}
 		else if ((res == 0) & (a < 0)) {
+			warning("Calculation exceeded machine's numerical precision")
 			return(x$dose.min)
 		}
 		return(res ** (1/a)) 
@@ -81,11 +83,13 @@ setMethod("gEUD", c("DVH.list", "numeric"),
 				if (is.empty(dvh)) {
 					return(NA)
 				}
-				res <- sum(dvh$volumes * (dvh$doses ** a), na.rm=TRUE) / dvh$structure.volume
+				res <- sum((dvh$volumes * (dvh$doses ** a) / dvh$structure.volume)[dvh$volumes > 0], na.rm=TRUE)
 				if ((res == Inf) & (a > 0)) {
+					warning("Calculation exceeded machine's numerical precision")
 					return(dvh$dose.max)
 				}
 				else if ((res == 0) & (a < 0)) {
+					warning("Calculation exceeded machine's numerical precision")
 					return(dvh$dose.min)
 				}
 				return(res ** (1/a)) 

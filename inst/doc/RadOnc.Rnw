@@ -63,14 +63,8 @@ Throughout this vignette, we will be exploring actual data for 2 patients, each 
 \newpage
 \section{Changes for \Rpackage{RadOnc} in current release}
 \label{current.version.changes}
-
 \begin{itemize}
-\item New function \Rfunction{gEUD()} to calculate generalized equivalent uniform dose values from \Rfunction{DVH} and \Rfunction{DVH.list} objects.
-\item New function \Rfunction{LQE()} to perform linear quadratic extrapolation for iso-effective dose conversion among \texttt{DVH} and \texttt{DVH.list} objects with different fractionation.
-\item New method for \Rfunction{sum()} to create DVH sum from two or more non-overlapping \Rfunction{DVH} and/or \Rfunction{DVH.list} object(s).
-\item Extended \Rfunction{read.DVH()} function to import multiple files simultaneously (if desired) and expanded import formats to include CadPlan files (for archival/historical data).
-\item Expanded functionality of DVH parameter access; now a user may specify output type in parentheses (e.g. \texttt{DVH["V20Gy(cc)"]}).
-
+\item Update 1
 \end{itemize}
 
 
@@ -411,10 +405,10 @@ Comparison of three-dimensional structures has numerous applications.  In the ca
 \begin{figure}[H]
 \begin{center}
 <<echo=TRUE,eval=FALSE>>=
-compareStructures(teeth, method="grid", plot=TRUE)
+compareStructures(teeth, method="axial", plot=TRUE)
 @
 <<label=fig11,fig=TRUE,echo=FALSE,results=hide,height=10,width=2>>=
-compareStructures(teeth, method="grid", plot=TRUE, pixels=40)
+compareStructures(teeth, method="axial", plot=TRUE, pixels=40)
 @
 \end{center}
 \caption{Axial comparison of overlap among three separate physician-defined contours for a single tooth. Red (and white) regions delineate consensus while decreasing degree of overlap is shown in decreasing shades of orange and yellow. }
@@ -449,9 +443,10 @@ Many thanks to Brandon Whitcher for his phenomenal and generous support regardin
 \section{Previous Release Notes}
 \label{previous}
 \begin{itemize}
-\item Last release (v1.0.2) on 2013-11-25
-\item Subsequent release (v1.0.1) on 2013-10-23
 \item Initial release (v1.0.0) on 2013-07-07
+\item Subsequent release (v1.0.1) on 2013-10-23
+\item Subsequent release (v1.0.2) on 2013-11-25
+\item Last release (v1.0.3) on 2014-01-17
 \end{itemize}
 Please refer to NEWS.Rd file for more details.
 <<echo=TRUE,results=hide>>=

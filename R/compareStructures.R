@@ -1,4 +1,4 @@
-compareStructures <- function(structures, method=c("grid", "surface", "hausdorff"), hausdorff.method=c("mean", "median", "absolute"), verbose=TRUE, plot=TRUE, pixels=100) {
+compareStructures <- function(structures, method=c("axial", "surface", "hausdorff", "grid"), hausdorff.method=c("mean", "median", "absolute"), verbose=TRUE, plot=TRUE, pixels=100) {
 	if (class(structures) != "structure.list") {
 		warning("Input 'structures' must be of class 'structure.list'")
 		return()
@@ -15,11 +15,15 @@ compareStructures <- function(structures, method=c("grid", "surface", "hausdorff
 	}
 	method <- match.arg(method)
 	switch(method,
-		grid = contours <- compareStructures.grid(structures, pixels=pixels),
+		axial = contours <- compareStructures.axial(structures, pixels=pixels),
+		grid = {
+			warning("method='grid' no longer supported, use method='axial' instead")
+			contours <- compareStructures.axial(structures, pixels=pixels)
+		},
 		surface = contours <- compareStructures.surface(structures),
 		hausdorff = contours <- compareStructures.hausdorff(structures, method=hausdorff.method, verbose=verbose)
 	)
-	if ((plot) & (method == "grid")) {
+	if ((plot) & (method %in% c("axial", "grid"))) {
 		mar.old <- par()$mar
 		par(mar=c(0, 0, 0, 0))
 		N.z <- length(unique(contours[,3]))
@@ -32,23 +36,8 @@ compareStructures <- function(structures, method=c("grid", "surface", "hausdorff
 			x <- unique(contours.i[, 1])
 			y <- unique(contours.i[, 2])
 			lvl.i <- matrix(sum.i, nrow=length(x), ncol=length(y))
-			if (dim(lvl.i)[1] < 1) {
-				plot(1,type="n",xaxt="n",yaxt="n")
-				text(1, labels=i)
-				next
-				##### this test is probably not right . . . have not tested why lvl.i should be 0x0 dimensions!!!! -- it should not be
-			}
-			lvl.i <- contourLines(x=x, y=y, z=lvl.i, levels=levels)
 			plot(range(x), range(y), type="n", xaxt="n", yaxt="n")
-			if (length(lvl.i) < 1) {
-				plot(1,type="n",xaxt="n",yaxt="n")
-				text(1, labels=i)
-				next
-			}
-			for (j in 1:length(lvl.i)) {
-				cl.j <- lvl.i[[j]]
-				polygon(cl.j$x, cl.j$y, rep(z.i, length(cl.j$x)), col=rev(heat.colors(N+1))[which(levels == cl.j$level)], border=NA, density=NA)
-			}
+			graphics::.filled.contour(x, y, lvl.i, levels, col=c(NA,rev(heat.colors(N))))
 			plot(1,type="n",xaxt="n",yaxt="n")
 			text(1, labels=i)
 		}
@@ -57,28 +46,7 @@ compareStructures <- function(structures, method=c("grid", "surface", "hausdorff
 	return(contours)
 }	
 
-compareStructures.surface <- function (structures) {
-
-	pointInPoly2D <- function (x, y, points) {
-		if (length(x) != length(y)) {
-			warning("'x' and 'y' lengths differ")
-		}
-		if (length(x) + length(y) < 1) {
-			return()
-		}
-		n <- dim(points)[1]
-		c <- v <- rep(0, min(length(x), length(y), na.rm=TRUE))
-		j <- n
-		for (i in 1:n) {
-			c <- abs(c - as.numeric(((y<points[i,2]) != (y<points[j,2])) * ((x<(points[j,1]-points[i,1])*(y-points[i,2])/(points[j,2]-points[i,2])+points[i,1]))))
-			v <- v+(y==points[i,2])*(x==points[i,1])
-			j <- i
-		}
-		c[which(is.na(c))] <- FALSE
-		c[v>0] <- TRUE
-		return(as.logical(c)[1:min(length(x), length(y))])
-	}
-	
+compareStructures.surface <- function (structures) {	
 	N <- length(structures)
 	z <- as.list(rep(NA, N))
 	pts <- matrix(nrow=0, ncol=3, dimnames=list(NULL, c("X", "Y", "Z")))
@@ -99,8 +67,7 @@ compareStructures.surface <- function (structures) {
 			## THIS LOOP ACCOUNTS FOR AXIAL SLICES WITH MULTIPLE SEPARATE CLOSED POLYGONS (e.g. 3 ROOTS FOR SINGLE TOOTH)
 			## THIS LOOP DOES NOT(!!!) ACCOUNT FOR DONUTS (E.G. STRUCTURES WITH HOLE IN THEM -- NEED TO FIGURE OUT HOW THOSE ARE STORED FIRST) -- IF STRUCTURE HAS A HOLE, ALL BETS ARE OFF AT THE MOMENT... SOLUTION WILL BE TO DO LOGICAL SUBTRACTION RATHER THAN ADDITION OF RESULTS
 			for (k in 1:length(z.j)) {
-#				poly.jk <- structures[[i]]$closed.polys[[z.j[k]]][, 1:2]
-				results.j <- results.j + as.numeric(pointInPoly2D(pts.j[,1], pts.j[,2], structures[[i]]$closed.polys[[z.j[k]]][, 1:2]))
+				results.j <- results.j + as.numeric(pointInPoly2D(pts.j[,1:2], structures[[i]]$closed.polys[[z.j[k]]][,1:2]))
 			}
 			results[which(pts[, 3]== j), i] <- results[which(pts[, 3]== j), i]+results.j
 		}
@@ -110,28 +77,7 @@ compareStructures.surface <- function (structures) {
 	return(cbind(pts, results))
 }
 
-compareStructures.grid <- function (structures, pixels=100) {
-
-	pointInPoly2D <- function (x, y, points) {
-		if (length(x) != length(y)) {
-			warning("'x' and 'y' lengths differ")
-		}
-		if (length(x) + length(y) < 1) {
-			return()
-		}
-		n <- dim(points)[1]
-		c <- v <- rep(0, min(length(x), length(y), na.rm=TRUE))
-		j <- n
-		for (i in 1:n) {
-			c <- abs(c - as.numeric(((y<points[i,2]) != (y<points[j,2])) * ((x<(points[j,1]-points[i,1])*(y-points[i,2])/(points[j,2]-points[i,2])+points[i,1]))))
-			v <- v+(y==points[i,2])*(x==points[i,1])
-			j <- i
-		}
-		c[which(is.na(c))] <- FALSE
-		c[v>0] <- TRUE
-		return(as.logical(c)[1:min(length(x), length(y))])
-	}
-	
+compareStructures.axial <- function (structures, pixels=100) {	
 	N <- length(structures)
 	z <- as.list(rep(NA, N))
 	bounds <- range(structures, na.rm=TRUE)
@@ -153,12 +99,11 @@ compareStructures.grid <- function (structures, pixels=100) {
 			results.j <- rep(0, dim(pts.j)[1])
 			z.j <- which(z[[i]] == j)
 			## THIS LOOP ACCOUNTS FOR AXIAL SLICES WITH MULTIPLE SEPARATE CLOSED POLYGONS (e.g. 3 ROOTS FOR SINGLE TOOTH)
-			## THIS LOOP DOES NOT(!!!) ACCOUNT FOR DONUTS (E.G. STRUCTURES WITH HOLE IN THEM -- NEED TO FIGURE OUT HOW THOSE ARE STORED FIRST) -- IF STRUCTURE HAS A HOLE, ALL BETS ARE OFF AT THE MOMENT... SOLUTION WILL BE TO DO LOGICAL SUBTRACTION RATHER THAN ADDITION OF RESULTS
+			## IF CLOSED POLYGONS ARE NESTED, THEY WILL BE INTERPRETED AS HOLES, SUCH THAT POINTS BETWEEN TWO POLYGONS MAY BE INTERPRETED AS EXTERIOR TO THE POLYGONS THEMSELVES (NOTE THAT THIS ASSUMES THE POLYGONS DO NOT CROSS EACH OTHER AT ANY POINT)
 			for (k in 1:length(z.j)) {
-#				poly.jk <- structures[[i]]$closed.polys[[z.j[k]]][, 1:2]
-				results.j <- results.j + as.numeric(pointInPoly2D(pts.j[,1], pts.j[,2], structures[[i]]$closed.polys[[z.j[k]]][, 1:2]))
+				results.j <- results.j + as.numeric(pointInPoly2D(pts.j[,1:2], structures[[i]]$closed.polys[[z.j[k]]][,1:2]))
 			}
-			results[which(pts[, 3]== j), i] <- results[which(pts[, 3]== j), i]+results.j
+			results[which(pts[, 3]== j), i] <- results[which(pts[, 3]== j), i]+(results.j %% 2 != 0)	
 		}
 	}
 	return(cbind(pts, results))
@@ -214,4 +159,18 @@ compareStructures.hausdorff <- function (structures, verbose=TRUE, method=c("mea
 		}
 	}
 	return(results)
+}
+
+pointInPoly2D <- function (points, poly) {
+	n <- dim(poly)[1]
+       x <- diff(poly[c(1:n,1),1])
+	y <- poly[,2] + poly[c(2:n,1),2]
+	if (sum(x*y/2) >= 0) {
+		#clockwise poly
+		return(pip2d(poly[n:1,], points) >= 0)
+	}
+	else {
+		#anti-clockwise poly
+		return(pip2d(poly, points) >= 0)
+	}
 }

@@ -13,6 +13,9 @@
 \alias{length,structure.list-method}
 \alias{names,structure.list-method}
 \alias{names<-,structure.list-method}
+\alias{plot,structure.list-method}
+\alias{plot,structure.list,missing-method}
+\alias{plot,structure.list,ANY-method}
 \alias{print,structure.list-method}
 \alias{range,structure.list-method}
 \alias{rev,structure.list-method}
@@ -32,19 +35,20 @@ Objects can be created by calls of the form \code{new("structure.list", structur
 }
 \section{Methods}{
   \describe{
-    \item{[}{\code{signature(x = "structure.list")}: Extract subset of structure list }
-    \item{[[}{\code{signature(x = "structure.list")}: Extract single \code{\link[RadOnc:structure3D-class]{structure3D}} object from structure list }
-    \item{[[<-}{\code{signature(x = "structure.list")}: Replace single \code{\link[RadOnc:structure3D-class]{structure3D}} object in structure list }
-    \item{$}{\code{signature(x = "structure.list")}: Extract parameter(s) from \code{structure3D} objects within structure list }
-    \item{c}{\code{signature(x = "structure.list")}: Combine two or more structure lists and/or \code{\link[RadOnc:structure3D-class]{structure3D}} objects }
-    \item{lapply}{\code{signature(X = "structure.list")}: Apply function to a list of \code{\link[RadOnc:structure3D-class]{structure3D}} objects }
-    \item{length}{\code{signature(x = "structure.list")}: Extract number of \code{\link[RadOnc:structure3D-class]{structure3D}} objects in structure list}
-    \item{names}{\code{signature(x = "structure.list")}: Extract structure names for \code{structure3D} objects in structure list }
-    \item{names<-}{\code{signature(x = "structure.list")}: Assign structure name(s) to one or more \code{structure3D} objects in structure list }
-    \item{print}{\code{signature(x = "structure.list")}: Display summary of structure list }
-    \item{range}{\code{signature(x = "structure.list")}: Compute the range (minimum and maximum coordinates) containing all \code{structure3D} ojbects in structure list }
-    \item{rev}{\code{signature(x = "structure.list")}: Return a structure list whose \code{structure3D} objects are in reverse order }
-    \item{show}{\code{signature(object = "structure.list")}: Display summary of structure list }
+    \item{[}{Extract subset of structure list }
+    \item{[[}{Extract single \code{\link[RadOnc:structure3D-class]{structure3D}} object from structure list }
+    \item{[[<-}{Replace single \code{\link[RadOnc:structure3D-class]{structure3D}} object in structure list }
+    \item{$}{Extract parameter(s) from \code{structure3D} objects within structure list }
+    \item{c}{Combine two or more structure lists and/or \code{\link[RadOnc:structure3D-class]{structure3D}} objects }
+    \item{lapply}{Apply function to a list of \code{\link[RadOnc:structure3D-class]{structure3D}} objects }
+    \item{length}{Extract number of \code{\link[RadOnc:structure3D-class]{structure3D}} objects in structure list}
+    \item{names}{Extract structure names for \code{structure3D} objects in structure list }
+    \item{names<-}{Assign structure name(s) to one or more \code{structure3D} objects in structure list }
+    \item{plot}{Plot all structures within a \code{structure.list}}
+    \item{print}{Display summary of structure list }
+    \item{range}{Compute the range (minimum and maximum coordinates) containing all \code{structure3D} ojbects in structure list }
+    \item{rev}{Return a structure list whose \code{structure3D} objects are in reverse order }
+    \item{show}{Display summary of structure list }
 	 }
 }
 \author{

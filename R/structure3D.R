@@ -1,103 +1,7 @@
-setClass("structure3D",
-	representation(
-		name = "character",
-		volume = "numeric",
-		volume.units = "character",
-		coordinate.units = "character",
-		vertices = "matrix",
-		origin = "numeric",
-		triangles = "matrix",
-		closed.polys = "matrix",
-		DVH = "DVH"
-	),
-	prototype(
-		name = character(),
-		volume = numeric(),
-		volume.units = character(),
-		coordinate.units = character(),
-		vertices = matrix(),
-		origin = numeric(),
-		triangles = matrix(),
-		closed.polys = matrix(),
-		DVH = new("DVH")
-	)
-)
-
-setMethod("initialize",
-	"structure3D",
-	function(.Object,
-		name = "",
-		volume = NULL,
-		volume.units = c("cc"),
-		coordinate.units = c("cm", "mm"),
-		vertices = matrix(nrow=0, ncol=3),
-		origin = NULL,
-		triangles = matrix(nrow=3, ncol=0),
-		closed.polys = matrix(nrow=0, ncol=3),
-		DVH = new("DVH")
-	) {
-		.Object@name <- as.character(name)
-		if (is.null(volume)) {
-			.Object@volume <- 0
-			# calculate volume of structure3D
-			# .Object@volume <- as.numeric(volume)
-		}
-		else {
-			.Object@volume <- as.numeric(volume)		
-		}		
-		if (is.null(vertices)) {
-			vertices <- matrix(nrow=0, ncol=3)
-		}
-		if (is.null(closed.polys)) {
-			closed.polys <- matrix(nrow=0, ncol=3)
-		}
-		if (is.null(origin)) {
-			if (dim(vertices)[1] <= 1) {
-				origin <- as.numeric(vertices)
-			}
-			else {
-				origin <- apply(vertices, 2, mean)
-			}
-		}
-		if (length(origin) != 3) {
-			.Object@origin <- c(0, 0, 0)
-		}
-		else {
-			.Object@origin <- origin
-		}
-		volume.units <- match.arg(volume.units)
-		.Object@volume.units <- as.character(volume.units)
-		coordinate.units <- match.arg(coordinate.units)
-		.Object@coordinate.units <- as.character(coordinate.units)
-		.Object@vertices <- as.matrix(vertices)
-		.Object@triangles <- as.matrix(triangles)
-		.Object@closed.polys <- as.matrix(closed.polys)
-		return(.Object)
-	}
-)
-
-setValidity("structure3D",
-	function(object) {
-		if (object@volume < 0) return(FALSE)
-		if (!is.matrix(object@vertices)) return(FALSE)
-		if (!is.matrix(object@triangles)) return(FALSE)
-		if (dim(object@vertices)[2] != 3) return(FALSE)
-		if (dim(object@triangles)[1] != 3) return(FALSE)
-		if (length(object@origin) != 3) return(FALSE)
-		if ((dim(object@triangles)[2] > 0) & (dim(object@vertices)[1] == 0)) return(FALSE)
-#		if ((dim(object@vertices)[1] > 0) & (dim(object@triangles)[2] == 0)) return(FALSE)
-		if ((dim(object@vertices)[1] > 0) & (dim(object@triangles)[2] > 0)) {
-			range.triangles <- suppressWarnings(range(object@triangles))
-			if (range.triangles[1] < 1) return(FALSE)
-			if (range.triangles[2] > dim(object@vertices)[1]) return(FALSE)			
-		}
-		return(validObject(object@DVH))
-	}
-)
-
 setMethod("$", "structure3D",
 	function (x, name) {
 		if (inherits(try(slot(x, name), silent=TRUE), "try-error")) {
+			warning("'", name, "' is not a parameter in class 'structure3D'")
 			return(NULL)	
 		}
 		else {
@@ -158,14 +62,24 @@ setMethod("range", "structure3D",
 setMethod("plot", c("structure3D", "missing"),
 	function(x, col="gray", alpha=1, ...) {
 		open3d()
-		triangles3d(x$vertices[x$triangles,1], x$vertices[x$triangles,2], x$vertices[x$triangles,3], col=col, alpha=alpha)
+		if (dim(x$triangles)[2] >= 1) {
+			triangles3d(x$vertices[x$triangles,1], x$vertices[x$triangles,2], x$vertices[x$triangles,3], col=col, alpha=alpha)
+		}
+		else {
+			points3d(x$vertices, col=col, alpha=alpha)
+		}
 	}
 )
 
 setMethod("plot", c("structure3D", "ANY"),
 	function(x, y, col="gray", alpha=1, ...) {
 		open3d()
-		triangles3d(x$vertices[x$triangles,1], x$vertices[x$triangles,2], x$vertices[x$triangles,3], col=col, alpha=alpha)
+		if (dim(x$triangles)[2] >= 1) {
+			triangles3d(x$vertices[x$triangles,1], x$vertices[x$triangles,2], x$vertices[x$triangles,3], col=col, alpha=alpha)
+		}
+		else {
+			points3d(x$vertices, col=col, alpha=alpha)
+		}
 	}
 )
 

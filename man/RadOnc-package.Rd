@@ -12,8 +12,8 @@ This package is designed for the import, analysis, and visualization of dosimetr
 \tabular{ll}{
 Package: \tab RadOnc\cr
 Type: \tab Package\cr
-Version: \tab 1.0.1\cr
-Date: \tab 2013-10-21\cr
+Version: \tab 1.0.4\cr
+Date: \tab 2014-01-21\cr
 License: \tab GPL (>=2)\cr
 }
 }
@@ -22,5 +22,5 @@ Reid F. Thompson <reid.thompson@gmail.com>
 }
 \keyword{ package }
 \seealso{
-\code{\link[RadOnc:DVH-class]{DVH}}, \code{\link[RadOnc:DVH.list-class]{DVH.list}}, \code{\link[RadOnc:structure3D-class]{structure3D}}, \code{\link[RadOnc:structure.list-class]{structure.list}}
+\code{\link[RadOnc:DVH-class]{DVH}}, \code{\link[RadOnc:DVH.list-class]{DVH.list}}, \code{\link[RadOnc:structure3D-class]{structure3D}}, \code{\link[RadOnc:structure.list-class]{structure.list}}, \code{\link[RadOnc:RTdata-class]{RTdata}}
 }

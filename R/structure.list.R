@@ -1,55 +1,8 @@
-setClass("structure.list",
-	representation(
-		structures = "list"
-	),
-	prototype(
-		structures = list()
-	)
-)
-
-
-setMethod("initialize",
-	"structure.list",
-	function (.Object,
-		structures = list(),
-		...
-	) {
-		if ((length(structures) == 1) & (class(structures) == "structure3D")) {
-			structures <- list(structures)
-		}
-		structs <- which(unlist(lapply(structures, class)) == "structure3D")
-		if (length(structs) >= 1) {
-			.Object@structures <- structures[structs]
-		}
-		else {
-			.Object@structures <- list()
-		}
-		return(.Object)
-	}
-)
-
-
-setValidity("DVH.list",
-	function(object) {
-		if (!is.list(object)) return(FALSE)
-		if (length(object) == 0) return(TRUE)
-		if (!all(unlist(lapply(structures, class)) == "structure3D")) return(FALSE)
-		return(TRUE)
-	}
-)
-
-setGeneric("as.list",
-	as.list
-)
 
 setMethod("as.list", "structure.list",
 	function(x, ...) {
 		return(attr(x,"structures"))
 	}
-)
-
-setGeneric("lapply",
-	lapply
 )
 
 setMethod("lapply", "structure.list",
@@ -109,9 +62,6 @@ setMethod("c", "structure.list",
 	}
 )
 
-setGeneric("rev",
-	rev
-)
 
 setMethod("rev", "structure.list",
 	function (x) {
@@ -124,10 +74,6 @@ setMethod("rev", "structure.list",
 	}
 )
 
-
-setGeneric("print",
-	print
-)
 
 setMethod("print", "structure.list",
 	function (x, ...) {
@@ -175,5 +121,58 @@ setMethod("range", "structure.list",
 			range[2, ] <- pmax(range[2, ], ranges[[i]][2, ], na.rm=na.rm)
 		}
 		return(range)
+	}
+)
+
+
+setMethod("plot", c("structure.list", "missing"),
+	function(x, y, col="gray", alpha=1, ...) {
+		open3d()
+		if (length(x) != length(col)) {
+			col <- rep(col[1], length(x))
+		}
+		if (length(x) != length(alpha)) {
+			alpha <- rep(alpha[1], length(x))
+		}
+		value <- mapply(
+			function(x, col, alpha) {
+				if (dim(x$triangles)[2] >= 1) {
+					triangles3d(x$vertices[x$triangles,1], x$vertices[x$triangles,2], x$vertices[x$triangles,3], col=col, alpha=alpha)
+				}
+				else {
+					points3d(x$vertices, col=col, alpha=alpha)
+				}
+			},
+			x,
+			col,
+			alpha
+		)
+		
+	}
+)
+
+setMethod("plot", c("structure.list", "ANY"),
+	function(x, y, col="gray", alpha=1, ...) {
+		open3d()
+		if (length(x) != length(col)) {
+			col <- rep(col[1], length(x))
+		}
+		if (length(x) != length(alpha)) {
+			alpha <- rep(alpha[1], length(x))
+		}
+		value <- mapply(
+			function(x, col, alpha) {
+				if (dim(x$triangles)[2] >= 1) {
+					triangles3d(x$vertices[x$triangles,1], x$vertices[x$triangles,2], x$vertices[x$triangles,3], col=col, alpha=alpha)
+				}
+				else {
+					points3d(x$vertices, col=col, alpha=alpha)
+				}
+			},
+			x,
+			col,
+			alpha
+		)
+		
 	}
 )

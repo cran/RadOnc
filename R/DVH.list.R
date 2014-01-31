@@ -1,46 +1,3 @@
-setClass("DVH.list",
-	representation(
-		structures = "list"
-	),
-	prototype(
-		structures = list()
-	)
-)
-
-
-setMethod("initialize",
-	"DVH.list",
-	function (.Object,
-		structures = list(),
-		...
-	) {
-		if ((length(structures) == 1) & (class(structures) == "DVH")) {
-			structures <- list(structures)
-		}
-		DVHs <- which(unlist(lapply(structures, class)) == "DVH")
-		if (length(DVHs) >= 1) {
-			.Object@structures <- structures[DVHs]
-		}
-		else {
-			.Object@structures <- list()
-		}
-		return(.Object)
-	}
-)
-
-setValidity("DVH.list",
-	function(object) {
-		if (!is.list(object)) return(FALSE)
-		if (length(object) == 0) return(TRUE)
-		if (!all(unlist(lapply(structures, class)) == "DVH")) return(FALSE)
-		return(TRUE)
-	}
-)
-
-
-setGeneric("as.list",
-	as.list
-)
 
 setMethod("as.list", "DVH.list",
 	function(x, ...) {
@@ -54,10 +11,12 @@ setAs("DVH", "DVH.list",
 	}
 )
 
-
-setGeneric("lapply",
-	lapply
+setAs("structure.list", "DVH.list", 
+	function(from) {
+		return(new("DVH.list", lapply(from, function(struct) {return(struct$DVH)})))
+	}
 )
+
 
 setMethod("lapply", "DVH.list",
 	function (X, FUN, ...) {
@@ -65,7 +24,6 @@ setMethod("lapply", "DVH.list",
     	.Internal(lapply(X, FUN))
 	}
 )
-
 
 
 setMethod("length", "DVH.list",
@@ -116,10 +74,6 @@ setMethod("c", "DVH.list",
 	}
 )
 
-setGeneric("rev",
-	rev
-)
-
 setMethod("rev", "DVH.list",
 	function (x) {
 		if (length(x) <= 1) {
@@ -129,10 +83,6 @@ setMethod("rev", "DVH.list",
 			return(x[length(x):1])
 		}
 	}
-)
-
-setGeneric("print",
-	print
 )
 
 setMethod("print", "DVH.list",

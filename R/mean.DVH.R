@@ -23,7 +23,8 @@ setMethod("mean", "DVH.list",
 		dose.min <- min(x)
 		dose.max <- max(x)
 		doses.new <- diffinv(rep((ceiling(dose.max)-0)/(size-1), size-1), xi=0)
-		dose.rx <- max(unlist(lapply(x,slot,"dose.rx")), na.rm=TRUE)
+		dose.rx <- max(100 * unlist(lapply(x,slot,"dose.rx")) / unlist(lapply(x,slot,"rx.isodose")), na.rm=TRUE)
+		rx.isodose <- 100
 		volume.matrix <- matrix(NA, ncol=N, nrow=size)
 		for (i in 1:N) {
 			volume.matrix[,i] <- approx(x[[i]]$doses, x[[i]]$volumes, doses.new, rule=2)$y
@@ -34,7 +35,7 @@ setMethod("mean", "DVH.list",
 		else {
 			volumes.new <- apply(volume.matrix, 1, mean, na.rm=TRUE)
 		}
-		new("DVH", type=type, dose.type=dose, volume.type=volume, structure.name=structure.name, structure.volume=mean(structure.volumes), dose.min=dose.min, dose.rx=dose.rx, dose.max=dose.max, dose.mean=dose.mean, doses=doses.new, dose.units=dose.units, volumes=volumes.new)
+		new("DVH", type=type, dose.type=dose, volume.type=volume, structure.name=structure.name, structure.volume=mean(structure.volumes), dose.min=dose.min, dose.rx=dose.rx, rx.isodose=rx.isodose, dose.max=dose.max, dose.mean=dose.mean, doses=doses.new, dose.units=dose.units, volumes=volumes.new)
 	}
 )
 
@@ -52,7 +53,7 @@ setMethod("mean", "DVH",
 				return(x@dose.mean)
 			}
 			else {
-				return(100*x@dose.mean/x@dose.rx)
+				return(x@dose.mean*x@rx.isodose/x@dose.rx)
 			}
 		}
 	}
@@ -89,14 +90,15 @@ setMethod("median", "DVH.list",
 		size <- ceiling(mean(as.numeric(lapply(x, function(DVH) { length(DVH@doses) })), na.rm=TRUE))
 		dose.min <- min(x)
 		dose.max <- max(x)
-		dose.rx <- max(unlist(lapply(x,slot,"dose.rx")), na.rm=TRUE)
+		dose.rx <- max(100 * unlist(lapply(x,slot,"dose.rx")) / unlist(lapply(x,slot,"rx.isodose")), na.rm=TRUE)
+		rx.isodose <- 100
 		doses.new <- diffinv(rep((ceiling(dose.max)-0)/(size-1), size-1), xi=0)
 		volume.matrix <- matrix(NA, ncol=N, nrow=size)
 		for (i in 1:N) {
 			volume.matrix[,i] <- approx(x[[i]]$doses, x[[i]]$volumes, doses.new, rule=2)$y
 		}
 		volumes.new <- apply(volume.matrix, 1, median, na.rm=na.rm)
-		new("DVH", type=x[[1]]$type, dose.type=x[[1]]$dose.type, volume.type=x[[1]]$volume.type, structure.name=structure.name, structure.volume=structure.volume, dose.rx=dose.rx, dose.min=dose.min, dose.max=dose.max, dose.mean=dose.mean, doses=doses.new, dose.units=dose.units, volumes=volumes.new)
+		new("DVH", type=x[[1]]$type, dose.type=x[[1]]$dose.type, volume.type=x[[1]]$volume.type, structure.name=structure.name, structure.volume=structure.volume, dose.rx=dose.rx, rx.isodose=rx.isodose, dose.min=dose.min, dose.max=dose.max, dose.mean=dose.mean, doses=doses.new, dose.units=dose.units, volumes=volumes.new)
 	}
 )
 
@@ -265,7 +267,7 @@ setMethod("max", "DVH",
 				return(x@dose.max)
 			}
 			else {
-				return(100*x@dose.max/x@dose.rx)
+				return(x@dose.max*x@rx.isodose/x@dose.rx)
 			}
 		}
 	}
@@ -289,7 +291,7 @@ setMethod("min", "DVH",
 				return(x@dose.min)
 			}
 			else {
-				return(100*x@dose.min/x@dose.rx)
+				return(x@dose.min*x@rx.isodose/x@dose.rx)
 			}
 		}
 	}
@@ -314,7 +316,7 @@ setMethod("range", "DVH",
 				return(c(x@dose.min, x@dose.max))
 			}
 			else {
-				return(100*c(x@dose.min, x@dose.max)/x@dose.rx)				
+				return(x@rx.isodose*c(x@dose.min, x@dose.max)/x@dose.rx)				
 			}
 		}
 	}
@@ -341,7 +343,8 @@ setMethod("sum", "DVH.list",
 		dose.min <- min(x, na.rm=na.rm)
 		dose.mean <- as.numeric(lapply(x, slot, "dose.mean"))
 		dose.mean <- sum(dose.mean * structure.volumes, na.rm=TRUE)/volume.sum
-		dose.rx <- max(unlist(lapply(x, slot, "dose.rx")), na.rm=TRUE)
+		dose.rx <- max(100 * unlist(lapply(x,slot,"dose.rx")) / unlist(lapply(x,slot,"rx.isodose")), na.rm=TRUE)
+		rx.isodose <- 100
 		size <- ceiling(mean(as.numeric(lapply(x, function(DVH) { length(DVH@doses) })), na.rm=TRUE))
 		doses.new <- unique(unlist(lapply(x, slot, "doses")))
 		volume.matrix <- matrix(NA, ncol=N, nrow=size)
@@ -349,7 +352,7 @@ setMethod("sum", "DVH.list",
 			volume.matrix[,i] <- approx(x[[i]]$doses, x[[i]]$volumes, doses.new, rule=2)$y
 		}
 		volumes.new <- apply(volume.matrix, 1, sum, na.rm=na.rm)
-		x <- new("DVH", type="differential", dose.type="absolute", volume.type="absolute", structure.name=structure.name, structure.volume=volume.sum, dose.min=dose.min, dose.rx=dose.rx, dose.max=dose.max, dose.mean=dose.mean, doses=doses.new, dose.units=dose.units, volumes=volumes.new)
+		x <- new("DVH", type="differential", dose.type="absolute", volume.type="absolute", structure.name=structure.name, structure.volume=volume.sum, dose.min=dose.min, dose.rx=dose.rx, rx.isodose=rx.isodose, dose.max=dose.max, dose.mean=dose.mean, doses=doses.new, dose.units=dose.units, volumes=volumes.new)
 		return(convert.DVH(x, type=type, dose=dose, dose.units=dose.units, volume=volume))
 	}
 )

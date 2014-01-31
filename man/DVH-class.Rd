@@ -44,6 +44,7 @@ Objects can be created by calls of the form \code{new("DVH", structure.name, str
     \item{\code{gradient}:}{Dose gradient (in centimeters)}
     \item{\code{dose.rx}:}{Prescription dose (in units specified by \code{dose.units})}
     \item{\code{dose.fx}:}{Fractional dose (in units specified by \code{dose.units})}
+    \item{\code{rx.isodose}:}{Isodose line (\%) receiving prescription dose (default is \code{100\%})}
     \item{\code{doses}:}{List of doses corresponding to \code{"volumes"} }
     \item{\code{dose.type}:}{A character string specifying the dose type (must be one of \code{"relative"} or \code{"absolute"})}
     \item{\code{dose.units}:}{A character string specifying the dose units (must be one of \code{"cGy"} or \code{"Gy"})}
@@ -53,18 +54,18 @@ Objects can be created by calls of the form \code{new("DVH", structure.name, str
 }
 \section{Methods}{
   \describe{
-    \item{[}{\code{signature(x = "DVH")}: Extract dose or volume parameter(s) from \code{DVH} object. Only one parameter may be specified at a time. Parameter specification should be of the form \code{["<A><B><C>"]}: \code{<A>} is equivalent to \code{"V"} or \code{"D"}, representing a volume or dose, respectively; \code{<B>} usually denotes a numerical value specifying the dose or volume; and \code{<C>} represents the dose or volume units (\code{"cGy"}, \code{"Gy"}, \code{"\%"}, or \code{"cc"}). An example would be \code{["V20Gy"]} which represents the volume of the structure receiving at least 20Gy dose. Specialized dosimetric keywords may also be used:  \code{"Dmax"} (maximum dose), \code{"Dmin"} (minimum dose), \code{"Dmean"} (mean dose), \code{"Dintegral"} (estimated integral dose), \code{"DRx"} (prescription dose), and \code{"volume"} (total structure volume).  If an improper parameter is specified however, \code{NA} results will be returned. See package documentation (vignette) for more details. }
-    \item{$}{\code{signature(x = "DVH")}: ... }
-    \item{$<-}{\code{signature(x = "DVH")}: ... }
-    \item{c}{\code{signature(x = "DVH")}: Combine multiple \code{DVH} objects into a single list }
-    \item{lines}{\code{signature(x = "DVH")}: ... }
-    \item{max}{\code{signature(x = "DVH")}: Extract maximum dose from \code{DVH} object }
-    \item{mean}{\code{signature(x = "DVH")}: Extract mean dose from \code{DVH} object }
-    \item{min}{\code{signature(x = "DVH")}: Extract minimum dose from \code{DVH} object }
-    \item{names}{\code{signature(x = "DVH")}: Extract structure name from \code{DVH} object }
-    \item{names<-}{\code{signature(x = "DVH")}: Assign structure name to \code{DVH} object }
-    \item{plot}{\code{signature(x = "DVH")}: ... }
-    \item{points}{\code{signature(x = "DVH")}: ... }
+    \item{[}{Extract dose or volume parameter(s) from \code{DVH} object. Only one parameter may be specified at a time. Parameter specification should be of the form \code{["<A><B><C>"]}: \code{<A>} is equivalent to \code{"V"} or \code{"D"}, representing a volume or dose, respectively; \code{<B>} usually denotes a numerical value specifying the dose or volume; and \code{<C>} represents the dose or volume units (\code{"cGy"}, \code{"Gy"}, \code{"\%"}, or \code{"cc"}). An example would be \code{["V20Gy"]} which represents the volume of the structure receiving at least 20Gy dose. Specialized dosimetric keywords may also be used:  \code{"Dmax"} (maximum dose), \code{"Dmin"} (minimum dose), \code{"Dmean"} (mean dose), \code{"Dintegral"} (estimated integral dose), \code{"DRx"} (prescription dose), and \code{"volume"} (total structure volume).  If an improper parameter is specified however, \code{NA} results will be returned. See package documentation (vignette) for more details. }
+    \item{$}{Extract a given parameter from a \code{DVH} object}
+    \item{$<-}{Assign a value to a given parameter within a \code{DVH} object}
+    \item{c}{Combine multiple \code{DVH} objects into a single list }
+    \item{lines}{Plot \code{DVH} object (see \code{link{lines}})}
+    \item{max}{Extract maximum dose from \code{DVH} object }
+    \item{mean}{Extract mean dose from \code{DVH} object }
+    \item{min}{Extract minimum dose from \code{DVH} object }
+    \item{names}{Extract structure name from \code{DVH} object }
+    \item{names<-}{Assign structure name to \code{DVH} object }
+    \item{plot}{Plot \code{DVH} object}
+    \item{points}{Plot \code{DVH} object (see \code{link{points}}) }
     \item{print}{\code{signature(x = "DVH")}: Display summary of \code{DVH} object }
     \item{range}{\code{signature(x = "DVH")}: Extract dose range from \code{DVH} object }
     \item{show}{\code{signature(x = "DVH")}: Display summary of \code{DVH} object }

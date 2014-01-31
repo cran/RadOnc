@@ -36,17 +36,16 @@ Objects can be created by calls of the form \code{new("structure3D", name, volum
 }
 \section{Methods}{
   \describe{
-    \item{$}{\code{signature(x = "structure3D")}: ... }
-    \item{$<-}{\code{signature(x = "structure3D")}: ... }
-    \item{c}{\code{signature(x = "structure3D")}: Combine multiple \code{structure3D} objects into a single \code{structure.list} }
-    \item{dim}{\code{signature(x = "structure3D")}: Extract dimensions (number of vertices and axial slices) from \code{structure3D} object }
-    \item{names}{\code{signature(x = "structure3D")}: Extract structure name from \code{structure3D} object  }
-    \item{names<-}{\code{signature(x = "structure3D")}: Assign structure name to \code{structure3D} object }
-    \item{plot}{\code{signature(x = "structure3D", y = "ANY")}: ... }
-    \item{plot}{\code{signature(x = "structure3D", y = "missing")}: ... }
-    \item{print}{\code{signature(x = "structure3D")}: Display summary of \code{structure3D} object }
-    \item{range}{\code{signature(x = "structure3D")}: Extract coordinate range from \code{structure3D} object }
-    \item{show}{\code{signature(x = "structure3D")}: Display summary of \code{structure3D} object }
+    \item{$}{Extract a given parameter from a \code{structure3D} object}
+    \item{$<-}{Assign a value to a given parameter within a \code{structure3D} object}
+    \item{c}{Combine multiple \code{structure3D} objects into a single \code{structure.list} }
+    \item{dim}{Extract dimensions (number of vertices and axial slices) from \code{structure3D} object }
+    \item{names}{Extract structure name from \code{structure3D} object  }
+    \item{names<-}{Assign structure name to a \code{structure3D} object }
+    \item{plot}{Plot \code{structure3D} object}
+    \item{print}{ Display summary of \code{structure3D} object }
+    \item{range}{ Extract coordinate range from \code{structure3D} object }
+    \item{show}{ Display summary of \code{structure3D} object }
 	 }
 }
 \author{

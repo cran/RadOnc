@@ -18,6 +18,8 @@ List of 10 DVH objects corresponding to structures (e.g. liver) for patients 'Jo
 Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   ..@ structures:List of 10
   .. ..$ LIVER       :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. ..@ patient		   : chr "John Doe"
+  .. .. .. ..@ ID			   : chr "5555555555"
   .. .. .. ..@ structure.name  : chr "LIVER"
   .. .. .. ..@ structure.volume: num 1367
   .. .. .. ..@ type            : chr "cumulative"
@@ -39,6 +41,8 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ volumes         : num [1:1026] 1367 414 392 378 368 ...
   .. .. .. ..@ volume.type     : chr "absolute"
   .. ..$ SMALL_BOWEL :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. ..@ patient		   : chr "John Doe"
+  .. .. .. ..@ ID			   : chr "5555555555"
   .. .. .. ..@ structure.name  : chr "SMALL_BOWEL"
   .. .. .. ..@ structure.volume: num 206
   .. .. .. ..@ type            : chr "cumulative"
@@ -60,6 +64,8 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ volumes         : num [1:1026] 206.2 43.1 39.5 37.4 35.8 ...
   .. .. .. ..@ volume.type     : chr "absolute"
   .. ..$ DUODENUM    :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. ..@ patient		   : chr "John Doe"
+  .. .. .. ..@ ID			   : chr "5555555555"
   .. .. .. ..@ structure.name  : chr "DUODENUM"
   .. .. .. ..@ structure.volume: num 93.1
   .. .. .. ..@ type            : chr "cumulative"
@@ -81,6 +87,8 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ volumes         : num [1:1026] 93.1 93.1 93 93 92.9 ...
   .. .. .. ..@ volume.type     : chr "absolute"
   .. ..$ STOMACH     :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. ..@ patient		   : chr "John Doe"
+  .. .. .. ..@ ID			   : chr "5555555555"
   .. .. .. ..@ structure.name  : chr "STOMACH"
   .. .. .. ..@ structure.volume: num 304
   .. .. .. ..@ type            : chr "cumulative"
@@ -102,6 +110,8 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ volumes         : num [1:1026] 303.6 78 71.5 67.8 65.1 ...
   .. .. .. ..@ volume.type     : chr "absolute"
   .. ..$ CTV         :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. ..@ patient		   : chr "John Doe"
+  .. .. .. ..@ ID			   : chr "5555555555"
   .. .. .. ..@ structure.name  : chr "CTV"
   .. .. .. ..@ structure.volume: num 88.4
   .. .. .. ..@ type            : chr "cumulative"
@@ -123,6 +133,8 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ volumes         : num [1:1026] 88.4 88.4 88.4 88.4 88.4 ...
   .. .. .. ..@ volume.type     : chr "absolute"
   .. ..$ PTV         :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. ..@ patient		   : chr "John Doe"
+  .. .. .. ..@ ID			   : chr "5555555555"
   .. .. .. ..@ structure.name  : chr "PTV"
   .. .. .. ..@ structure.volume: num 156
   .. .. .. ..@ type            : chr "cumulative"
@@ -144,6 +156,8 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ volumes         : num [1:1026] 156 156 156 156 156 ...
   .. .. .. ..@ volume.type     : chr "absolute"
   .. ..$ BODY        :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. ..@ patient		   : chr "John Doe"
+  .. .. .. ..@ ID			   : chr "5555555555"
   .. .. .. ..@ structure.name  : chr "BODY"
   .. .. .. ..@ structure.volume: num 17666
   .. .. .. ..@ type            : chr "cumulative"
@@ -165,6 +179,8 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ volumes         : num [1:1026] 17666 3424 3290 3206 3143 ...
   .. .. .. ..@ volume.type     : chr "absolute"
   .. ..$ LEFT_KIDNEY :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. ..@ patient		   : chr "John Doe"
+  .. .. .. ..@ ID			   : chr "5555555555"
   .. .. .. ..@ structure.name  : chr "LEFT_KIDNEY"
   .. .. .. ..@ structure.volume: num 154
   .. .. .. ..@ type            : chr "cumulative"
@@ -186,6 +202,8 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ volumes         : num [1:1026] 154.2 48.3 46.4 45.3 44.4 ...
   .. .. .. ..@ volume.type     : chr "absolute"
   .. ..$ RIGHT_KIDNEY:Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. ..@ patient		   : chr "John Doe"
+  .. .. .. ..@ ID			   : chr "5555555555"
   .. .. .. ..@ structure.name  : chr "RIGHT_KIDNEY"
   .. .. .. ..@ structure.volume: num 155
   .. .. .. ..@ type            : chr "cumulative"
@@ -207,6 +225,8 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ volumes         : num [1:1026] 155 134 132 130 129 ...
   .. .. .. ..@ volume.type     : chr "absolute"
   .. ..$ CORD        :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. ..@ patient		   : chr "John Doe"
+  .. .. .. ..@ ID			   : chr "5555555555"
   .. .. .. ..@ structure.name  : chr "CORD"
   .. .. .. ..@ structure.volume: num 40.7
   .. .. .. ..@ type            : chr "cumulative"
@@ -234,6 +254,8 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
 Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   ..@ structures:List of 10
   .. ..$ LIVER       :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. ..@ patient		   : chr "Jane Doe"
+  .. .. .. ..@ ID			   : chr "1111111111"
   .. .. .. ..@ structure.name  : chr "LIVER"
   .. .. .. ..@ structure.volume: num 1636
   .. .. .. ..@ type            : chr "cumulative"
@@ -255,6 +277,8 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 ...
   .. .. .. ..@ volume.type     : chr "relative"
   .. ..$ LEFT_KIDNEY :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. ..@ patient		   : chr "Jane Doe"
+  .. .. .. ..@ ID			   : chr "1111111111"
   .. .. .. ..@ structure.name  : chr "LEFT_KIDNEY"
   .. .. .. ..@ structure.volume: num 196
   .. .. .. ..@ type            : chr "cumulative"
@@ -276,6 +300,8 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 100 100 100 100 100 ...
   .. .. .. ..@ volume.type     : chr "relative"
   .. ..$ STOMACH     :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. ..@ patient		   : chr "Jane Doe"
+  .. .. .. ..@ ID			   : chr "1111111111"
   .. .. .. ..@ structure.name  : chr "STOMACH"
   .. .. .. ..@ structure.volume: num 695
   .. .. .. ..@ type            : chr "cumulative"
@@ -297,6 +323,8 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 100 100 100 100 100 ...
   .. .. .. ..@ volume.type     : chr "relative"
   .. ..$ DUODENUM    :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. ..@ patient		   : chr "Jane Doe"
+  .. .. .. ..@ ID			   : chr "1111111111"
   .. .. .. ..@ structure.name  : chr "DUODENUM"
   .. .. .. ..@ structure.volume: num 34.2
   .. .. .. ..@ type            : chr "cumulative"
@@ -318,6 +346,8 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 100 100 100 100 100 ...
   .. .. .. ..@ volume.type     : chr "relative"
   .. ..$ RIGHT_KIDNEY:Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. ..@ patient		   : chr "Jane Doe"
+  .. .. .. ..@ ID			   : chr "1111111111"
   .. .. .. ..@ structure.name  : chr "RIGHT_KIDNEY"
   .. .. .. ..@ structure.volume: num 224
   .. .. .. ..@ type            : chr "cumulative"
@@ -339,6 +369,8 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 100 100 100 100 100 ...
   .. .. .. ..@ volume.type     : chr "relative"
   .. ..$ CTV         :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. ..@ patient		   : chr "Jane Doe"
+  .. .. .. ..@ ID			   : chr "1111111111"
   .. .. .. ..@ structure.name  : chr "CTV"
   .. .. .. ..@ structure.volume: num 147
   .. .. .. ..@ type            : chr "cumulative"
@@ -360,6 +392,8 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 100 100 100 100 100 ...
   .. .. .. ..@ volume.type     : chr "relative"
   .. ..$ PTV         :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. ..@ patient		   : chr "Jane Doe"
+  .. .. .. ..@ ID			   : chr "1111111111"
   .. .. .. ..@ structure.name  : chr "PTV"
   .. .. .. ..@ structure.volume: num 239
   .. .. .. ..@ type            : chr "cumulative"
@@ -381,6 +415,8 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 100 100 100 100 100 ...
   .. .. .. ..@ volume.type     : chr "relative"
   .. ..$ SMALL_BOWEL :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. ..@ patient		   : chr "Jane Doe"
+  .. .. .. ..@ ID			   : chr "1111111111"
   .. .. .. ..@ structure.name  : chr "SMALL_BOWEL"
   .. .. .. ..@ structure.volume: num 232
   .. .. .. ..@ type            : chr "cumulative"
@@ -402,6 +438,8 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ volumes         : num [1:1133] 100 100 100 100 100 100 100 100 100 100 ...
   .. .. .. ..@ volume.type     : chr "relative"
   .. ..$ CORD        :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. ..@ patient		   : chr "Jane Doe"
+  .. .. .. ..@ ID			   : chr "1111111111"
   .. .. .. ..@ structure.name  : chr "CORD"
   .. .. .. ..@ structure.volume: num 64.9
   .. .. .. ..@ type            : chr "cumulative"
@@ -423,6 +461,8 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ volumes         : num [1:1133] 100 98.5 95.9 93.8 90.8 ...
   .. .. .. ..@ volume.type     : chr "relative"
   .. ..$ BODY        :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. ..@ patient		   : chr "Jane Doe"
+  .. .. .. ..@ ID			   : chr "1111111111"
   .. .. .. ..@ structure.name  : chr "BODY"
   .. .. .. ..@ structure.volume: num 25508
   .. .. .. ..@ type            : chr "cumulative"
@@ -561,6 +601,8 @@ Formal class 'structure3D' [package "RadOnc"] with 9 slots
   .. .. [list output truncated]
   .. ..- attr(*, "dim")= int [1:2] 130 1
   ..@ DVH             :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. ..@ patient		    : chr ""
+  .. .. ..@ ID			    : chr ""
   .. .. ..@ structure.name  : chr ""
   .. .. ..@ structure.volume: num 0
   .. .. ..@ type            : chr "cumulative"
@@ -699,6 +741,8 @@ Formal class 'structure3D' [package "RadOnc"] with 9 slots
   .. .. [list output truncated]
   .. ..- attr(*, "dim")= int [1:2] 104 1
   ..@ DVH             :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. ..@ patient		    : chr ""
+  .. .. ..@ ID			    : chr ""
   .. .. ..@ structure.name  : chr ""
   .. .. ..@ structure.volume: num 0
   .. .. ..@ type            : chr "cumulative"
@@ -759,6 +803,8 @@ Formal class 'structure.list' [package "RadOnc"] with 1 slots
   .. .. .. .. ..$ : num [1:6, 1:3] -18.6 -17.4 -16.8 -18.6 -20.4 ...
   .. .. .. .. ..- attr(*, "dim")= int [1:2] 23 1
   .. .. .. ..@ DVH             :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. .. .. ..@ patient	     : chr ""
+  .. .. .. .. .. ..@ ID			     : chr ""
   .. .. .. .. .. ..@ structure.name  : chr ""
   .. .. .. .. .. ..@ structure.volume: num(0) 
   .. .. .. .. .. ..@ type            : chr "cumulative"
@@ -814,6 +860,8 @@ Formal class 'structure.list' [package "RadOnc"] with 1 slots
   .. .. .. .. ..$ : num [1:4, 1:3] -18.6 -16.8 -18.6 -19.1 -129.4 ...
   .. .. .. .. ..- attr(*, "dim")= int [1:2] 24 1
   .. .. .. ..@ DVH             :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. .. .. ..@ patient	     : chr ""
+  .. .. .. .. .. ..@ ID			     : chr ""
   .. .. .. .. .. ..@ structure.name  : chr ""
   .. .. .. .. .. ..@ structure.volume: num(0) 
   .. .. .. .. .. ..@ type            : chr "cumulative"
@@ -869,6 +917,8 @@ Formal class 'structure.list' [package "RadOnc"] with 1 slots
   .. .. .. .. ..$ : num [1:6, 1:3] -18.6 -16.7 -16.7 -18.6 -18.7 ...
   .. .. .. .. ..- attr(*, "dim")= int [1:2] 24 1
   .. .. .. ..@ DVH             :Formal class 'DVH' [package "RadOnc"] with 18 slots
+  .. .. .. .. .. ..@ patient	     : chr ""
+  .. .. .. .. .. ..@ ID			     : chr ""
   .. .. .. .. .. ..@ structure.name  : chr ""
   .. .. .. .. .. ..@ structure.volume: num(0) 
   .. .. .. .. .. ..@ type            : chr "cumulative"

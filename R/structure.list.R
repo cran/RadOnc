@@ -5,6 +5,16 @@ setMethod("as.list", "structure.list",
 	}
 )
 
+setAs("list", "structure.list", 
+	function(from) {
+		struct.list.combined <- new("structure.list")
+		lapply(from, function (struct.list) {
+			struct.list.combined <<- c(struct.list.combined, struct.list)
+		})
+		return(struct.list.combined)
+	}
+)
+
 setMethod("lapply", "structure.list",
 	function (X, FUN, ...) {
     	X <- as.list(X)
@@ -22,10 +32,37 @@ setMethod("length", "structure.list",
 
 setMethod("[", "structure.list",
 	function (x, i, ...) {
-		x <- attr(x,"structures")
-		return(new("structure.list", x[i]))
+		if (missing(i) || (length(i) < 1) || is.na(i)) {
+			return(new("structure.list"))
+		}
+		if (all(is.logical(i))) {
+			x <- attr(x,"structures")
+			return(new("structure.list", x[i]))
+		}
+		if (suppressWarnings(all(!is.na(as.numeric(i))))) {
+			x <- attr(x,"structures")
+			return(new("structure.list", x[as.numeric(i)]))
+		}
+		if (length(i) == 1) {
+			names.x <- names(x)
+			x <- attr(x,"structures")
+			if (suppressWarnings(!is.na(as.numeric(i)))) {
+				i <- as.numeric(i)
+			}
+			if (grepl("(\\*|\\^|\\$|\\?|\\+|[[]|[{]|\\|)", i)) {
+				return(new("structure.list", x[grep(i, names.x)]))
+			}
+			else if (is.character(i)) {
+				return(new("structure.list", x[which(names.x == i)]))
+			}
+			else {
+				return(new("structure.list", x[i]))
+			}			
+		}
+		return(c(x[i[1]], x[i[2:length(i)]]))
 	}
 )
+
 
 setMethod("$", "structure.list",
 	function (x, name) {

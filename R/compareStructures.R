@@ -162,8 +162,9 @@ compareStructures.hausdorff <- function (structures, verbose=TRUE, method=c("mea
 }
 
 pointInPoly2D <- function (points, poly) {
+	poly <- matrix(unique(poly), ncol=2)
 	n <- dim(poly)[1]
-       x <- diff(poly[c(1:n,1),1])
+    x <- diff(poly[c(1:n,1),1])
 	y <- poly[,2] + poly[c(2:n,1),2]
 	if (sum(x*y/2) >= 0) {
 		#clockwise poly

@@ -3,6 +3,57 @@
 \title{ RadOnc News }
 \encoding{UTF-8}
 
+\section{CHANGES IN VERSION 1.0.5}{
+
+  \subsection{NEW FEATURES}{
+    \itemize{
+      \item Functionality expanded for \code{[]} accessor method to \code{DVH.list} and \code{structure.list} objects to enable pattern matching (e.g. \code{janedoe["KIDNEY$"]} and handling of redundant structure names in \code{DVH.list} (see updated package Vignette for further details). 
+      \item New method for \code{as()} function to convert a list of \code{DVH} and/or \code{DVH.list} objects to a single combined \code{DVH.list} object
+      \item New method for \code{as()} function to convert a list of \code{structure3D} and/or \code{structure.list} objects to a single combined \code{structure.list} object
+      \item Expanded \code{read.DICOM.RT()} functionality to include calculation of DVHs from dose grid information. DVH calculations can be enabled by specifying logical parameter \code{DVH=TRUE} (default).
+      \item \code{LQE()} now supports fractionation specification in either dose per fraction or total number of fractions (parameter \code{N} was introduced for this purpose).
+   }
+  }
+
+  \subsection{BUG FIXES}{
+    \itemize{
+      \item Fixed structure import using \code{read.DICOM.RT()} for structure sets not mapped to a DVH present within the dose file (previously returned empty structures instead of populating the structures with their respective vertices).
+      \item Fixed fatal error in DVH extraction from dose grid data (previously occurred when one or more points were duplicated within a structure).
+      \item Input of empty directly previously caused fatal error in \code{read.DICOM.RT()}
+      \item \code{t.test()}, \code{wilcox.test()} and methods employing this functionality (e.g. \code{plot(..., plot.type="ttest")}) previously failed if any elements in DVH list were empty.
+      \item \code{sum()}, \code{mean()}, \code{median()}, \code{mad()}, \code{var()}, and \code{sd()} previously failed if any elements in DVH list were empty.
+      \item Fixed integral dose calculation, which previously returned values that were inadvertently scaled by the dose bin width.
+      \item Fixed validity checking of \code{DVH} objects containing a single dose-volume value.
+      \item x-axis improperly specified dose units as "cGy" when plotting DVHs in units of "Gy". 
+      \item Isoeffective dose calculation using \code{LQE()} was previously inaccurate due to incorrect implementation of the Withers isoeffective dose formula -- this has now been corrected.
+      \item Previously improper handling of \code{type} specifier in \code{read.DVH()} where specified type was not provided and list of input files was longer than length 6.
+    }
+  }
+
+  \subsection{DEPRECATED AND DEFUNCT}{
+    \itemize{
+      \item Removed unused package dependency on \pkg{Rcpp} (future releases may reincorporate this dependency in order to support C++ implementations of various algorithms).
+    }
+  }
+
+  \subsection{OTHER UPDATES}{
+    \itemize{
+      \item Changed formatting of printed \code{DVH} objects (structure volume is now displayed to precision of one decimal point and min/max doses displayed to two decimals).
+      \item \code{dose.units} parameter introduced for \code{LQE()} function.
+      \item \code{DVH} class expanded to include patient identifying information (new parameter \code{patient})
+      \item \code{read.DVH(..., type="dicom")} now links to \code{read.DICOM.RT(..., DVH=TRUE)} and returns a DVH list extracted from the relevant DICOM-RT directory.
+    }
+   }
+
+  \subsection{ACKNOWLEDGEMENTS}{
+    \itemize{
+      \item Thanks to Daniel Wollschlaeger for identifying the bug in \code{read.DVH()} type specification and for his suggestion to expand the \code{DVH} class specification to include patient identification.
+   }
+  }
+
+ }
+
+
 \section{CHANGES IN VERSION 1.0.4}{
 
   \subsection{NEW FEATURES}{

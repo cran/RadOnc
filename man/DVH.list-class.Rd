@@ -45,30 +45,31 @@ Objects can be created by calls of the form \code{new("DVH.list", structures, ..
 }
 \section{Methods}{
   \describe{
-    \item{[}{\code{signature(x = "DVH.list")}: Extract subset of DVH list }
-    \item{[[}{\code{signature(x = "DVH.list")}: Extract single \code{DVH} object from DVH list }
-    \item{[[<-}{\code{signature(x = "DVH.list")}: Replace single \code{DVH} object in DVH list }
-    \item{[<-}{\code{signature(x = "DVH.list")}: Replace multiple elements of DVH list }
-    \item{$}{\code{signature(x = "DVH.list")}: Extract dose or volume parameter(s) from \code{DVH} objects within DVH list. Note that multiple parameters may be specified by use of the comma (e.g. \code{\$"V20Gy,D5\%"}). See \code{\link[RadOnc:DVH-class]{DVH}} documentation (\code{[]} usage) for additional details. }
-    \item{c}{\code{signature(x = "DVH.list")}: Combine two or more DVH lists and/or \code{\link[RadOnc:DVH-class]{DVH}} objects }
-    \item{lapply}{\code{signature(X = "DVH.list")}: Apply function to a list of \code{\link[RadOnc:DVH-class]{DVH}} objects }
-    \item{length}{\code{signature(x = "DVH.list")}: Extract number of \code{\link[RadOnc:DVH-class]{DVH}} objects in DVH list }
-    \item{mad}{\code{signature(x = "DVH.list")}: Compute the median absolute deviation (i.e. the median of the absolute deviations from the median) for all doses extracted from \code{DVH} object list }
-    \item{max}{\code{signature(x = "DVH.list")}: Compute the maximum dose contained within the DVH list }
-    \item{mean}{\code{signature(x = "DVH.list")}: Compute the mean \code{DVH} from all \code{DVH} objects within the list }
-    \item{median}{\code{signature(x = "DVH.list")}: Compute the median \code{DVH} from all \code{DVH} objects within the list }
-    \item{min}{\code{signature(x = "DVH.list")}: Compute the minimum dose contained within the DVH list }
-    \item{names}{\code{signature(x = "DVH.list")}: Extract structure names for \code{DVH} objects in DVH list }
-    \item{names<-}{\code{signature(x = "DVH.list")}: Assign structure name(s) to one or more \code{DVH} objects in DVH list }
-    \item{print}{\code{signature(x = "DVH.list")}: Display summary of DVH list }
-    \item{range}{\code{signature(x = "DVH.list")}: Compute the range (minimum and maximum doses) contained within the DVH list }
-    \item{rev}{\code{signature(x = "DVH.list")}: Return a DVH list whose \code{DVH} objects are in reverse order}
-    \item{sd}{\code{signature(x = "DVH.list")}: Compute the standard deviation for all doses extracted from \code{DVH} object list }
-    \item{show}{\code{signature(x = "DVH.list")}: Display summary of DVH list }
-    \item{sum}{\code{signature(x = "DVH.list")}: Compute the total (summed) \code{DVH} from all \code{DVH} objects within the list. \emph{Note that structures are assumed to be non-overlapping; any overlaps in structure volumes may generate inaccurate dose summation.} }
-    \item{t.test}{\code{signature(x = "DVH.list")}: Apply Student's t-Test to compare two DVH lists  (see also \code{\link{t.test}})}
-    \item{var}{\code{signature(x = "DVH.list")}: Compute the variance for all doses extracted from \code{DVH} object list }
-    \item{wilcox.test}{\code{signature(x = "DVH.list")}: Apply Wilcoxon Rank Sum and Signed Rank Tests to compare two DVH lists (see also \code{\link{wilcox.test}}) }
+    \item{[}{Extract subset of DVH list (regular expressions may be specified if desired, see \code{\link{regex}} for more details) }
+    \item{[[}{Extract single \code{DVH} object from DVH list }
+    \item{[[<-}{Replace single \code{DVH} object in DVH list }
+    \item{[<-}{Replace multiple elements of DVH list }
+    \item{$}{Extract dose or volume parameter(s) from \code{DVH} objects within DVH list. Note that multiple parameters may be specified by use of the comma (e.g. \code{\$"V20Gy,D5\%"}). See \code{\link[RadOnc:DVH-class]{DVH}} documentation (\code{[]} usage) for additional details. Note that this functionality can also be used to extract patient name(s) and/or identifier(s) (e.g. \code{\$patients} or \code{$ID}).}
+    \item{as.list}{Convert a \code{DVH.list} object to a list containing individual \code{DVH} objects. Note that the reverse conversion can be performed using the \code{\link{as}} command and specifying \code{class="DVH.list"}.}
+    \item{c}{Combine two or more DVH lists and/or \code{\link[RadOnc:DVH-class]{DVH}} objects }
+    \item{lapply}{Apply function to a list of \code{\link[RadOnc:DVH-class]{DVH}} objects }
+    \item{length}{Extract number of \code{\link[RadOnc:DVH-class]{DVH}} objects in DVH list }
+    \item{mad}{Compute the median absolute deviation (i.e. the median of the absolute deviations from the median) for all doses extracted from \code{DVH} object list }
+    \item{max}{Compute the maximum dose contained within the DVH list }
+    \item{mean}{Compute the mean \code{DVH} from all \code{DVH} objects within the list }
+    \item{median}{Compute the median \code{DVH} from all \code{DVH} objects within the list }
+    \item{min}{Compute the minimum dose contained within the DVH list }
+    \item{names}{Extract structure names for \code{DVH} objects in DVH list }
+    \item{names<-}{Assign structure name(s) to one or more \code{DVH} objects in DVH list }
+    \item{print}{Display summary of DVH list }
+    \item{range}{Compute the range (minimum and maximum doses) contained within the DVH list }
+    \item{rev}{Return a DVH list whose \code{DVH} objects are in reverse order}
+    \item{sd}{Compute the standard deviation for all doses extracted from \code{DVH} object list }
+    \item{show}{Display summary of DVH list }
+    \item{sum}{Compute the total (summed) \code{DVH} from all \code{DVH} objects within the list. \emph{Note that structures are assumed to be non-overlapping; any overlaps in structure volumes may generate inaccurate dose summation.} }
+    \item{t.test}{Apply Student's t-Test to compare two DVH lists  (see also \code{\link{t.test}})}
+    \item{var}{Compute the variance for all doses extracted from \code{DVH} object list }
+    \item{wilcox.test}{Apply Wilcoxon Rank Sum and Signed Rank Tests to compare two DVH lists (see also \code{\link{wilcox.test}}) }
 	 }
 }
 \author{

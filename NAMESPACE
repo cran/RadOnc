@@ -18,8 +18,6 @@ importFrom(ptinpoly)
 
 importFrom(methods, new, slot, validObject)
 
-importFrom(Rcpp, sourceCpp)
-
 exportClasses(
 	DVH,
 	DVH.list,

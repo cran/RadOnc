@@ -428,7 +428,7 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 					if (verbose) {
 						cat("calculating DVH from dose grid ... ")
 					}
-					dvh.i <- extract.DVH(struct.i, doses[[1]], resolution.xyz=c(pmin(voxel.size[1:2]/4, pixel.size/8, apply(range(struct.i),2,diff)[1:2]/100, na.rm=TRUE), voxel.size[3]), dose.units=dose.units)
+					dvh.i <- calculate.DVH(struct.i, doses[[1]], resolution.xyz=c(pmin(voxel.size[1:2]/4, pixel.size/8, apply(range(struct.i),2,diff)[1:2]/100, na.rm=TRUE), voxel.size[3]), method="ATC", dose.units=dose.units)
 					if (is.null(dvh.i)) {
 						warning(paste("Unable to calculate DVH for structure '", data$name[[i]][j], "_", data$set[[i]], "'", sep=""))
 						if (verbose) {
@@ -467,7 +467,7 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 					if (verbose) {
 						cat("calculating DVH from dose grid ... ")
 					}
-					dvh.i <- extract.DVH(struct.i, doses[[1]], resolution.xyz=c(pmin(voxel.size[1:2]/4, pixel.size/8, apply(range(struct.i),2,diff)[1:2]/100, na.rm=TRUE), voxel.size[3]), dose.units=dose.units)
+					dvh.i <- calculate.DVH(struct.i, doses[[1]], resolution.xyz=c(pmin(voxel.size[1:2]/4, pixel.size/8, apply(range(struct.i),2,diff)[1:2]/100, na.rm=TRUE), voxel.size[3]), method="ATC", dose.units=dose.units)
 					if (is.null(dvh.i)) {
 						warning(paste("Unable to calculate DVH for structure '", data$name[[i]][j], "_", data$set[[i]], "'", sep=""))
 						if (verbose) {

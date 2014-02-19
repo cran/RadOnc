@@ -4,10 +4,10 @@
 Read DICOM-RT data from an input directory
 }
 \description{
-Function to extract three-dimensional structural data from input file(s) DICOM-RT formats
+Function to extract three-dimensional structural and dosimetric data from input file(s) in DICOM-RT format
 }
 \usage{
-read.DICOM.RT(path, exclude = NULL, recursive = TRUE, verbose = TRUE, limit = NULL, ...)
+read.DICOM.RT(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limit=NULL, DVH=TRUE, ...)
 }
 \arguments{
   \item{path}{
@@ -24,6 +24,9 @@ Logical value (default is \code{TRUE}) indicating whether or not to output verbo
 }
   \item{limit}{
 Numerical value specifying size threshold over which to skip processing of specific structures (number corresponds to the number of points used to define each structure surface)
+}
+  \item{DVH}{
+Logical value (default is \code{TRUE}) indicating whether or not to extract DVH data from DICOM-RT files (may involve dose grid calculations if DVH not explicitly specificied in DICOM-RT data)
 }
   \item{\dots}{
 Additional parameters passed to \code{\link{readDICOM}} function

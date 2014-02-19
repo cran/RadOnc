@@ -56,12 +56,28 @@ setMethod("[", "DVH",
 			if (any(volume)) {
 				type[volume] <- "VOLUME"
 			}
+			patients <- grepl("PATIENT", i)
+			if (any(patients)) {
+				type[patients] <- "PATIENT"
+			}
+			IDs <- grepl("ID", i)
+			if (any(IDs)) {
+				type[IDs] <- "ID"
+			}
 			value <- sub("[VD]([.0-9]+|MAX|MIN|MEAN|RX|INTEGRAL).*", "\\1", i)
 			type2 <- sub("[VD]([.0-9]+|MAX|MIN|MEAN|RX|INTEGRAL)([%]|GY|CGY|CC)*.*$", "\\2", i)
 			type3 <- grepl(".*[(](.*)[)]$", i)
 			type4 <- sub(".*[(](.*)[)]$", "\\1", i)
 			for (count in 1:length(i)) {
 				switch(type[count],
+					PATIENT = {
+						result <- c(result, x$patient)
+						result.units <- c(result.units, "")	
+					},
+					ID = {
+						result <- c(result, x$ID)
+						result.units <- c(result.units, "")	
+					},
 					VOLUME = {
 						if (type4[count] == "%") {
 							result <- c(result, 100)	
@@ -227,17 +243,19 @@ setMethod("[", "DVH",
 										units.i <- ""
 									}
 									switch(units.i,
-										CGY = y <- convert.DVH(x, type="differential", volume="absolute", dose="absolute", dose.units="cGy"),
-										GY = y <- convert.DVH(x, type="differential", volume="absolute", dose="absolute", dose.units="Gy"),
-										"%" = y <- convert.DVH(x, type="differential", volume="absolute", dose="relative"),
-										y <- convert.DVH(x, type="differential", volume="absolute", dose="absolute")
+										CGY = y <- convert.DVH(x, volume="absolute", dose="absolute", dose.units="cGy"),
+										GY = y <- convert.DVH(x, volume="absolute", dose="absolute", dose.units="Gy"),
+										"%" = y <- convert.DVH(x, volume="absolute", dose="relative"),
+										y <- convert.DVH(x, volume="absolute", dose="absolute")
 									)
+									dose.bins <- diff(y@doses)
+									y <- convert.DVH(y, type="differential")
 									start.i <- max(start.i, min(y))				
 									end.i <- min(end.i, max(y))				
 									if (units.i == "%") {
 										result <- c(result,
 											y@dose.rx * max(0, integrate(function(dose) {
-												return(approx(y@doses, y@volumes, dose, yleft=0, yright=0)$y)
+												return(approx(y@doses, y@volumes*y@doses/dose.bins, dose, yleft=0, yright=0)$y)
 												}, start.i, end.i, stop.on.error=FALSE, abs.tol=0, rel.tol=100*.Machine$double.eps
 											)$value) / y@rx.isodose
 										)
@@ -245,7 +263,7 @@ setMethod("[", "DVH",
 									else {
 										result <- c(result,
 											max(0, integrate(function(dose) {
-												return(approx(y@doses, y@volumes, dose, yleft=0, yright=0)$y)
+												return(approx(y@doses, y@volumes*y@doses/dose.bins, dose, yleft=0, yright=0)$y)
 												}, start.i, end.i, stop.on.error=FALSE, abs.tol=0, rel.tol=100*.Machine$double.eps
 											)$value)
 										)
@@ -333,6 +351,70 @@ setMethod("[", "DVH",
 								}
 							},
 							differential = {
+								if (value[count] == "INTEGRAL") {
+									if (type3[count]) {
+										if (grepl("(>|<)[.0-9]+([%]|GY|CGY)*$", type4[count])) {
+											if (grepl(">", type4[count])) {
+												start.i <- as.numeric(sub("(>|<)([.0-9]+)([%]|GY|CGY)*$", "\\2", type4[count]))
+												end.i <- Inf
+											}
+											else {
+												start.i <- 0
+												end.i <- as.numeric(sub("(>|<)([.0-9]+)([%]|GY|CGY)*$", "\\2", type4[count]))
+											}
+
+											units.i <- sub("(>|<)[-.0-9]+([%]|GY|CGY)$", "\\2", type4[count])
+										}
+										else if (grepl("[.0-9]+-[.0-9]+([%]|GY|CGY)*$", type4[count])) {
+											start.i <- as.numeric(sub("([.0-9]+)[-].*", "\\1", type4[count]))
+											end.i <- as.numeric(sub(".*[-]([.0-9]+)[^.0-9]*", "\\1", type4[count]))
+											if (end.i < start.i) {
+												units.i <- end.i
+												end.i <- start.i
+												start.i <- units.i
+											}
+											units.i <- sub("[-.0-9]+([%]|GY|CGY)$", "\\1", type4[count])
+										}
+										else {
+											start.i <- 0
+											end.i <- Inf
+											units.i <- ""
+										}
+									}
+									else {
+										start.i <- 0
+										end.i <- Inf
+										units.i <- ""
+									}
+									switch(units.i,
+										CGY = y <- convert.DVH(x, volume="absolute", dose="absolute", dose.units="cGy"),
+										GY = y <- convert.DVH(x, volume="absolute", dose="absolute", dose.units="Gy"),
+										"%" = y <- convert.DVH(x, volume="absolute", dose="relative"),
+										y <- convert.DVH(x, volume="absolute", dose="absolute")
+									)
+									# may be flawed if bin widths variable!!!
+									bin.widths <- median(diff(y@doses))
+									start.i <- max(start.i, min(y))				
+									end.i <- min(end.i, max(y))				
+									if (units.i == "%") {
+										result <- c(result,
+											y@dose.rx * max(0, integrate(function(dose) {
+												return(approx(y@doses, y@volumes*y@doses/bin.widths, dose, yleft=0, yright=0)$y)
+												}, start.i, end.i, stop.on.error=FALSE, abs.tol=0, rel.tol=100*.Machine$double.eps
+											)$value) / y@rx.isodose
+										)
+									}
+									else {
+										result <- c(result,
+											max(0, integrate(function(dose) {
+												return(approx(y@doses, y@volumes*y@doses/bin.widths, dose, yleft=0, yright=0)$y)
+												}, start.i, end.i, stop.on.error=FALSE, abs.tol=0, rel.tol=100*.Machine$double.eps
+											)$value)
+										)
+									}
+									result.units <- c(result.units, paste(y@dose.units, "*cc", sep=""))
+									next
+								}
 								warning("No method available to extract dose given differential doses")
 								result <- c(result, NA)
 								result.units <- c(result.units, NA)
@@ -380,7 +462,7 @@ setMethod("print", "DVH",
 			dose.min <- x@dose.min
 			dose.max <- x@dose.max
 		}
-		print(paste("Structure: ", x@structure.name, " (", x@structure.volume, " cc), Dose: ", dose.min, "-", dose.max, dose.type, " (", x@dose.rx, x@dose.units, " prescribed", if (x@rx.isodose != 100) {paste(" to ", x@rx.isodose, "% isodose line", sep="")}, "), DVH: ", x@type, ", Volume: ", x@volume.type, sep=""))
+		print(paste("Structure: ", x@structure.name, " (", sprintf("%.*f", 1, x@structure.volume), "cc), Dose: ", sprintf("%.*f", 2, dose.min), "-", sprintf("%.*f", 2, dose.max), dose.type, " (", x@dose.rx, x@dose.units, " prescribed", if (x@rx.isodose != 100) {paste(" to ", x@rx.isodose, "% isodose line", sep="")}, "), DVH: ", x@type, ", Volume: ", x@volume.type, sep=""))
 	}
 )
 

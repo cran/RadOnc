@@ -12,7 +12,9 @@ setMethod("t.test", "DVH.list",
 			y <- new("DVH.list", y)
 		}
 		x <- new("DVH.list", lapply(x, convert.DVH, type=type, dose=dose, volume=volume))
+		x <- x[!unlist(lapply(x, is.empty))]		
 		y <- new("DVH.list", lapply(y, convert.DVH, type=type, dose=dose, volume=volume))
+		y <- y[!unlist(lapply(y, is.empty))]		
 		N.x <- length(x)
 		N.y <- length(y)
 		if (N.x < 2) {

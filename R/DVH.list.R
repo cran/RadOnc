@@ -17,6 +17,15 @@ setAs("structure.list", "DVH.list",
 	}
 )
 
+setAs("list", "DVH.list", 
+	function(from) {
+		DVH.list.combined <- new("DVH.list")
+		lapply(from, function (DVH.list) {
+			DVH.list.combined <<- c(DVH.list.combined, DVH.list)
+		})
+		return(DVH.list.combined)
+	}
+)
 
 setMethod("lapply", "DVH.list",
 	function (X, FUN, ...) {
@@ -35,8 +44,33 @@ setMethod("length", "DVH.list",
 
 setMethod("[", "DVH.list",
 	function (x, i, ...) {
-		x <- attr(x,"structures")
-		return(new("DVH.list", x[i]))
+		if (missing(i) || (length(i) < 1) || is.na(i)) {
+			return(new("DVH.list"))
+		}
+		if (all(is.logical(i))) {
+			x <- attr(x,"structures")
+			return(new("DVH.list", x[i]))
+		}
+		if (suppressWarnings(all(!is.na(as.numeric(i))))) {
+			x <- attr(x,"structures")
+			return(new("DVH.list", x[as.numeric(i)]))
+		}
+		if (length(i) == 1) {
+			x <- attr(x,"structures")
+			if (suppressWarnings(!is.na(as.numeric(i)))) {
+				i <- as.numeric(i)
+			}
+			if (grepl("(\\*|\\^|\\$|\\?|\\+|[[]|[{]|\\|)", i)) {
+				return(new("DVH.list", x[grep(i, unlist(lapply(x, names)))]))
+			}
+			else if (is.character(i)) {
+				return(new("DVH.list", x[which(unlist(lapply(x, names)) == i)]))
+			}
+			else {
+				return(new("DVH.list", x[i]))
+			}			
+		}
+		return(c(x[i[1]], x[i[2:length(i)]]))
 	}
 )
 

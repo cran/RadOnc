@@ -94,14 +94,21 @@ read.DVH(file="Jane_Doe.dvh", type="aria10", verbose=TRUE)
 <<echo=FALSE,results=verbatim>>=
 janedoe <- read.DVH(file=system.file("extdata/Jane_Doe.dvh", package="RadOnc"), type="aria10", verbose=TRUE)
 @
-
+Multiple files can be imported simultaneously, generating a list of \Rfunction{DVH.list} objects:
+<<echo=TRUE,eval=FALSE,results=hide>>=
+DVHs <- read.DVH(file=c("Jane_Doe.dvh", "John_Doe.dvh"), type="aria10")
+@
+<<echo=FALSE,results=verbatim>>=
+DVHs <- read.DVH(file=paste(system.file("extdata/", package="RadOnc"), c("Jane_Doe.dvh", "John_Doe.dvh"), sep=""), type="aria10")
+DVHs
+@
 \newpage
 \subsection{DVH list manipulation}
 \label{DVH.manipulation}
 The \Rfunction{read.DVH()} function returns a DVH list that can be manipulated in multiple ways. Subsets of DVH lists can be obtained using the \Rfunction{[]} modifier, and any number of DVH lists can be combined using the \Rfunction{c()} function. Additionally, single DVH objects can be directly accessed using the \Rfunction{[[]]} modifier, and individual elements of a DVH list may be directly replaced with other DVH objects using the \Rfunction{[[<-} function.
 <<echo=TRUE,results=verbatim>>=
 janedoe[1:4]
-c(janedoe[c("PTV")], johndoe[c("CTV", "DUODENUM")])
+c(janedoe["PTV"], johndoe[c("CTV", "DUODENUM")])
 @
 <<echo=FALSE,results=hide>>=
 temp <- janedoe
@@ -115,6 +122,11 @@ janedoe[1:4]
 janedoe <- temp
 @
 
+Note that pattern matching (using regular expressions) may also be employed to select a subset of DVH elements from a DVH list:
+<<echo=TRUE,results=verbatim>>=
+janedoe["KIDNEY$"]
+janedoe[c(2,"IGHT.*")]
+@
 
 Other list processing functions may be applied to DVH lists, enabling further data manipulation. The \Rfunction{rev()} function may be used to reverse the order of a DVH list, while the \Rfunction{names()} function may be used to extract (or set) the structure names for each DVH contained within the list. The \Rfunction{length()} function may be used to find the number of DVH objects contained within a DVH list, and the \Rfunction{lapply()} function can be used to perform a customizable set of operations on a DVH list and return a customizable set of values. Here are some examples employing each of these functions:
 
@@ -126,6 +138,12 @@ lapply(johndoe, function(DVH) { DVH[c("DMIN", "D50%", "DMAX", "V20%")] })
 @
 <<echo=FALSE,results=hide>>=
 janedoe <- temp
+@
+
+Patient name(s) and identifier(s) may be extracted from each DVH within the DVH list using the \Rfunction{\$} modifier:
+<<echo=TRUE,results=verbatim>>=
+janedoe[1:2]$patients
+janedoe[3:4]$ID
 @
 
 \newpage
@@ -339,7 +357,7 @@ data("RadOnc")
 \newpage
 \subsection{3D structure manipulation}
 \label{3D.manip}
-The \Rfunction{read.DICOM.RT()} function returns a \Rfunction{struct.list} object that can be manipulated in multiple ways. Subsets of structure lists can be obtained using the \Rfunction{[]} modifier, and any number of structure lists can be combined using the \Rfunction{c()} function. Additionally, single \Rfunction{structure3D} objects can be directly accessed using the \Rfunction{[[]]} modifier, and individual elements of a structure list may be directly replaced with other \Rfunction{structure3D} objects using the \Rfunction{[[<-} function.
+The \Rfunction{read.DICOM.RT()} function returns a \Rfunction{structure.list} object that can be manipulated in multiple ways. Subsets of structure lists can be obtained using the \Rfunction{[]} modifier, and any number of structure lists can be combined using the \Rfunction{c()} function. Additionally, single \Rfunction{structure3D} objects can be directly accessed using the \Rfunction{[[]]} modifier, and individual elements of a structure list may be directly replaced with other \Rfunction{structure3D} objects using the \Rfunction{[[<-} function.
 <<echo=TRUE,results=verbatim>>=
 teeth[1:2]
 c(cord, mandible)
@@ -356,6 +374,10 @@ teeth
 teeth <- temp
 @
 
+As with \Rfunction{DVH.list} objects, \Rfunction{structure.list} objects may be subsetted by pattern matching:
+<<echo=TRUE,results=verbatim>>=
+teeth["Tooth.*"]
+@
 
 Other list processing functions may be applied to structure lists, enabling further data manipulation. The \Rfunction{rev()} function may be used to reverse the order of a structure list, while the \Rfunction{names()} function may be used to extract (or set) the structure names for each structure contained within the list. The \Rfunction{length()} function may be used to find the number of structures contained within a structure list, and the \Rfunction{lapply()} function can be used to perform a customizable set of operations on a structure list and return a customizable set of values. Here are some examples employing each of these functions:
 
@@ -446,7 +468,8 @@ Many thanks to Brandon Whitcher for his phenomenal and generous support regardin
 \item Initial release (v1.0.0) on 2013-07-07
 \item Subsequent release (v1.0.1) on 2013-10-23
 \item Subsequent release (v1.0.2) on 2013-11-25
-\item Last release (v1.0.3) on 2014-01-17
+\item Subsequent release (v1.0.3) on 2014-01-17
+\item Last release (v1.0.4) on 2014-01-31
 \end{itemize}
 Please refer to NEWS.Rd file for more details.
 <<echo=TRUE,results=hide>>=

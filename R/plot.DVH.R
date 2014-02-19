@@ -61,8 +61,10 @@ plot.DVH.ttest <- function(x, y, ..., paired=FALSE, col="black", lty="solid", lw
 	type <- match.arg(type)
 	legend <- match.arg(legend)
 	x <- new("DVH.list", lapply(x, convert.DVH, type=type, dose=dose, dose.units=dose.units, volume=volume))
+	x <- x[!unlist(lapply(x, is.empty))]
 	N.x <- length(x)
 	y <- new("DVH.list", lapply(y, convert.DVH, type=type, dose=dose, dose.units=dose.units, volume=volume))
+	y <- y[!unlist(lapply(y, is.empty))]
 	N.y <- length(y)
 	if (N.x < 2) {
 		stop("not enough 'x' observations")
@@ -104,7 +106,7 @@ plot.DVH.ttest <- function(x, y, ..., paired=FALSE, col="black", lty="solid", lw
 	if (new) {
 		layout(c(2,1),heights=c(1,4))
 		par(mar=c(4.1, 4.1, 0.5, 2.1))
-		plot(NULL, xlim=range(doses), ylim=if (volume == "relative") {c(0, 100)} else {range(unlist(lapply(c(x, y), slot, "volumes")), na.rm=TRUE)}, xlab=if (dose == "absolute") {"Dose (cGy)"} else {"Dose %"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main="")
+		plot(NULL, xlim=range(doses), ylim=if (volume == "relative") {c(0, 100)} else {range(unlist(lapply(c(x, y), slot, "volumes")), na.rm=TRUE)}, xlab=if (dose == "absolute") {paste("Dose (", dose.units, ")",sep="")} else {"Dose (%)"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main="")
 	}
 	conf.int <- abs(data.ttest$conf.int1 - (data.ttest$x.mean - data.ttest$y.mean))/2
 	conf.int[which(is.na(conf.int))] <- 0
@@ -165,8 +167,10 @@ plot.DVH.wilcox <- function(x, y, ..., alternative=c("two.sided", "greater", "le
 	alternative <- match.arg(alternative)
 	legend <- match.arg(legend)	
 	x <- new("DVH.list", lapply(x, convert.DVH, type=type, dose=dose, dose.units=dose.units, volume=volume))
+	x <- x[!unlist(lapply(x, is.empty))]
 	N.x <- length(x)
 	y <- new("DVH.list", lapply(y, convert.DVH, type=type, dose=dose, dose.units=dose.units, volume=volume))
+	y <- y[!unlist(lapply(y, is.empty))]
 	N.y <- length(y)
 	if (N.x < 2) {
 		stop("not enough 'x' observations")
@@ -205,7 +209,7 @@ plot.DVH.wilcox <- function(x, y, ..., alternative=c("two.sided", "greater", "le
 	if (new) {
 		layout(c(2,1),heights=c(1,4))
 		par(mar=c(4.1, 4.1, 0.5, 2.1))
-		plot(NULL, xlim=range(doses), ylim=if (volume == "relative") {c(0, 100)} else {range(unlist(lapply(c(x, y), slot, "volumes")), na.rm=TRUE)}, xlab=if (dose == "absolute") {"Dose (cGy)"} else {"Dose %"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main="")
+		plot(NULL, xlim=range(doses), ylim=if (volume == "relative") {c(0, 100)} else {range(unlist(lapply(c(x, y), slot, "volumes")), na.rm=TRUE)}, xlab=if (dose == "absolute") {paste("Dose (", dose.units, ")",sep="")} else {"Dose (%)"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main="")
 	}
 	conf.int <- abs(data.wilcox$conf.int2 - data.wilcox$conf.int1)/2
 	conf.int[which(is.na(conf.int))] <- 0
@@ -310,7 +314,7 @@ plot.DVH.bars <- function(x, ..., new=TRUE, legend=TRUE, legend.labels=NULL, dos
 	for (i in 1:length(ax.labs)) {
 		rect(c(left,at.labs)[i], par("usr")[4], min(at.labs[i],right), par("usr")[4]+max.vol/25, xpd=TRUE)	
 	}
-	mtext(if (dose == "relative") {"Dose (%)"} else {"Dose (cGy)"}, at=(left + right)/2, line=2, xpd=TRUE)
+	mtext(if (dose == "relative") {"Dose (%)"} else {paste("Dose (", dose.units, ")",sep="")}, at=(left + right)/2, line=2, xpd=TRUE)
 	mtext(main, at=left, line=2, xpd=TRUE, font=2)
 }
 
@@ -339,8 +343,8 @@ plot.DVH.individual <- function(x, ..., col="black", lty ="solid", lwd=1, line.t
 	if (length(line.transparency) != N) {
 		line.transparency <- rep(line.transparency[1], N)
 	}
-	if (new) {			
-		plot(NULL, xlim=range(x), ylim=range(unlist(lapply(x, slot, "volumes"))), xlab=if (dose == "absolute") {"Dose (cGy)"} else {"Dose %"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main=main)
+	if (new) {	
+		plot(NULL, xlim=range(x), ylim=range(unlist(lapply(x, slot, "volumes"))), xlab=if (dose == "absolute") {paste("Dose (", dose.units, ")",sep="")} else {"Dose (%)"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main=main)
 	}
 	for (i in 1:N) {
 		col.i <- col2rgb(col[i])/255
@@ -404,7 +408,7 @@ plot.DVH.groups <- function(x, ..., col="black", lty ="solid", lwd=1, line.trans
 		}
 	}
 	if (new) {
-		plot(NULL, xlim=range.dose, ylim=range.volume, xlab=if (dose == "absolute") {"Dose (cGy)"} else {"Dose %"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main=main)
+		plot(NULL, xlim=range.dose, ylim=range.volume, xlab=if (dose == "absolute") {paste("Dose (", dose.units, ")",sep="")} else {"Dose (%)"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main=main)
 	}
 	y.max <- par("usr")[3]+par("usr")[4]
 	for (i in 1:N) {

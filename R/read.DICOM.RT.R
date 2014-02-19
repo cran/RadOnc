@@ -1,5 +1,5 @@
 
-read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limit=NULL, ...) {
+read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limit=NULL, DVH=TRUE, ...) {
 	if (length(list.files(path)) == 0 && file.exists(path)) {
     	filenames <- path
 	}
@@ -8,6 +8,10 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
     }
 	if (! is.null(exclude)) {
     	filenames <- grep(exclude, filenames, ignore.case=TRUE, value=TRUE, invert=TRUE)
+  	}
+  	if (length(filenames) < 1) {
+  		warning("No files to read from path '", path, "'", sep="")
+  		return()
   	}
 	if (verbose) {
 		cat("Reading ", length(filenames), " DICOM files from path: '", path, "' ... ", sep="")
@@ -30,6 +34,8 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 	image.position <- as.numeric(unlist(strsplit(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "ImagePositionPatient"), "value"], " ")))
 	z.slices <- lapply(DICOMs$hdr[CT], function(x) { as.numeric(unlist(strsplit(x[which(x[,"name"] == "ImagePositionPatient"), "value"], " "))[3]) })
 	voxel.size <- c(voxel.size, as.numeric(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "SliceThickness"), "value"]))
+	patient.name <- as.character(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "PatientsName"), "value"])
+	patient.ID <- as.character(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "PatientID"), "value"])
 	CT <- create3D(list(hdr=DICOMs$hdr[CT], img=DICOMs$img[CT]))
 	dimnames(CT) <- list((1:dim(CT)[1]-1)*voxel.size[1]+image.position[1], (1:dim(CT)[2]-1)*voxel.size[2]+image.position[2], image.position[3]-(1:dim(CT)[3]-1)*voxel.size[3]) 
 	if (verbose) {
@@ -124,7 +130,6 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 		plan.type <- DICOM.i$hdr[which(DICOM.i$hdr[,"name"] == "DoseSummationType"), "value"]
 		# Type of Dose Summation... Defined Terms: PLAN = dose calculated for entire RT Plan MULTI_PLAN = dose calculated for 2 or more RT Plans FRACTION = dose calculated for a single Fraction Group within RT Plan BEAM = dose calculated for one or more Beams within RT Plan BRACHY = dose calculated for one or more Brachy Application Setups within RT Plan CONTROL_POINT = dose calculated for one or more Control Points within a Beam
 		DICOMs$img[[i]] <- DICOM.i$img * grid.scale
-#		temp <- array(data=NA, dim=dim(DICOM.i$img)[c(2:1,3)], dimnames=list((1:dim(DICOM.i$img)[2]-1)*pixel.size[1]+image.origin[1], ((1:dim(DICOM.i$img)[1])-1)*pixel.size[2]+image.origin[2], (1:dim(DICOM.i$img)[3]-1)*z.size+image.origin[3]))
 		temp <- array(data=NA, dim=dim(DICOM.i$img)[c(2:1,3)])
 		for (j in 1:dim(DICOM.i$img)[3]) {
 			temp[,,j] <- t(DICOMs$img[[i]][,,j])
@@ -134,11 +139,7 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 			rev(2*mean(range(as.numeric(dimnames(CT)[[2]]))) - (((1:dim(temp)[2])-1)*pixel.size[2]+image.origin[2])),
 			(1:dim(temp)[3]-1)*z.size+image.origin[3]
 		)
-		
-#		return(list(img=DICOMs$img[[i]], size=c(pixel.size,z.size), origin=image.origin))
-		
 		DICOMs$img[[i]] <- temp
-#		dimnames(DICOMs$img[[i]]) <- list((1:dim(DICOM.i$img)[1]-1)*pixel.size[1]+image.origin[1], (1:dim(DICOM.i$img)[2]-1)*pixel.size[2]+image.origin[2], (1:dim(DICOM.i$img)[3]-1)*z.size+image.origin[3])
 		if (length(unique(dose.units)) != 1) {
 			warning("Disagreement of dose specification within dose grid file")
 			if (verbose) {
@@ -169,65 +170,69 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 		if (verbose) {
 			cat("FINISHED\n")
 		}
-		
 		## EXTRACT DVH DATA
-		if (verbose) {
-			cat("Extracting ", filenames[i], " DVHs ... ", sep="")
-		}
-		dvh.start <- which(DICOM.i$hdr[,"name"] == "DVHType")
-		dvh.end <- which(DICOM.i$hdr[,"name"] == "DVHMeanDose")
-		if (length(dvh.start) < 1) {
-			warning(paste("Dose file '", file, "' contained no recognizable DVH structure(s)", sep=""))
+		if (FALSE) { ### THE FOLLOWING COMMANDS BYPASSED DUE TO UNRELIABILITY OF DVHs STORED WITHIN DICOM-RT DATA
+#		if (DVH) {
 			if (verbose) {
-				cat("ERROR\n")
+				cat("Extracting existent DVHs ... ", sep="")
 			}
-			next
-		}
-		else if (length(dvh.start) == 1) {
-   		 	dvhs <- list(DICOM.i$hdr[dvh.start:dvh.end,])	
+			dvh.start <- which(DICOM.i$hdr[,"name"] == "DVHType")
+			dvh.end <- which(DICOM.i$hdr[,"name"] == "DVHMeanDose")
+			if (length(dvh.start) < 1) {
+				warning(paste("Dose file '", file, "' contained no recognizable DVH structure(s)", sep=""))
+				if (verbose) {
+					cat("ERROR\n")
+				}
+				next
+			}
+			else if (length(dvh.start) == 1) {
+   			 	dvhs <- list(DICOM.i$hdr[dvh.start:dvh.end,])	
+			}
+			else {
+				dvhs <- mapply(function(start, end) list(DICOM.i$hdr[start:end,]), dvh.start, dvh.end)
+			}
+			DVH.list <- lapply(dvhs,
+				function(dvh) {
+					ID <- dvh[which(dvh[, "name"] == "ReferencedROINumber"), "value"]
+					type <- toupper(dvh[which(dvh[, "name"] == "DVHType"), "value"])
+					switch(type,
+						CUMULATIVE = type <- "cumulative",
+						DIFFERENTIAL = type <- "differential"
+					)
+					dose.units <- toupper(dvh[which(dvh[, "name"] == "DoseUnits"), "value"])
+					switch(dose.units,
+						GY = dose.units <- "Gy",
+						CGY = dose.units <- "cGy",
+						{
+							warning("Dose not specified as 'Gy' or 'cGy'")
+							return(new("DVH", patient=patient.name, ID=patient.ID, structure.name=ID))
+						}
+					)
+					vol.units <- toupper(dvh[which(dvh[, "name"] == "DVHVolumeUnits"), "value"])
+					switch(vol.units,
+						CM3 = vol.type <- "absolute",
+						PERCENT = vol.type <- "relative",
+						vol.type <- "relative"
+					)
+					dvh.length <- as.numeric(dvh[which(dvh[, "name"] == "DVHNumberOfBins"), "value"])
+					data <- as.numeric(unlist(strsplit(dvh[which(dvh[, "name"] == "DVHData"), "value"], " ")))
+					vols <- data[1:dvh.length*2]
+					scale <- as.numeric(dvh[which(dvh[, "name"] == "DVHDoseScaling"), "value"])
+					doses <- cumsum(data[1:dvh.length*2-1]*scale)
+					min <- dose.rx*as.numeric(dvh[which(dvh[, "name"] == "DVHMinimumDose"), "value"])/100
+					mean <- dose.rx*as.numeric(dvh[which(dvh[, "name"] == "DVHMeanDose"), "value"])/100
+					max <- dose.rx*as.numeric(dvh[which(dvh[, "name"] == "DVHMaximumDose"), "value"])/100
+					return(new("DVH", patient=patient.name, ID=patient.ID, structure.name=ID, type=type, dose.units=dose.units, volume.type=vol.type, dose.type="absolute",doses=doses,volumes=vols,dose.min=min,dose.mean=mean,dose.max=max,dose.fx=N.fractions,dose.rx=dose.rx))
+				}
+			)
+			DVH.list.names <- unlist(lapply(DVH.list, function(dvh) {return(dvh$structure.name)}))
+			if (verbose) {
+				cat("FINISHED\n")
+			}		
 		}
 		else {
-			dvhs <- mapply(function(start, end) list(DICOM.i$hdr[start:end,]), dvh.start, dvh.end)
+			DVH.list.names <- NULL
 		}
-		DVH.list <- lapply(dvhs,
-			function(dvh) {
-				ID <- dvh[which(dvh[, "name"] == "ReferencedROINumber"), "value"]
-				type <- toupper(dvh[which(dvh[, "name"] == "DVHType"), "value"])
-				switch(type,
-					CUMULATIVE = type <- "cumulative",
-					DIFFERENTIAL = type <- "differential"
-				)
-				dose.units <- toupper(dvh[which(dvh[, "name"] == "DoseUnits"), "value"])
-				switch(dose.units,
-					GY = dose.units <- "Gy",
-					CGY = dose.units <- "cGy",
-					{
-						warning("Dose not specified as 'Gy' or 'cGy'")
-						return(new("DVH", structure.name=ID))
-					}
-				)
-				vol.units <- toupper(dvh[which(dvh[, "name"] == "DVHVolumeUnits"), "value"])
-				switch(vol.units,
-					CM3 = vol.type <- "absolute",
-					PERCENT = vol.type <- "relative",
-					vol.type <- "relative"
-				)
-				dvh.length <- as.numeric(dvh[which(dvh[, "name"] == "DVHNumberOfBins"), "value"])
-				data <- as.numeric(unlist(strsplit(dvh[which(dvh[, "name"] == "DVHData"), "value"], " ")))
-				vols <- data[1:dvh.length*2]
-				scale <- as.numeric(dvh[which(dvh[, "name"] == "DVHDoseScaling"), "value"])
-				doses <- cumsum(data[1:dvh.length*2-1]*scale)
-				min <- dose.rx*as.numeric(dvh[which(dvh[, "name"] == "DVHMinimumDose"), "value"])/100
-				mean <- dose.rx*as.numeric(dvh[which(dvh[, "name"] == "DVHMeanDose"), "value"])/100
-				max <- dose.rx*as.numeric(dvh[which(dvh[, "name"] == "DVHMaximumDose"), "value"])/100
-				return(new("DVH", structure.name=ID, type=type, dose.units=dose.units, volume.type=vol.type, dose.type="absolute",doses=doses,volumes=vols,dose.min=min,dose.mean=mean,dose.max=max,dose.fx=N.fractions,dose.rx=dose.rx))
-			}
-		)
-		DVH.list.names <- unlist(lapply(DVH.list, function(dvh) {return(dvh$structure.name)}))
-		if (verbose) {
-			cat("FINISHED\n")
-		}		
-		
 	}
 
 
@@ -248,7 +253,8 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 		N <- dim(structures)[1]/2
 		frame.ref.CT.i <- as.character(DICOM.i[which(DICOM.i[,"name"] == "FrameOfReferenceUID"), "value"])
 		structureset.i.ID <- as.character(DICOM.i[which(DICOM.i[,"name"] == "SOPInstanceUID"), "value"])
-		use.dose.grid <- c(use.dose.grid, !structureset.i.ID %in% structureset.ID)
+#		use.dose.grid <- c(use.dose.grid, !structureset.i.ID %in% structureset.ID)
+		use.dose.grid <- c(use.dose.grid, TRUE) ## CALCULATE DVH FROM DOSE GRID RATHER THAN USING EXISTENT DVHs IN DICOM DOSE FILE
 		if (length(frame.ref.CT.i) < 1) {
 			frame.ref.CT.i <- frame.ref.CT
 			warning("No reference frame in structure set file")
@@ -278,7 +284,6 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 		names(structure.IDs) <- structures[1:N*2, "value"]
 		colors <- as.numeric(which(DICOM.i[,"name"] %in% c("ROIDisplayColor")))
 		col <- c()
-#		structures <- as.numeric(which((DICOM.i[,"name"] == "ReferencedROINumber") & (DICOM.i[,"sequence"] == "(3006,0039)")))
 		structures <- as.numeric(which(DICOM.i[,"name"] == "ReferencedROINumber"))
 		contour.seq <- as.numeric(which(DICOM.i[,"name"] == "ContourSequence"))
 		contours <- as.numeric(which(DICOM.i[,"name"] == "ContourData"))
@@ -293,7 +298,9 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 			data.old$set <- c(data.old$set, data$set)
 			data.old$name <- c(data.old$name, list(data$name))
 			data.old$points <- c(data.old$points, list(data$points))
-			data.old$DVH <- c(data.old$DVH, list(data$DVH))
+			if (DVH) {
+				data.old$DVH <- c(data.old$DVH, list(data$DVH))
+			}
 		}
 		else {
 			data.old <- list(set=NULL, name=NULL, points=NULL, DVH=NULL)
@@ -307,35 +314,33 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 			structure.j <- structures.j[which.min(structures.j)]
 			data.j <- strsplit(DICOM.i[intersect(contour.seq[j]:structure.j, contours), "value"], " ")
 			struct.ID.j <- which(structure.IDs == as.numeric(DICOM.i[structure.j, "value"]))
-			DVH.j <- which(DVH.list.names == as.numeric(DICOM.i[structure.j, "value"]))
+			if (DVH) {
+				DVH.j <- which(DVH.list.names == as.numeric(DICOM.i[structure.j, "value"]))
+			}
 			if (length(struct.ID.j) < 1) {
 				warning(paste("Expected structure not matched in DICOM file", sep=""))
 				next
 			}
 			used <- c(used, struct.ID.j)
-##		for (j in 1:min(N, N.ROIs)) {
-##			data.j <- strsplit(DICOM.i[intersect(structures.ordered[j]:structures.ordered[j+1], contours), "value"], " ")
 			if (length(data.j) < 1) {
 				warning(paste("Structure '", names(structure.IDs)[struct.ID.j], "' is empty", sep=""))
 				data$points[[struct.ID.j]] <- NA
-				if (length(DVH.j) < 1) {
-					data$DVH[[struct.ID.j]] <- new("DVH", structure.name=names(structure.IDs)[struct.ID.j])
+				if (DVH) {
+					if (length(DVH.j) < 1) {
+						data$DVH[[struct.ID.j]] <- new("DVH", patient=patient.name, ID=patient.ID, structure.name=names(structure.IDs)[struct.ID.j])
+					}
+					else {
+						DVH.j <- DVH.list[[DVH.j]]
+						DVH.j$structure.name <- names(structure.IDs)[struct.ID.j]
+						data$DVH[[struct.ID.j]] <- DVH.j
+					}
+					next
 				}
-				else {
-					DVH.j <- DVH.list[[DVH.j]]
-					DVH.j$structure.name <- names(structure.IDs)[struct.ID.j]
-					data$DVH[[struct.ID.j]] <- DVH.j
-				}
-##				data$points[[which(structure.IDs == as.numeric(DICOM.i[structures[j], "value"]))]] <- NA
-##				used <- c(used, which(structure.IDs == as.numeric(DICOM.i[structures[j], "value"])))
-##				col <- c(col, DICOM.i[colors[j], "value"])
-				next
 			}
 			data.j <- lapply(data.j,
 				function(x) {
 					x <- as.numeric(x)
 					if (length(x) < 3) {
-##						warning(paste("Structure '", names(structure.IDs)[j], "' is missing slices", sep=""))
 						warning(paste("Structure '", names(structure.IDs)[struct.ID.j], "' is missing slices", sep=""))
 						return(NA)
 					}
@@ -345,24 +350,24 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 				}
 			)			
 			data$points[[struct.ID.j]] <- data.j
-			if (length(DVH.j) < 1) {
-				data$DVH[[struct.ID.j]] <- new("DVH", structure.name=names(structure.IDs)[struct.ID.j])
+			if (DVH) {
+				if (length(DVH.j) < 1) {
+					data$DVH[[struct.ID.j]] <- new("DVH", patient=patient.name, ID=patient.ID, structure.name=names(structure.IDs)[struct.ID.j])
+				}
+				else {
+					DVH.j <- DVH.list[[DVH.j]]
+					DVH.j$structure.name <- names(structure.IDs)[struct.ID.j]
+					data$DVH[[struct.ID.j]] <- DVH.j
+				}
 			}
-			else {
-				DVH.j <- DVH.list[[DVH.j]]
-				DVH.j$structure.name <- names(structure.IDs)[struct.ID.j]
-				data$DVH[[struct.ID.j]] <- DVH.j
-			}
-			
-##			data$points[[which(structure.IDs == as.numeric(DICOM.i[structures[j], "value"]))]] <- data.j
-##			used <- c(used, which(structure.IDs == as.numeric(DICOM.i[structures[j], "value"])))
-##			col <- c(col, DICOM.i[colors[j], "value"])
 		}
 		if (length(setdiff(1:N, used)) > 0) {
 			warning(paste("Structure(s) ", paste("'", names(structure.IDs)[setdiff(1:N, used)], "'", collapse=", ", sep=""), " are empty", sep=""))
 			for (k in setdiff(1:N, used)) {
 				data$points[[k]] <- NA
-				data$DVH[[k]] <- new("DVH", structure.name=names(structure.IDs)[k])
+				if (DVH) {
+					data$DVH[[k]] <- new("DVH", patient=patient.name, ID=patient.ID, structure.name=names(structure.IDs)[k])
+				}
 			}
 		}
 		if (verbose) {
@@ -372,9 +377,9 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 	data$set <- c(data.old$set, data$set)
 	data$name <- c(data.old$name, list(data$name))
 	data$points <- c(data.old$points, list(data$points))
-	data$DVH <- c(data.old$DVH, list(data$DVH))
-
-#return(DICOMs)
+	if (DVH) {
+		data$DVH <- c(data.old$DVH, list(data$DVH))
+	}
 
 	if (length(unlist(data$name)) >= 1) {
 		if (verbose) {
@@ -382,8 +387,8 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 		}		
 	}
 	else {
-		## THIS IS AN ERROR CASE WITH NO STRUCTURES TO IMPORT . . . SHOULD NESt EVERYTHING BELOW INTO IF COMMAND SO CAN SKIP IT IF NEEDED . . . FIX THIS!!
-		return(list(DICOM=DICOMs))
+		warning("No structure set(s) available for import")
+		return(new("RTdata", name=path, CT=CT, dose=doses[[1]]))
 	}
 	N <- length(data$name)
 	struct.list <- new("structure.list")
@@ -397,7 +402,12 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 				if (verbose) {
 					cat("  ", data$set[[i]], ": ", data$name[[i]][j], " [", length(struct.i), " axial slice(s), ", length(unlist(struct.i, recursive=FALSE)), " point(s)] ... skipped\n", sep="")
 				}
-				struct.list <- c(struct.list, new("structure3D", name=paste(data$name[[i]][j], data$set[[i]]), DVH=data$DVH[[i]][[j]]))
+				if (DVH) {
+					struct.list <- c(struct.list, new("structure3D", name=paste(data$name[[i]][j], data$set[[i]]), DVH=data$DVH[[i]][[j]]))
+				}
+				else {
+					struct.list <- c(struct.list, new("structure3D", name=paste(data$name[[i]][j], data$set[[i]])))
+				}
 				next
 			}
 			else if (length(unlist(struct.i, recursive=FALSE)) > 1) {
@@ -413,13 +423,26 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 						pts.i <- rbind(pts.i, struct.i[[k]])
 					}
 				}						
-				struct.i <- new("structure3D", name=paste(data$name[[i]][j], data$set[[i]]), vertices=pts.i, closed.polys=struct.i, DVH=data$DVH[[i]][[j]])
-				if (use.dose.grid[i]) {
+				struct.i <- new("structure3D", name=paste(data$name[[i]][j], data$set[[i]]), vertices=pts.i, closed.polys=struct.i)
+				if (DVH & use.dose.grid[i]) {
 					if (verbose) {
-						cat("ERROR (dose grid calculation not currently supported)\n")
+						cat("calculating DVH from dose grid ... ")
 					}
-					struct.list <- c(struct.list, new("structure3D", name=paste(data$name[[i]][j], data$set[[i]])))
-					next
+					dvh.i <- extract.DVH(struct.i, doses[[1]], resolution.xyz=c(pmin(voxel.size[1:2]/4, pixel.size/8, apply(range(struct.i),2,diff)[1:2]/100, na.rm=TRUE), voxel.size[3]), dose.units=dose.units)
+					if (is.null(dvh.i)) {
+						warning(paste("Unable to calculate DVH for structure '", data$name[[i]][j], "_", data$set[[i]], "'", sep=""))
+						if (verbose) {
+							cat("ERROR\n")
+						}			
+						struct.list <- c(struct.list, struct.i)
+						next						
+					}
+					struct.i$DVH <- dvh.i
+					struct.i$DVH$dose.rx <- dose.rx
+					struct.i$DVH$dose.fx <- N.fractions
+				}
+				else if (DVH) {
+					struct.i$DVH <- data$DVH[[i]][[j]]
 				}
 				struct.list <- c(struct.list, struct.i)
 				if (verbose) {
@@ -439,13 +462,26 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 						pts.i <- rbind(pts.i, struct.i[[k]])
 					}
 				}					
-				struct.i <- new("structure3D", name=paste(data$name[[i]][j], data$set[[i]]), vertices=pts.i, closed.polys=struct.i, DVH=data$DVH[[i]][[j]])	
-				if (use.dose.grid[i]) {
+				struct.i <- new("structure3D", name=paste(data$name[[i]][j], data$set[[i]]), vertices=pts.i, closed.polys=struct.i)
+				if (DVH & use.dose.grid[i]) {
 					if (verbose) {
-						cat("ERROR (dose grid calculation not currently supported)\n")
+						cat("calculating DVH from dose grid ... ")
 					}
-					struct.list <- c(struct.list, new("structure3D", name=paste(data$name[[i]][j], data$set[[i]])))
-					next
+					dvh.i <- extract.DVH(struct.i, doses[[1]], resolution.xyz=c(pmin(voxel.size[1:2]/4, pixel.size/8, apply(range(struct.i),2,diff)[1:2]/100, na.rm=TRUE), voxel.size[3]), dose.units=dose.units)
+					if (is.null(dvh.i)) {
+						warning(paste("Unable to calculate DVH for structure '", data$name[[i]][j], "_", data$set[[i]], "'", sep=""))
+						if (verbose) {
+							cat("ERROR\n")
+						}			
+						struct.list <- c(struct.list, struct.i)
+						next						
+					}
+					struct.i$DVH <- dvh.i
+					struct.i$DVH$dose.rx <- dose.rx
+					struct.i$DVH$dose.fx <- N.fractions
+				}
+				else if (DVH) {
+					struct.i$DVH <- data$DVH[[i]][[j]]
 				}
 				struct.list <- c(struct.list, struct.i)
 				if (verbose) {
@@ -456,12 +492,15 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 				if (verbose) {
 					cat("  ", data$set[[i]], ": ", data$name[[i]][j], " [EMPTY] ... FINISHED\n", sep="")
 				}
-				struct.list <- c(struct.list, new("structure3D", name=paste(data$name[[i]][j], data$set[[i]]), DVH=data$DVH[[i]][[j]]))				
+				if (DVH) {
+					struct.list <- c(struct.list, new("structure3D", name=paste(data$name[[i]][j], data$set[[i]]), DVH=data$DVH[[i]][[j]]))				
+				}
+				else {
+					struct.list <- c(struct.list, new("structure3D", name=paste(data$name[[i]][j], data$set[[i]])))				
+				}
 			}
 		}
 	}
-#	return(new("RTdata", CT=CT, structures=struct.list))
-#	return(list(structures=list(col=col, data=data), DICOM=DICOMs, struct.list=struct.list))
 
 	return(new("RTdata", name=path, CT=CT, dose=doses[[1]], structures=struct.list))
 	## FOR OTHER FILES LOAD SPECIFIC DICOM files with skipSequence=FALSE and re-store hdr info in DICOM list!

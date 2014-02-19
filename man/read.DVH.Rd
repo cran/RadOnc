@@ -7,7 +7,7 @@ Read DVH data from input file
 Function to extract DVH data from input file(s). Supported file formats include Aria (v8-11), DICOM-RT, and CadPlan.
 }
 \usage{
-read.DVH(file, type=c(NA,"aria10","aria11","aria8","dicom","cadplan"), verbose=TRUE)
+read.DVH(file, type=NA, verbose=TRUE)
 }
 \arguments{
   \item{file}{

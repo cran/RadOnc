@@ -3,6 +3,8 @@
 ############################################
 setClass("DVH",
 	representation(
+		patient = "character",
+		ID = "character",
 		structure.name = "character",
 		structure.volume = "numeric",
 		type = "character",
@@ -25,6 +27,8 @@ setClass("DVH",
 		volume.type = "character"
 	),
 	prototype(
+		patient = character(),
+		ID = character(),
 		structure.name = character(),
 		structure.volume = numeric(),
 		type = character(),
@@ -51,6 +55,8 @@ setClass("DVH",
 setMethod("initialize",
 	"DVH",
 	function (.Object,
+		patient = "",
+		ID = "",
 		structure.name = "",
 		structure.volume = numeric(),
 		type = c("cumulative", "differential"),
@@ -73,6 +79,8 @@ setMethod("initialize",
 		volume.type = c("relative", "absolute"),
 		...
 	) {
+		.Object@patient <- as.character(patient)
+		.Object@ID <- as.character(ID)
 		.Object@structure.name <- as.character(structure.name)
 		.Object@structure.volume <- max(0, as.numeric(structure.volume), na.rm=TRUE)
 		.Object@type <- match.arg(type)
@@ -129,21 +137,20 @@ setValidity("DVH",
 	function(object) {
 		if (length(object@doses) != length(object@volumes)) return(FALSE)
 		if (length(object@doses) == 0) return(TRUE)
-		if (length(object@doses) < 2) return(FALSE)
+#		if (length(object@doses) < 2) return(FALSE)
 		if (any(is.na(object@doses))) return(FALSE)
 		if (!is.na(object@dose.rx) & (object@dose.rx <= 0)) return(FALSE)
 		if (object@rx.isodose <= 0) return(FALSE) 
 		if (object@dose.min > object@dose.max) return(FALSE)
 		if ((object@dose.mean > object@dose.max) | (object@dose.mean < object@dose.min)) return(FALSE)
 		if (!identical(order(object@doses, decreasing=FALSE), 1:length(object@doses))) return(FALSE)
-		if ((object@dose.type == "relative") & (range(object@doses, na.rm=TRUE)[2] > 250)) return(FALSE)
+		if ((object@dose.type == "relative") & (range(object@doses, na.rm=TRUE)[2] > 250)) return(FALSE)		
 		if (any(is.na(object@volumes))) return(FALSE)		
-		# ENSURE RELATIVE DVH VOLUMES ARE ON SCALE UP TO 100% MAXIMUM (VOLUME SHOULD NEVER BE >100%)		
-		if ((object@volume.type == "relative") & (max(object@volumes, na.rm=TRUE) > 100.00000000001)) return(FALSE)	
+		# ENSURE RELATIVE DVH VOLUMES ARE ON SCALE UP TO 100% MAXIMUM (VOLUME SHOULD NEVER BE >100%)		if ((object@volume.type == "relative") & (max(object@volumes, na.rm=TRUE) > 100.00000000001)) return(FALSE)	
 		# ENSURE STRUCTURE VOLUME IS SUFFICIENTLY LARGE TO ENCOMPASS ALL LISTED DVH INFORMATION	
-		if ((object@volume.type == "absolute") & (object@structure.volume < floor(max(object@volumes, na.rm=TRUE)))) return(FALSE)
+		if ((object@volume.type == "absolute") & (object@structure.volume < max(object@volumes, na.rm=TRUE))) return(FALSE)
 		# ENSURE CUMULATIVE DOSE HISTOGRAM HAS APPROPRIATE DATA (DOSE RANGE MUST START AT 0)	
-		if ((object@type == "cumulative") & (object@doses[1] != 0)) return(FALSE)
+		# if ((object@type == "cumulative") & (object@doses[1] != 0)) return(FALSE)
 		# ENSURE STRUCTURE VOLUME AND DVH VOLUME DATA ARE EQUIVALENT (TOLERANCE=0.1%)
 		if (!grepl("(mean|median)[(].*[)]", object@structure.name)) {
 			if ((object@type == "differential") & (object@volume.type == "relative") & (abs(sum(object@volumes, na.rm=TRUE) - 100) > 0.1)) return(FALSE)

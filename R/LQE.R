@@ -11,17 +11,24 @@ setMethod("LQE", c("ANY", "missing"),
 )
 
 setMethod("LQE", c("numeric", "numeric"),
-	function (x, aB, fractions=NULL) {
+	function (x, aB, fractions=NULL, N=NULL, dose.units=c("cGy", "Gy")) {
+		dose.units <- match.arg(dose.units)
 		if (is.null(fractions)) {
-			stop("argument 'fractions' is missing, with no default")		
+			if (is.null(N)) {
+				warning("arguments 'fractions' and 'N' are missing, with no default")	
+				return(NA)	
+			}
+			else {
+				fractions <- N
+				dose.units <- paste(dose.units, "N", sep="")
+			}
 		}
 		if (length(fractions) != 2) {
 			warning("argument 'fractions' must be of length two")
 			return(NA)
 		}
-		fractions <- as.integer(fractions)
-		if (any(fractions < 1)) {
-			warning("argument 'fractions' must specify two positive integer values")
+		if (any(fractions <= 0)) {
+			warning("argument 'fractions' must specify two positive numeric values")
 			return(NA)
 		}
 		if (length(aB) < 1) {
@@ -32,26 +39,54 @@ setMethod("LQE", c("numeric", "numeric"),
 			warning("argument 'aB' must be non-zero")
 			return(NA)
 		}
-		x <- x * (1 + x / (fractions[1] * aB))
-		x <- suppressWarnings(unlist(lapply(x,
-				function(dose) {
-					dose <- as.numeric(polyroot(c(-dose, 1, 1/(fractions[2] * aB))))
-					return(dose[dose >= 0])
-				}
-			)))
-		return(x)
+		switch(dose.units,
+			cGy = {
+				return(x * (0.01 * fractions[1] + aB) / (0.01 * fractions[2] + aB))
+			},
+			Gy = {
+				return(x * (fractions[1] + aB) / (fractions[2] + aB))				
+			},
+			cGyN = {
+				return(suppressWarnings(unlist(lapply(x, 
+					function (dose) {
+						dose <- as.numeric(polyroot(c(-dose * (0.01 * dose / fractions[1] + aB), aB, 0.01 / fractions[2])))
+						return(dose[dose >= 0])
+					}
+ 				))))
+			},
+			GyN = {
+				return(suppressWarnings(unlist(lapply(x, 
+					function (dose) {
+						dose <- as.numeric(polyroot(c(-dose * (dose / fractions[1] + aB), aB, 1 / fractions[2])))
+						return(dose[dose >= 0])
+					}
+ 				))))
+			}			
+		)
 	}
 )
 
 setMethod("LQE", c("DVH", "numeric"),
-	function (x, aB, fractions=NULL, dose.units=c("cGy", "Gy")) {
+	function (x, aB, fractions=NULL, N=NULL, dose.units=c("cGy", "Gy")) {
 		dose.units <- match.arg(dose.units)
-		if (is.null(fractions) || (as.integer(fractions) < 1)) {
-			warning("argument 'fractions' must be positive integer value")
+		if (is.empty(x)) {
+			warning("argument 'x' is an empty DVH")
 			return(NA)
 		}
-		else {
-			fractions <- as.integer(fractions)
+		x <- convert.DVH(x, dose="absolute", dose.units=dose.units)
+		if (is.null(fractions)) {
+			if (is.null(N)) {
+				warning("arguments 'fractions' and 'N' are both missing, with no default")	
+				return(NA)	
+			}
+			else {
+				fractions <- N
+				dose.units <- paste(dose.units, "N", sep="")
+			}
+		}
+		if ((length(fractions) != 1) || (fractions <= 0)) {
+			warning("argument 'fractions' must specify a single positive numeric value")	
+			return(NA)	
 		}
 		if (length(aB) < 1) {
 			warning("argument 'aB' is of zero length")
@@ -65,63 +100,100 @@ setMethod("LQE", c("DVH", "numeric"),
 			warning("argument 'aB' must be non-zero")
 			return(NA)
 		}
-		if (is.empty(x)) {
-			warning("argument 'x' is an empty DVH")
-			return(NA)
-		}
-		x <- convert.DVH(x, dose="absolute", dose.units=dose.units)
-		if (x$dose.fx == 0) {
-			x$dose.fx <- fractions
-		}
-		else if (x$dose.fx != fractions) {
-			LQE.calc <- function (doses) {
-				doses <- doses * (1 + doses / (x$dose.fx * aB))
-				doses <- suppressWarnings(unlist(lapply(doses,
-					function(dose) {
-						dose <- as.numeric(polyroot(c(-dose, 1, 1/(fractions * aB))))
-						return(dose[dose >= 0])
-					}
-				)))
+		switch(dose.units,
+			cGy = {
+				if ((x$dose.fx == 0) || (x$dose.fx == x$dose.rx / fractions)) {
+					x$dose.fx <- x$dose.rx / fractions
+					return(x)
+				}				
+				LQE.calc <- function (doses) {
+					return(doses * (0.01 * doses / x$dose.fx + aB) / (0.01 * fractions * doses / x$dose.rx + aB))
+				}		
+			},
+			Gy = {
+				if ((x$dose.fx == 0) || (x$dose.fx == x$dose.rx / fractions)) {
+					x$dose.fx <- x$dose.rx / fractions
+					return(x)
+				}				
+				LQE.calc <- function (doses) {
+					return(doses * (doses / x$dose.fx + aB) / (fractions * doses / x$dose.rx + aB))
+				}		
+			},
+			cGyN = {
+				if ((x$dose.fx == 0) || (x$dose.fx == fractions)) {
+					x$dose.fx <- fractions
+					return(x)
+				}				
+				LQE.calc <- function (doses) {
+					return(suppressWarnings(unlist(lapply(doses, 
+						function (dose) {
+							dose <- as.numeric(polyroot(c(-dose * (0.01 * dose / x$dose.fx + aB), aB, 0.01 / fractions)))
+							return(dose[dose >= 0])
+						}
+ 					))))
+				}		
+			},
+			GyN = {
+				if ((x$dose.fx == 0) || (x$dose.fx == fractions)) {
+					x$dose.fx <- fractions
+					return(x)
+				}		
+				LQE.calc <- function (doses) {
+					return(suppressWarnings(unlist(lapply(doses, 
+						function (dose) {
+							dose <- as.numeric(polyroot(c(-dose * (dose / x$dose.fx + aB), aB, 1 / fractions)))
+							return(dose[dose >= 0])
+						}
+ 					))))
+				}		
 			}
-
-			x$doses <- LQE.calc(x$doses)
-			x$dose.max <- LQE.calc(x$dose.max)
-			x$dose.min <- LQE.calc(x$dose.min)
-			x$dose.mean <- LQE.calc(x$dose.mean)
-			x$dose.median <- LQE.calc(x$dose.median)
-			x$dose.mode <- LQE.calc(x$dose.mode)
-			x$dose.STD <- LQE.calc(x$dose.STD)
-			x$dose.rx <- LQE.calc(x$dose.rx)
-			x$dose.fx <- fractions		
-		}
+		)
+		x$doses <- LQE.calc(x$doses)
+		x$dose.max <- LQE.calc(x$dose.max)
+		x$dose.min <- LQE.calc(x$dose.min)
+		x$dose.mean <- LQE.calc(x$dose.mean)
+		x$dose.median <- LQE.calc(x$dose.median)
+		x$dose.mode <- LQE.calc(x$dose.mode)
+		x$dose.STD <- LQE.calc(x$dose.STD)
+		x$dose.rx <- LQE.calc(x$dose.rx)
+		x$dose.fx <- fractions		
 		return(x) 
 	}
 )
 
 setMethod("LQE", c("DVH.list", "numeric"),
-	function (x, aB, fractions=NULL, dose.units=NULL) {
-		if (length(aB) != length(x)) {
-			if (length(aB) > 1) {
-				warning(paste("length of 'x' and 'aB' do not match, will use single value for aB=",aB[1], sep=""))
-			}
-			aB <- rep(aB[1], length(x))
-		}
-		if (is.null(fractions)) {
-			warning("argument 'fractions' is missing, with no default")
-			return(NA)
-		}
-		if (length(fractions) != length(x)) {
-			if (length(fractions) > 1) {
-				warning(paste("length of 'x' and 'fractions' do not match, will use single value for fractions=",fractions[1], sep=""))
-			}
-			fractions <- rep(fractions[1], length(x))
-		}
+	function (x, aB, fractions=NULL, N=NULL, dose.units=NULL) {
 		dose.units <- match.arg(dose.units, choices=c("cGy","Gy"), several.ok=TRUE)
 		if (length(dose.units) != length(x)) {
 			if (length(dose.units) > 1) {
 				warning(paste("length of 'x' and 'dose.units' do not match, will use single value for dose.units=",dose.units[1], sep=""))
 			}
 			dose.units <- rep(dose.units[1], length(x))
+		}
+		if (length(aB) != length(x)) {
+			if (length(aB) > 1) {
+				warning(paste("length of 'x' and 'aB' do not match, will use single value for aB=",aB[1], sep=""))
+			}
+			aB <- rep(aB[1], length(x))
+		}
+		if (length(fractions) != length(x)) {
+			if (length(fractions) > 1) {
+				warning(paste("length of 'x' and 'fractions' do not match, will use single value for fractions=",fractions[1], sep=""))
+			}
+			else if (length(fractions) < 1) {
+				if (length(N) != length(x)) {
+					if (length(N) > 1) {
+						warning(paste("length of 'x' and 'N' do not match, will use single value for N=",N[1], sep=""))
+					}
+					else if (length(N) < 1) {
+						warning("arguments 'fractions' and 'N' are both missing, with no default")	
+						return(NA)	
+					}
+					N <- rep(N[1], length(x))				
+				}
+				return(new("DVH.list", mapply(LQE, x, aB=aB, N=N, dose.units=dose.units)))			
+			}
+			fractions <- rep(fractions[1], length(x))
 		}
 		return(new("DVH.list", mapply(LQE, x, aB=aB, fractions=fractions, dose.units=dose.units)))
 	}

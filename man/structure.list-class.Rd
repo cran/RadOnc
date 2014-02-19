@@ -35,10 +35,11 @@ Objects can be created by calls of the form \code{new("structure.list", structur
 }
 \section{Methods}{
   \describe{
-    \item{[}{Extract subset of structure list }
+    \item{[}{Extract subset of structure list (regular expressions may be specified if desired, see \code{\link{regex}} for more details)}
     \item{[[}{Extract single \code{\link[RadOnc:structure3D-class]{structure3D}} object from structure list }
     \item{[[<-}{Replace single \code{\link[RadOnc:structure3D-class]{structure3D}} object in structure list }
     \item{$}{Extract parameter(s) from \code{structure3D} objects within structure list }
+    \item{as.list}{Convert a \code{structure.list} object to a list containing individual \code{structure3D} objects. Note that the reverse conversion can be performed using the \code{\link{as}} command and specifying \code{class="structure.list"}.}
     \item{c}{Combine two or more structure lists and/or \code{\link[RadOnc:structure3D-class]{structure3D}} objects }
     \item{lapply}{Apply function to a list of \code{\link[RadOnc:structure3D-class]{structure3D}} objects }
     \item{length}{Extract number of \code{\link[RadOnc:structure3D-class]{structure3D}} objects in structure list}

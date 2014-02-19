@@ -26,10 +26,12 @@
 A data structure containing Dose-Volume Histogram (\code{DVH}) data and associated parameters for a single structure
 }
 \section{Objects from the Class}{
-Objects can be created by calls of the form \code{new("DVH", structure.name, structure.volume, type, dose.max, dose.min, dose.mean, dose.median, dose.mode, dose.STD, conf.index, equiv.sphere, gradient, dose.rx, dose.fx, doses, dose.type, dose.units, volumes, volume.type, ...)}.
+Objects can be created by calls of the form \code{new("DVH", patient, structure.name, structure.volume, type, dose.max, dose.min, dose.mean, dose.median, dose.mode, dose.STD, conf.index, equiv.sphere, gradient, dose.rx, dose.fx, doses, dose.type, dose.units, volumes, volume.type, ...)}.
 }
 \section{Slots}{
   \describe{
+    \item{\code{patient}:}{Name of the patient (e.g. "Jane Doe") }
+    \item{\code{ID}:}{Additional patient identifier or medical record number (e.g. "123456789") }
     \item{\code{structure.name}:}{Name of the structure (e.g. "Stomach") }
     \item{\code{structure.volume}:}{Volume of the structure (in cubic centimeters) }
     \item{\code{type}:}{A character string specifying the DVH type (must be one of \code{"cumulative"} or \code{"differential"})}

@@ -27,6 +27,7 @@ exportClasses(
 )
 
 export(
+	calculate.DVH,
 	compareStructures,
 	gEUD,
 	LQE,

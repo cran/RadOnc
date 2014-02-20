@@ -1,3 +1,10 @@
+setAs("structure3D", "DVH", 
+	function(from) {
+		return(from$DVH)
+	}
+)
+
+
 setMethod("$", "DVH",
 	function (x, name) {
 		if (inherits(try(slot(x, name), silent=TRUE), "try-error")) {

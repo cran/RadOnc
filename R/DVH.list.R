@@ -11,6 +11,12 @@ setAs("DVH", "DVH.list",
 	}
 )
 
+setAs("zDVH", "DVH.list", 
+	function(from) {
+		return(new("DVH.list", structures=from))
+	}
+)
+
 setAs("structure.list", "DVH.list", 
 	function(from) {
 		return(new("DVH.list", lapply(from, function(struct) {return(struct$DVH)})))
@@ -92,11 +98,11 @@ setMethod("[[", "DVH.list",
 setMethod("[[<-", "DVH.list",
 	function (x, i, value) {
 		x <- attr(x,"structures")
-		if (class(value) == "DVH") {
+		if (class(value) %in% c("DVH", "zDVH")) {
 			x[[i]] <- value
 		}
 		else {
-			stop("'value' must be an object of class 'DVH'")
+			stop("'value' must be an object of class 'DVH' or 'zDVH'")
 		}
 		return(new("DVH.list", x))
 	}

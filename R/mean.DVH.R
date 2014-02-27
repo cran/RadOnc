@@ -31,6 +31,9 @@ setMethod("mean", "DVH.list",
 		rx.isodose <- 100
 		volume.matrix <- matrix(NA, ncol=N, nrow=size)
 		for (i in 1:N) {
+			if (class(x[[i]]) == "zDVH") {
+				x[[i]] <- as(x[[i]], "DVH")	
+			}
 			volume.matrix[,i] <- approx(x[[i]]$doses, x[[i]]$volumes, doses.new, rule=2)$y
 		}
 		if (weighted) {
@@ -116,6 +119,9 @@ setMethod("median", "DVH.list",
 		doses.new <- diffinv(rep((ceiling(dose.max)-0)/(size-1), size-1), xi=0)
 		volume.matrix <- matrix(NA, ncol=N, nrow=size)
 		for (i in 1:N) {
+			if (class(x[[i]]) == "zDVH") {
+				x[[i]] <- as(x[[i]], "DVH")	
+			}
 			volume.matrix[,i] <- approx(x[[i]]$doses, x[[i]]$volumes, doses.new, rule=2)$y
 		}
 		volumes.new <- apply(volume.matrix, 1, median, na.rm=na.rm)
@@ -172,6 +178,9 @@ setMethod("mad", "DVH.list",
 		}
 		volume.matrix <- matrix(NA, ncol=N, nrow=size)
 		for (i in 1:N) {
+			if (class(x[[i]]) == "zDVH") {
+				x[[i]] <- as(x[[i]], "DVH")	
+			}
 			volume.matrix[,i] <- approx(x[[i]]$doses, x[[i]]$volumes, doses.new, rule=2)$y
 		}
 		return(list(dose=doses.new, mad=apply(volume.matrix, 1, mad)))
@@ -224,6 +233,9 @@ setMethod("quantile", "DVH.list",
 		doses.new <- diffinv(rep((ceiling(dose.max)-0)/(size-1), size-1), xi=0)
 		volume.matrix <- matrix(NA, ncol=N, nrow=size)
 		for (i in 1:N) {
+			if (class(x[[i]]) == "zDVH") {
+				x[[i]] <- as(x[[i]], "DVH")	
+			}
 			volume.matrix[,i] <- approx(x[[i]]$doses, x[[i]]$volumes, doses.new, rule=2)$y
 		}
 		return(list(dose=doses.new, quantiles=apply(volume.matrix, 1, quantile, type=type, ...)))
@@ -278,6 +290,9 @@ setMethod("var", "DVH.list",
 		}
 		volume.matrix <- matrix(NA, ncol=N, nrow=size)
 		for (i in 1:N) {
+			if (class(x[[i]]) == "zDVH") {
+				x[[i]] <- as(x[[i]], "DVH")	
+			}
 			volume.matrix[,i] <- pmax(0, approx(x[[i]]$doses, x[[i]]$volumes, doses.new, rule=2)$y, na.rm=TRUE)
 		}
 		return(list(dose=doses.new, var=apply(volume.matrix, 1, var, na.rm=na.rm)))
@@ -332,6 +347,9 @@ setMethod("sd", "DVH.list",
 		}
 		volume.matrix <- matrix(NA, ncol=N, nrow=size)
 		for (i in 1:N) {
+			if (class(x[[i]]) == "zDVH") {
+				x[[i]] <- as(x[[i]], "DVH")	
+			}
 			volume.matrix[,i] <- approx(x[[i]]$doses, x[[i]]$volumes, doses.new, rule=2)$y
 		}
 		return(list(dose=doses.new, sd=apply(volume.matrix, 1, sd, na.rm=na.rm)))
@@ -438,6 +456,9 @@ setMethod("sum", "DVH.list",
 		doses.new <- unique(unlist(lapply(x, slot, "doses")))
 		volume.matrix <- matrix(NA, ncol=N, nrow=size)
 		for (i in 1:N) {
+			if (class(x[[i]]) == "zDVH") {
+				x[[i]] <- as(x[[i]], "DVH")	
+			}
 			volume.matrix[,i] <- approx(x[[i]]$doses, x[[i]]$volumes, doses.new, rule=2)$y
 		}
 		volumes.new <- apply(volume.matrix, 1, sum, na.rm=na.rm)

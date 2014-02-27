@@ -1,10 +1,10 @@
-convert.DVH <- function(..., type=c(NA, "cumulative", "differential"), dose=c(NA, "absolute", "relative"), volume=c(NA, "relative", "absolute"), dose.units=c(NA, "cGy", "Gy")) {
-	type <- match.arg(type)
-	dose <- match.arg(dose)
-	volume <- match.arg(volume)
-	dose.units <- match.arg(dose.units)
+convert.DVH <- function(..., type=NULL, dose=NULL, volume=NULL, dose.units=NULL) {
+	type <- match.arg(type, choices=c(NA, "cumulative", "differential"))
+	dose <- match.arg(dose, choices=c(NA, "absolute", "relative"))
+	volume <- match.arg(volume, choices=c(NA, "relative", "absolute"))
+	dose.units <- match.arg(dose.units, choices=c(NA, "cGy", "Gy"))
 	arglist <- c(...)
-	arglist <- arglist[unlist(lapply(arglist, function(arg) { ((class(arg)[1] == "DVH") & validObject(arg)) }))]
+	arglist <- arglist[unlist(lapply(arglist, function(arg) { ((class(arg)[1] %in% c("DVH", "zDVH")) & validObject(arg)) }))]
 	N <- length(arglist)
 	if (N <=0) {
 		return(NULL)
@@ -22,7 +22,7 @@ convert.DVH <- function(..., type=c(NA, "cumulative", "differential"), dose=c(NA
 		}
 		if ((!is.na(dose)) & (dose != x@dose.type)) {
 			if (is.na(x@dose.rx)) {
-				warning(paste("Cannot convert DVH (", x@name, ") because prescription dose is not specified", sep=""))
+				warning(paste("Cannot convert DVH (", x@structure.name, ") because prescription dose is not specified", sep=""))
 				arglist[[i]] <- x
 				next	
 			}
@@ -35,6 +35,9 @@ convert.DVH <- function(..., type=c(NA, "cumulative", "differential"), dose=c(NA
 				x@dose.type <- "relative"
 			}
 		}
+		else {
+			dose <- x@dose.type
+		}
 		if ((!is.na(volume)) & (volume != x@volume.type)) {
 			if (volume == "absolute") {
 				x@volumes <- x@volumes * x@structure.volume / 100
@@ -45,20 +48,47 @@ convert.DVH <- function(..., type=c(NA, "cumulative", "differential"), dose=c(NA
 				x@volume.type <- "relative"
 			}
 		}
+		else {
+			volume <- x@volume.type
+		}
 		if ((!is.na(type)) & (type != x@type)) {
 			if (type == "cumulative") {
 				temp.doses <- x@doses - diff(c(-x@doses[1], x@doses))/2
 				x@doses <- c(temp.doses, (2*x@doses - temp.doses)[length(temp.doses)])
 				if (volume == "relative") {
-					x@volumes <- diffinv(-x@volumes, xi=100)
+					if (class(x) == "DVH") {
+						x@volumes <- diffinv(-x@volumes, xi=100)
+					}
+					else {
+						volumes <- diffinv(-x@volumes, xi=matrix(apply(x@volumes, 2, sum), nrow=1))
+						class(volumes) <- c("numeric", "matrix")
+						colnames(volumes) <- colnames(x@volumes)
+						x@volumes <- volumes
+					}
 				}
 				else {
-					x@volumes <- diffinv(-x@volumes, xi=x@structure.volume)
+					if (class(x) == "DVH") {
+						x@volumes <- diffinv(-x@volumes, xi=x@structure.volume)
+					}
+					else {
+						volumes <- diffinv(-x@volumes, xi=matrix(apply(x@volumes, 2, sum), nrow=1))
+						class(volumes) <- c("numeric", "matrix")
+						colnames(volumes) <- colnames(x@volumes)
+						x@volumes <- volumes
+					}
 				}
 				x@type <- "cumulative"
 			}
 			else {
-				x@volumes <- -diff(x@volumes)
+				if (class(x) == "DVH") {
+					x@volumes <- -diff(x@volumes)
+				}
+				else {
+					volumes <- -apply(x@volumes, 2, diff)
+					class(volumes) <- c("numeric", "matrix")
+					colnames(volumes) <- colnames(x@volumes)
+					x@volumes <- volumes
+				}
 				x@doses <- x@doses[1:(length(x@doses)-1)] + diff(x@doses)/2
 				x@type <- "differential"
 			}

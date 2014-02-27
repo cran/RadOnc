@@ -1,5 +1,5 @@
 
-read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limit=NULL, DVH=TRUE, ...) {
+read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limit=NULL, DVH=TRUE, zDVH=FALSE, ...) {
 	if (length(list.files(path)) == 0 && file.exists(path)) {
     	filenames <- path
 	}
@@ -164,75 +164,75 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 		if (verbose) {
 			cat("[Dose type = ", plan.type, ", Units = ", dose.units, "] ", sep="")
 		}
-
+		attr(DICOMs$img[[i]], "dose.units") <- dose.units
 		doses <- c(doses, list(DICOMs$img[[i]]))
-		doses.hdr <- DICOM.i$hdr
+#		doses.hdr <- DICOM.i$hdr
 		if (verbose) {
 			cat("FINISHED\n")
 		}
 		## EXTRACT DVH DATA
-		if (FALSE) { ### THE FOLLOWING COMMANDS BYPASSED DUE TO UNRELIABILITY OF DVHs STORED WITHIN DICOM-RT DATA
+#		if (FALSE) { ### THE FOLLOWING COMMANDS BYPASSED DUE TO UNRELIABILITY OF DVHs STORED WITHIN DICOM-RT DATA
 #		if (DVH) {
-			if (verbose) {
-				cat("Extracting existent DVHs ... ", sep="")
-			}
-			dvh.start <- which(DICOM.i$hdr[,"name"] == "DVHType")
-			dvh.end <- which(DICOM.i$hdr[,"name"] == "DVHMeanDose")
-			if (length(dvh.start) < 1) {
-				warning(paste("Dose file '", file, "' contained no recognizable DVH structure(s)", sep=""))
-				if (verbose) {
-					cat("ERROR\n")
-				}
-				next
-			}
-			else if (length(dvh.start) == 1) {
-   			 	dvhs <- list(DICOM.i$hdr[dvh.start:dvh.end,])	
-			}
-			else {
-				dvhs <- mapply(function(start, end) list(DICOM.i$hdr[start:end,]), dvh.start, dvh.end)
-			}
-			DVH.list <- lapply(dvhs,
-				function(dvh) {
-					ID <- dvh[which(dvh[, "name"] == "ReferencedROINumber"), "value"]
-					type <- toupper(dvh[which(dvh[, "name"] == "DVHType"), "value"])
-					switch(type,
-						CUMULATIVE = type <- "cumulative",
-						DIFFERENTIAL = type <- "differential"
-					)
-					dose.units <- toupper(dvh[which(dvh[, "name"] == "DoseUnits"), "value"])
-					switch(dose.units,
-						GY = dose.units <- "Gy",
-						CGY = dose.units <- "cGy",
-						{
-							warning("Dose not specified as 'Gy' or 'cGy'")
-							return(new("DVH", patient=patient.name, ID=patient.ID, structure.name=ID))
-						}
-					)
-					vol.units <- toupper(dvh[which(dvh[, "name"] == "DVHVolumeUnits"), "value"])
-					switch(vol.units,
-						CM3 = vol.type <- "absolute",
-						PERCENT = vol.type <- "relative",
-						vol.type <- "relative"
-					)
-					dvh.length <- as.numeric(dvh[which(dvh[, "name"] == "DVHNumberOfBins"), "value"])
-					data <- as.numeric(unlist(strsplit(dvh[which(dvh[, "name"] == "DVHData"), "value"], " ")))
-					vols <- data[1:dvh.length*2]
-					scale <- as.numeric(dvh[which(dvh[, "name"] == "DVHDoseScaling"), "value"])
-					doses <- cumsum(data[1:dvh.length*2-1]*scale)
-					min <- dose.rx*as.numeric(dvh[which(dvh[, "name"] == "DVHMinimumDose"), "value"])/100
-					mean <- dose.rx*as.numeric(dvh[which(dvh[, "name"] == "DVHMeanDose"), "value"])/100
-					max <- dose.rx*as.numeric(dvh[which(dvh[, "name"] == "DVHMaximumDose"), "value"])/100
-					return(new("DVH", patient=patient.name, ID=patient.ID, structure.name=ID, type=type, dose.units=dose.units, volume.type=vol.type, dose.type="absolute",doses=doses,volumes=vols,dose.min=min,dose.mean=mean,dose.max=max,dose.fx=N.fractions,dose.rx=dose.rx))
-				}
-			)
-			DVH.list.names <- unlist(lapply(DVH.list, function(dvh) {return(dvh$structure.name)}))
-			if (verbose) {
-				cat("FINISHED\n")
-			}		
-		}
-		else {
-			DVH.list.names <- NULL
-		}
+#			if (verbose) {
+#				cat("Extracting existent DVHs ... ", sep="")
+#			}
+#			dvh.start <- which(DICOM.i$hdr[,"name"] == "DVHType")
+#			dvh.end <- which(DICOM.i$hdr[,"name"] == "DVHMeanDose")
+#			if (length(dvh.start) < 1) {
+#				warning(paste("Dose file '", file, "' contained no recognizable DVH structure(s)", sep=""))
+#				if (verbose) {
+#					cat("ERROR\n")
+#				}
+#				next
+#			}
+#			else if (length(dvh.start) == 1) {
+ #  			 	dvhs <- list(DICOM.i$hdr[dvh.start:dvh.end,])	
+#			}
+#			else {
+#				dvhs <- mapply(function(start, end) list(DICOM.i$hdr[start:end,]), dvh.start, dvh.end)
+#			}
+#			DVH.list <- lapply(dvhs,
+#				function(dvh) {
+#					ID <- dvh[which(dvh[, "name"] == "ReferencedROINumber"), "value"]
+#					type <- toupper(dvh[which(dvh[, "name"] == "DVHType"), "value"])
+#					switch(type,
+#						CUMULATIVE = type <- "cumulative",
+#						DIFFERENTIAL = type <- "differential"
+#					)
+#					dose.units <- toupper(dvh[which(dvh[, "name"] == "DoseUnits"), "value"])
+#					switch(dose.units,
+#						GY = dose.units <- "Gy",
+#						CGY = dose.units <- "cGy",
+#						{
+#							warning("Dose not specified as 'Gy' or 'cGy'")
+#							return(new("DVH", patient=patient.name, ID=patient.ID, structure.name=ID))
+#						}
+#					)
+#					vol.units <- toupper(dvh[which(dvh[, "name"] == "DVHVolumeUnits"), "value"])
+#					switch(vol.units,
+#						CM3 = vol.type <- "absolute",
+#						PERCENT = vol.type <- "relative",
+#						vol.type <- "relative"
+#					)
+#					dvh.length <- as.numeric(dvh[which(dvh[, "name"] == "DVHNumberOfBins"), "value"])
+#					data <- as.numeric(unlist(strsplit(dvh[which(dvh[, "name"] == "DVHData"), "value"], " ")))
+#					vols <- data[1:dvh.length*2]
+#					scale <- as.numeric(dvh[which(dvh[, "name"] == "DVHDoseScaling"), "value"])
+#					doses <- cumsum(data[1:dvh.length*2-1]*scale)
+#					min <- dose.rx*as.numeric(dvh[which(dvh[, "name"] == "DVHMinimumDose"), "value"])/100
+#					mean <- dose.rx*as.numeric(dvh[which(dvh[, "name"] == "DVHMeanDose"), "value"])/100
+#					max <- dose.rx*as.numeric(dvh[which(dvh[, "name"] == "DVHMaximumDose"), "value"])/100
+#					return(new("DVH", patient=patient.name, ID=patient.ID, structure.name=ID, type=type, dose.units=dose.units, volume.type=vol.type, dose.type="absolute",doses=doses,volumes=vols,dose.min=min,dose.mean=mean,dose.max=max,dose.fx=N.fractions,dose.rx=dose.rx))
+#				}
+#			)
+#			DVH.list.names <- unlist(lapply(DVH.list, function(dvh) {return(dvh$structure.name)}))
+#			if (verbose) {
+#				cat("FINISHED\n")
+#			}		
+#		}
+#		else {
+			DVH.list.names <- DVH.list <- NULL
+#		}
 	}
 
 
@@ -425,10 +425,18 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 				}						
 				struct.i <- new("structure3D", name=paste(data$name[[i]][j], data$set[[i]]), vertices=pts.i, closed.polys=struct.i)
 				if (DVH & use.dose.grid[i]) {
-					if (verbose) {
-						cat("calculating DVH from dose grid ... ")
+					if (zDVH) {
+						if (verbose) {
+							cat("calculating zDVH from dose grid ... ")
+						}
+						dvh.i <- calculate.DVH(struct.i, doses[[1]], resolution.xyz=c(pmin(voxel.size[1:2]/4, pixel.size/8, apply(range(struct.i),2,diff)[1:2]/100, na.rm=TRUE), voxel.size[3]), method="axial", dose.units=dose.units)
 					}
-					dvh.i <- calculate.DVH(struct.i, doses[[1]], resolution.xyz=c(pmin(voxel.size[1:2]/4, pixel.size/8, apply(range(struct.i),2,diff)[1:2]/100, na.rm=TRUE), voxel.size[3]), method="ATC", dose.units=dose.units)
+					else {
+						if (verbose) {
+							cat("calculating DVH from dose grid ... ")
+						}
+						dvh.i <- calculate.DVH(struct.i, doses[[1]], resolution.xyz=c(pmin(voxel.size[1:2]/4, pixel.size/8, apply(range(struct.i),2,diff)[1:2]/100, na.rm=TRUE), voxel.size[3]), method="ATC", dose.units=dose.units)
+					}
 					if (is.null(dvh.i)) {
 						warning(paste("Unable to calculate DVH for structure '", data$name[[i]][j], "_", data$set[[i]], "'", sep=""))
 						if (verbose) {
@@ -464,10 +472,18 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 				}					
 				struct.i <- new("structure3D", name=paste(data$name[[i]][j], data$set[[i]]), vertices=pts.i, closed.polys=struct.i)
 				if (DVH & use.dose.grid[i]) {
-					if (verbose) {
-						cat("calculating DVH from dose grid ... ")
+					if (zDVH) {
+						if (verbose) {
+							cat("calculating zDVH from dose grid ... ")
+						}
+						dvh.i <- calculate.DVH(struct.i, doses[[1]], resolution.xyz=c(pmin(voxel.size[1:2]/4, pixel.size/8, apply(range(struct.i),2,diff)[1:2]/100, na.rm=TRUE), voxel.size[3]), method="axial", dose.units=dose.units)
 					}
-					dvh.i <- calculate.DVH(struct.i, doses[[1]], resolution.xyz=c(pmin(voxel.size[1:2]/4, pixel.size/8, apply(range(struct.i),2,diff)[1:2]/100, na.rm=TRUE), voxel.size[3]), method="ATC", dose.units=dose.units)
+					else {
+						if (verbose) {
+							cat("calculating DVH from dose grid ... ")
+						}
+						dvh.i <- calculate.DVH(struct.i, doses[[1]], resolution.xyz=c(pmin(voxel.size[1:2]/4, pixel.size/8, apply(range(struct.i),2,diff)[1:2]/100, na.rm=TRUE), voxel.size[3]), method="ATC", dose.units=dose.units)
+					}	
 					if (is.null(dvh.i)) {
 						warning(paste("Unable to calculate DVH for structure '", data$name[[i]][j], "_", data$set[[i]], "'", sep=""))
 						if (verbose) {

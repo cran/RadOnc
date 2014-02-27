@@ -20,7 +20,7 @@ Objects can be created by calls of the form \code{new("RTdata", name, CT, dose, 
   \describe{
     \item{\code{name}:}{Name of the dataset (e.g. "Patient XX") }
     \item{\code{CT}:}{Object of class \code{"array"} containing computed tomography (CT) image data in Houndsfield units }
-    \item{\code{dose}:}{Object of class \code{"array"} containing dose grid data (pre-calculated using a separate treatment planning system)}
+    \item{\code{dose}:}{Object of class \code{"array"} containing dose grid data (pre-calculated using a separate treatment planning system) with a \code{"dose.units"} attribute specifying the units of dose.}
     \item{\code{structures}:}{Object of class \code{"structure.list"} containing the corresponding structure set, indexed to the CT and dose grid coordinate systems }
   }
 }

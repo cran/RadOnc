@@ -17,16 +17,16 @@ Function to calculate DVH data for one or more structure(s) using a dose grid.
 }
 \usage{
 \S4method{calculate.DVH}{RTdata,missing}(x, dose, resolution.xyz=c(0.2,0.2,NA), 
-	resolution.dose=0.01, method=c("ATC", "surface"), dose.units=c("cGy","Gy"))
+	resolution.dose=0.01, method=NULL, dose.units=NULL)
 
 \S4method{calculate.DVH}{RTdata,array}(x, dose, resolution.xyz=c(0.2,0.2,NA), 
-	resolution.dose=0.01, method=c("ATC", "surface"), dose.units=c("cGy","Gy"))
+	resolution.dose=0.01, method=NULL, dose.units=NULL)
 
 \S4method{calculate.DVH}{structure3D,array}(x, dose, resolution.xyz=c(0.2,0.2,NA), 
-	resolution.dose=0.01, method=c("ATC", "surface"), dose.units=c("cGy","Gy"))
+	resolution.dose=0.01, method=NULL, dose.units=NULL)
 
 \S4method{calculate.DVH}{structure.list,array}(x, dose, resolution.xyz=c(0.2,0.2,NA), 
-	resolution.dose=0.01, method=c("ATC", "surface"), dose.units=c("cGy","Gy"))
+	resolution.dose=0.01, method=NULL, dose.units=NULL)
 }
 \arguments{
   \item{x}{
@@ -42,13 +42,13 @@ A numeric list containing three positive values representing \emph{x}, \emph{y},
 A positive numeric value specifying the dose calculation interval (bin width) for DVH calculation (values interpreted in Gy).
 }
   \item{method}{
-Character value specifying the DVH calculation algorithm to employ. Must be one of \code{"ATC"} or \code{"surface"}. See below for further details about the dose calculation algorithms.
+Character value specifying the DVH calculation algorithm to employ. Must be one of \code{"ATC"}, \code{"surface"}, or \code{"axial"}. See below for further details about the dose calculation algorithms.
 }
   \item{dose.units}{
 Value specifying units of dose. Must be one of \code{"cGy"} (default) or \code{"Gy"}.}
 }
 \value{
-Returns a single calculated \code{"DVH"} object or a \code{"DVH.list"} object consisting of multiple DVHs where relevant.
+Returns a single calculated \code{"DVH"} object or a \code{"DVH.list"} object consisting of multiple DVHs where relevant, or otherwise a \code{"zDVH"} or \code{"DVH.list"} containing multiple zDVHs when \code{method="axial"}.
 }
 \references{
 Straube, W., Matthews, J., Bosch, W., and Purdy, J.A. (2005)
@@ -62,9 +62,8 @@ Reid F. Thompson (\email{reid.thompson@gmail.com})
 \code{\link[RadOnc:DVH-class]{DVH}}, \code{\link[RadOnc:DVH.list-class]{DVH.list}}, \code{\link{new}}
 }
 \examples{
-# Read two DVH example files
-# need to add DICOM data to RadOnc.RData so have a dose grid in there!!
-# add further details section to discuss algorithm!!  should also have citation for ATC stuff!!
+data("RadOnc")
+# zDVHs <- calculate.DVH(janedoe.RTdata, method="axial")
 }
 \keyword{ methods }
 \keyword{ manip }

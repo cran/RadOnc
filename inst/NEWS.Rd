@@ -3,6 +3,32 @@
 \title{ RadOnc News }
 \encoding{UTF-8}
 
+\section{CHANGES IN VERSION 1.0.7}{
+
+  \subsection{NEW FEATURES}{
+    \itemize{
+      \item New class \code{zDVH} (along with relevant methods) to store one or more axially-segmented and calculated dose-volume histograms. The class otherwise contains all elements of the \code{DVH} class and is largely interchangeable with other \code{DVH} objects.
+      \item New plot functionality for axial dose-volume histogram displayed from one or more \code{zDVH} objects.
+      \item New method for \code{compareStructures()} ("DSC") which calculates Dice similarity coefficients between pairs of structures.
+   }
+  }
+
+  \subsection{BUG FIXES}{
+    \itemize{
+      \item Fatal error in \code{convert.DVH(..., dose="relative")} when prescription dose not specified.
+    }
+  }
+
+  \subsection{OTHER UPDATES}{
+    \itemize{
+      \item Added attribute \code{dose.units} to dose grid in class \code{RTdata} to enable specification and processing of dose units.
+      \item Added \code{stomach} to package data contents in order to provide an example of a \code{zDVH} object.
+    }
+   }
+
+ }
+
+
 \section{CHANGES IN VERSION 1.0.6}{
 
   \subsection{NEW FEATURES}{
@@ -13,7 +39,7 @@
 
   \subsection{BUG FIXES}{
     \itemize{
-      \item Fixed v.1.0.5 Windows build error due to incorrect file path specification in vignette
+      \item Fixed v.1.0.5 Windows build error due to incorrect file path specification in vignette.
     }
   }
 

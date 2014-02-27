@@ -1,4 +1,4 @@
-compareStructures <- function(structures, method=c("axial", "surface", "hausdorff", "grid"), hausdorff.method=c("mean", "median", "absolute"), verbose=TRUE, plot=TRUE, pixels=100) {
+compareStructures <- function(structures, method=NULL, hausdorff.method=NULL, verbose=TRUE, plot=TRUE, pixels=100) {
 	if (class(structures) != "structure.list") {
 		warning("Input 'structures' must be of class 'structure.list'")
 		return()
@@ -13,7 +13,8 @@ compareStructures <- function(structures, method=c("axial", "surface", "hausdorf
 		warning("Need at least 2 structures to perform comparison")
 		return()
 	}
-	method <- match.arg(method)
+	method <- match.arg(method, choices=c("axial", "surface", "hausdorff", "grid", "DSC"))
+	hausdorff.method <- match.arg(hausdorff.method, choices=c("mean", "median", "absolute"))
 	switch(method,
 		axial = contours <- compareStructures.axial(structures, pixels=pixels),
 		grid = {
@@ -21,7 +22,22 @@ compareStructures <- function(structures, method=c("axial", "surface", "hausdorf
 			contours <- compareStructures.axial(structures, pixels=pixels)
 		},
 		surface = contours <- compareStructures.surface(structures),
-		hausdorff = contours <- compareStructures.hausdorff(structures, method=hausdorff.method, verbose=verbose)
+		hausdorff = return(compareStructures.hausdorff(structures, method=hausdorff.method, verbose=verbose)),
+		DSC = {
+			contours <- compareStructures.axial(structures, pixels=pixels)
+			N <- dim(contours)[2]-3
+			results <- matrix(0, nrow=N, ncol=N, dimnames=list(names(structures), names(structures)))
+			for (i in 1:N) {
+				for (j in 1:N) {
+					if (i == j) {
+						results[i, j] <- 1#
+						next
+					}
+					results[i, j] <- 2*sum((contours[,i+3]>0) & (contours[,j+3]>0))/(sum(contours[,i+3]>0)+sum(contours[,j+3]>0))
+				}
+			}
+			return(results)
+		}
 	)
 	if ((plot) & (method %in% c("axial", "grid"))) {
 		mar.old <- par()$mar
@@ -110,7 +126,7 @@ compareStructures.axial <- function (structures, pixels=100) {
 }
 
 
-compareStructures.hausdorff <- function (structures, verbose=TRUE, method=c("mean", "median", "absolute")) {
+compareStructures.hausdorff <- function (structures, verbose=TRUE, method=NULL) {
 
 	hausdorff.dist <- function (A, B, method) {
 		if (ncol(A) != ncol(B)){
@@ -143,7 +159,7 @@ compareStructures.hausdorff <- function (structures, verbose=TRUE, method=c("mea
 		}
 	}
 
-	method <- match.arg(method)
+	method <- match.arg(method, choices=c("mean", "median", "absolute"))
 	N <- length(structures)
 	results <- matrix(0, nrow=N, ncol=N, dimnames=list(names(structures), names(structures)))
 	for (i in 1:N) {
@@ -160,6 +176,7 @@ compareStructures.hausdorff <- function (structures, verbose=TRUE, method=c("mea
 	}
 	return(results)
 }
+
 
 pointInPoly2D <- function (points, poly) {
 	poly <- matrix(unique(poly), ncol=2)

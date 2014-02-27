@@ -4,14 +4,15 @@
 \alias{janedoe.RTdata}
 \alias{cord}
 \alias{mandible}
+\alias{stomach}
 \alias{teeth}
 \alias{RadOnc-data}
 \docType{data}
 \title{
-DVH data for 'John Doe' and 'Jane Doe'; 3D structural data for 'cord', 'mandible', and 'teeth'; RT data for 'Jane Doe'
+DVH data for 'John Doe' and 'Jane Doe'; 3D structural data for 'cord', 'mandible', and 'teeth'; RT data for 'Jane Doe'; and a zDVH object for 'stomach'
 }
 \description{
-List of 10 DVH objects corresponding to structures (e.g. liver) for patients 'John Doe' and 'Jane Doe'; Two structure3D objects ('cord' and 'mandible') and one structure list ('teeth') containing 3 structures; an RTdata object for 'Jane Doe' containing dose grid information and a structure list with 3 structures.}
+List of 10 DVH objects corresponding to structures (e.g. liver) for patients 'John Doe' and 'Jane Doe'; Two structure3D objects ('cord' and 'mandible') and one structure list ('teeth') containing 3 structures; an RTdata object for 'Jane Doe' containing dose grid information and a structure list with 3 structures; and one zDVH object ('stomach').}
 \usage{data(package="RadOnc")}
 \format{
   The format for \code{johndoe} is:
@@ -1155,6 +1156,37 @@ Formal class 'structure.list' [package "RadOnc"] with 1 slots
   .. .. .. .. .. ..@ dose.units      : chr "cGy"
   .. .. .. .. .. ..@ volumes         : num(0) 
   .. .. .. .. .. ..@ volume.type     : chr "relative"
+}
+
+  The format for \code{stomach} is:
+\preformatted{
+Formal class 'zDVH' [package "RadOnc"] with 22 slots
+  ..@ patient         : chr ""
+  ..@ ID              : chr ""
+  ..@ structure.name  : chr "STOMACH"
+  ..@ structure.volume: num 699
+  ..@ type            : chr "differential"
+  ..@ dose.max        : num 53.6
+  ..@ dose.min        : num 0.594
+  ..@ dose.mean       : num 12.5
+  ..@ dose.median     : num 0
+  ..@ dose.mode       : num 0
+  ..@ dose.STD        : num 0
+  ..@ conf.index      : num 0
+  ..@ equiv.sphere    : num 0
+  ..@ gradient        : num 0
+  ..@ dose.rx         : num 55
+  ..@ dose.fx         : num 25
+  ..@ rx.isodose      : num 100
+  ..@ doses           : num [1:114] 0.125 0.5 1 1.5 2 2.5 3 3.5 4 4.5 ...
+  ..@ dose.type       : chr "absolute"
+  ..@ dose.units      : chr "Gy"
+  ..@ volumes         : numeric [1:114, 1:48] 0 0 0 0 0 ...
+  .. ..- attr(*, "dimnames")=List of 2
+  .. .. ..$ : NULL
+  .. .. ..$ : chr [1:48] "-96" "-93" "-90" "-87" ...
+  .. ..- attr(*, "class")= chr [1:2] "numeric" "matrix"
+  ..@ volume.type     : chr "absolute"
 }
 }
 

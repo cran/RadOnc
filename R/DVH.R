@@ -4,6 +4,15 @@ setAs("structure3D", "DVH",
 	}
 )
 
+setAs("zDVH", "DVH", 
+	function(from) {
+		from$volumes <- apply(from$volumes, 1, sum)
+		class(from$volumes) <- "numeric"
+		class(from) <- "DVH"
+		return(from)
+	}
+)
+
 
 setMethod("$", "DVH",
 	function (x, name) {

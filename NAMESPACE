@@ -30,6 +30,7 @@ export(
 	calculate.DVH,
 	compareStructures,
 	gEUD,
+	getStructureList,
 	LQE,
 	read.DVH,
 	read.DICOM.RT

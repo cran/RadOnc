@@ -63,14 +63,17 @@ setMethod("[", "DVH.list",
 		}
 		if (length(i) == 1) {
 			x <- attr(x,"structures")
-			if (suppressWarnings(!is.na(as.numeric(i)))) {
-				i <- as.numeric(i)
-			}
 			if (grepl("(\\*|\\^|\\$|\\?|\\+|[[]|[{]|\\|)", i)) {
 				return(new("DVH.list", x[grep(i, unlist(lapply(x, names)))]))
 			}
 			else if (is.character(i)) {
-				return(new("DVH.list", x[which(unlist(lapply(x, names)) == i)]))
+				return(new("DVH.list", x[which(unlist(lapply(x, names)) == i)]))					
+			}
+			else if (is.logical(i)) {
+				return(new("DVH.list", x[i]))
+			}
+			else if (suppressWarnings(!is.na(as.numeric(i)))) {
+				return(new("DVH.list", x[i]))
 			}
 			else {
 				return(new("DVH.list", x[i]))

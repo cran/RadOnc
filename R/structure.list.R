@@ -46,14 +46,17 @@ setMethod("[", "structure.list",
 		if (length(i) == 1) {
 			names.x <- names(x)
 			x <- attr(x,"structures")
-			if (suppressWarnings(!is.na(as.numeric(i)))) {
-				i <- as.numeric(i)
-			}
 			if (grepl("(\\*|\\^|\\$|\\?|\\+|[[]|[{]|\\|)", i)) {
 				return(new("structure.list", x[grep(i, names.x)]))
 			}
 			else if (is.character(i)) {
 				return(new("structure.list", x[which(names.x == i)]))
+			}
+			else if (is.logical(i)) {
+				return(new("structure.list", x[i]))
+			}			
+			else if (suppressWarnings(!is.na(as.numeric(i)))) {
+				return(new("structure.list", x[as.numeric(i)]))
 			}
 			else {
 				return(new("structure.list", x[i]))

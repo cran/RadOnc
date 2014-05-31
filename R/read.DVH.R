@@ -1,5 +1,5 @@
 read.DVH <- function (file, type=NA, verbose=TRUE) {
-	type <- match.arg(tolower(type), choices=c(NA, "aria10", "aria11", "aria8", "dicom", "cadplan"), several.ok=TRUE)
+	type <- match.arg(tolower(type), choices=c(NA, "aria10", "aria11", "aria8", "dicom", "cadplan", "tomo"), several.ok=TRUE)
 	if (length(file) < 1) {
 		warning("argument 'file' is missing, with no default")
 		return()
@@ -12,6 +12,7 @@ read.DVH <- function (file, type=NA, verbose=TRUE) {
 			aria11 = return(read.DVH.Aria11(file=file, verbose=verbose)),
 			dicom = return(read.DVH.DICOM(path=file, verbose=verbose)),
 			cadplan = return(read.DVH.CadPlan(file=file, verbose=verbose)),
+			tomo = return(read.DVH.TomoTherapy(file=file, verbose=verbose)),
 			warning("DVH file format not specified for file '", file, "'")
 		)
 		return()
@@ -97,7 +98,7 @@ read.DVH.Aria10 <- function (file, verbose=TRUE) {
 		dose.units <- "cGy"
 	}
 	dose.rx <- suppressWarnings(as.numeric(sub("^Prescribed dose.*: ", "", dose.rx, ignore.case=TRUE, perl=TRUE)))
-    rx.isodose <- as.numeric(sub(".*: ", "", header[grep("^[%] for dose.*: ", header, ignore.case=TRUE, perl=TRUE)]))
+    rx.isodose <- suppressWarnings(as.numeric(sub(".*: ", "", header[grep("^[%] for dose.*: ", header, ignore.case=TRUE, perl=TRUE)])))
     
 	if (verbose) {
 		cat("[exported on ", date, "]\n", sep="")
@@ -319,4 +320,11 @@ read.DVH.CadPlan <- function(file, verbose=TRUE) {
 	# RETURN DVH LIST
 	names(DVH.list) <- unlist(lapply(DVH.list, names))
 	return(new("DVH.list", DVH.list))
+}
+
+
+read.DVH.TomoTherapy <- function (file, verbose=TRUE) {
+	warning("TomoTherapy format not currently supported")
+	return()
+#	data <- read.table(file, header=TRUE, sep=",")
 }

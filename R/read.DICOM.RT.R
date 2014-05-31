@@ -32,12 +32,12 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 	## ASSUMES CONSTANT VOXEL SIZE AND SLICE THICKNESS FOR ALL DICOM FILES IN CT!!!!
 	voxel.size <- as.numeric(unlist(strsplit(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "PixelSpacing"), "value"], " ")))
 	image.position <- as.numeric(unlist(strsplit(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "ImagePositionPatient"), "value"], " ")))
-	z.slices <- lapply(DICOMs$hdr[CT], function(x) { as.numeric(unlist(strsplit(x[which(x[,"name"] == "ImagePositionPatient"), "value"], " "))[3]) })
+	z.slices <- unlist(lapply(DICOMs$hdr[CT], function(x) { as.numeric(unlist(strsplit(x[which(x[,"name"] == "ImagePositionPatient"), "value"], " "))[3]) }))
 	voxel.size <- c(voxel.size, as.numeric(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "SliceThickness"), "value"]))
 	patient.name <- as.character(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "PatientsName"), "value"])
 	patient.ID <- as.character(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "PatientID"), "value"])
 	CT <- create3D(list(hdr=DICOMs$hdr[CT], img=DICOMs$img[CT]))
-	dimnames(CT) <- list((1:dim(CT)[1]-1)*voxel.size[1]+image.position[1], (1:dim(CT)[2]-1)*voxel.size[2]+image.position[2], image.position[3]-(1:dim(CT)[3]-1)*voxel.size[3]) 
+	dimnames(CT) <- list((1:dim(CT)[1]-1)*voxel.size[1]+image.position[1], (1:dim(CT)[2]-1)*voxel.size[2]+image.position[2], z.slices) 
 	if (verbose) {
 		cat("FINISHED [", length(z.slices), " slices, ", paste(sprintf("%.*f", 1, voxel.size), collapse="x", sep=""), "mm res]\n", sep="")
 	}
@@ -68,13 +68,14 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 		else {
 			structureset.ID <- ""
 		}
-		if (length(which(DICOM.i$hdr[,"name"] == "DoseReferenceSequence")) == 1) {
-			switch(toupper(DICOM.i$hdr[which(DICOM.i$hdr[,"name"] == "DoseReferenceType"), "value"]),
+		dose.ref.type <- unique(toupper(DICOM.i$hdr[which(DICOM.i$hdr[,"name"] == "DoseReferenceType"), "value"]))
+		if ((length(which(DICOM.i$hdr[,"name"] == "DoseReferenceSequence")) == 1) & (length(dose.ref.type) == 1)) {
+			switch(dose.ref.type,
 				TARGET = {
-					dose.rx <- as.numeric(DICOM.i$hdr[which(DICOM.i$hdr[,"name"] == "TargetPrescriptionDose"), "value"])			
+					dose.rx <- max(as.numeric(DICOM.i$hdr[which(DICOM.i$hdr[,"name"] == "TargetPrescriptionDose"), "value"]), na.rm=TRUE)			
 				},
 				ORGAN_AT_RISK = {
-					dose.rx <- as.numeric(DICOM.i$hdr[which(DICOM.i$hdr[,"name"] == "DeliveryMaximumDose"), "value"])			
+					dose.rx <- max(as.numeric(DICOM.i$hdr[which(DICOM.i$hdr[,"name"] == "DeliveryMaximumDose"), "value"]), na.rm=TRUE)			
 				},
 				dose.rx <- NA
 			)
@@ -231,10 +232,13 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 #			}		
 #		}
 #		else {
-			DVH.list.names <- DVH.list <- NULL
+#			DVH.list.names <- DVH.list <- NULL
 #		}
 	}
-
+	if (length(which(modalities == "RTDOSE")) < 1) {
+		warning("Unable to extract DVH data from DICOM-RT (no dose grid available)")
+		DVH <- FALSE
+	}
 
 ##################################
 ## IMPORT STRUCTURE SET FILE(S) ##
@@ -314,9 +318,9 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 			structure.j <- structures.j[which.min(structures.j)]
 			data.j <- strsplit(DICOM.i[intersect(contour.seq[j]:structure.j, contours), "value"], " ")
 			struct.ID.j <- which(structure.IDs == as.numeric(DICOM.i[structure.j, "value"]))
-			if (DVH) {
-				DVH.j <- which(DVH.list.names == as.numeric(DICOM.i[structure.j, "value"]))
-			}
+#			if (DVH) {
+#				DVH.j <- which(DVH.list.names == as.numeric(DICOM.i[structure.j, "value"]))
+#			}
 			if (length(struct.ID.j) < 1) {
 				warning(paste("Expected structure not matched in DICOM file", sep=""))
 				next
@@ -326,14 +330,14 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 				warning(paste("Structure '", names(structure.IDs)[struct.ID.j], "' is empty", sep=""))
 				data$points[[struct.ID.j]] <- NA
 				if (DVH) {
-					if (length(DVH.j) < 1) {
+#					if (length(DVH.j) < 1) {
 						data$DVH[[struct.ID.j]] <- new("DVH", patient=patient.name, ID=patient.ID, structure.name=names(structure.IDs)[struct.ID.j])
-					}
-					else {
-						DVH.j <- DVH.list[[DVH.j]]
-						DVH.j$structure.name <- names(structure.IDs)[struct.ID.j]
-						data$DVH[[struct.ID.j]] <- DVH.j
-					}
+#					}
+#					else {
+#						DVH.j <- DVH.list[[DVH.j]]
+#						DVH.j$structure.name <- names(structure.IDs)[struct.ID.j]
+#						data$DVH[[struct.ID.j]] <- DVH.j
+#					}
 					next
 				}
 			}
@@ -351,14 +355,14 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 			)			
 			data$points[[struct.ID.j]] <- data.j
 			if (DVH) {
-				if (length(DVH.j) < 1) {
+#				if (length(DVH.j) < 1) {
 					data$DVH[[struct.ID.j]] <- new("DVH", patient=patient.name, ID=patient.ID, structure.name=names(structure.IDs)[struct.ID.j])
-				}
-				else {
-					DVH.j <- DVH.list[[DVH.j]]
-					DVH.j$structure.name <- names(structure.IDs)[struct.ID.j]
-					data$DVH[[struct.ID.j]] <- DVH.j
-				}
+#				}
+#				else {
+#					DVH.j <- DVH.list[[DVH.j]]
+#					DVH.j$structure.name <- names(structure.IDs)[struct.ID.j]
+#					data$DVH[[struct.ID.j]] <- DVH.j
+#				}
 			}
 		}
 		if (length(setdiff(1:N, used)) > 0) {
@@ -388,7 +392,12 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 	}
 	else {
 		warning("No structure set(s) available for import")
-		return(new("RTdata", name=path, CT=CT, dose=doses[[1]]))
+		if (length(doses) > 0) {
+			return(new("RTdata", name=path, CT=CT, dose=doses[[1]]))
+		}
+		else {
+			return(new("RTdata", name=path, CT=CT))
+		}
 	}
 	N <- length(data$name)
 	struct.list <- new("structure.list")
@@ -518,7 +527,12 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 		}
 	}
 
-	return(new("RTdata", name=path, CT=CT, dose=doses[[1]], structures=struct.list))
+	if (length(doses) > 0) {
+		return(new("RTdata", name=path, CT=CT, dose=doses[[1]], structures=struct.list))
+	}
+	else {
+		return(new("RTdata", name=path, CT=CT, structures=struct.list))		
+	}
 	## FOR OTHER FILES LOAD SPECIFIC DICOM files with skipSequence=FALSE and re-store hdr info in DICOM list!
 
 }

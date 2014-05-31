@@ -84,12 +84,13 @@ setMethod("plot", c("DVH.list", "ANY"),
 	}
 ) 
 
-plot.DVH.ttest <- function(x, y, ..., paired=FALSE, col="black", lty="solid", lwd=1, alpha=0.05, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), main="", line.transparency=1, fill.transparency=line.transparency/2, angle=45, density=NULL, fill.lty=lty, fill=TRUE, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, new=TRUE, highlight="lightyellow") {
+plot.DVH.ttest <- function(x, y, ..., paired=FALSE, col="black", lty="solid", lwd=1, alpha=0.05, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), width=NULL, main="", multiplier=1, quantile=c(0.25, 0.75), line.transparency=1, fill.transparency=line.transparency/2, angle=45, density=NULL, fill.lty=lty, fill=TRUE, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, new=TRUE, highlight="lightyellow") {
 	dose <- match.arg(dose)
 	dose.units <- match.arg(dose.units)
 	volume <- match.arg(volume)
 	type <- match.arg(type)
 	legend <- match.arg(legend)
+	width <- match.arg(width, choices=c(NA, "range", "mad", "IQR", "quantile", "var", "sd"))
 	x <- new("DVH.list", lapply(x, convert.DVH, type=type, dose=dose, dose.units=dose.units, volume=volume))
 	x <- x[!unlist(lapply(x, is.empty))]
 	N.x <- length(x)
@@ -138,20 +139,87 @@ plot.DVH.ttest <- function(x, y, ..., paired=FALSE, col="black", lty="solid", lw
 		par(mar=c(4.1, 4.1, 0.5, 2.1))
 		plot(NULL, xlim=range(doses), ylim=if (volume == "relative") {c(0, 100)} else {range(unlist(lapply(c(x, y), slot, "volumes")), na.rm=TRUE)}, xlab=if (dose == "absolute") {paste("Dose (", dose.units, ")",sep="")} else {"Dose (%)"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main="")
 	}
-	conf.int <- abs(data.ttest$conf.int1 - (data.ttest$x.mean - data.ttest$y.mean))/2
-	conf.int[which(is.na(conf.int))] <- 0
-	var.x <- var(x)
-	var.x <- approx(var.x$dose, var.x$var, doses, yright=0, yleft=0)$y
-	var.y <- var(y)
-	var.y <- approx(var.y$dose, var.y$var, doses, yright=0, yleft=0)$y
-	sum.var <- var.x + var.y
-	var.x[which(sum.var != 0)] <- (var.x / sum.var)[which(sum.var != 0)]
-	var.y[which(sum.var != 0)] <- (var.y / sum.var)[which(sum.var != 0)]
+	if (is.na(width)) {
+		conf.int <- data.ttest$y.mean + data.ttest$conf.int2 - data.ttest$x.mean
+		conf.int[which(is.na(conf.int))] <- 0
+		var.x <- var(x)
+		var.x <- approx(var.x$dose, var.x$var, doses, yright=0, yleft=0)$y
+		var.y <- var(y)
+		var.y <- approx(var.y$dose, var.y$var, doses, yright=0, yleft=0)$y
+		sum.var <- var.x + var.y
+		var.x[which(sum.var != 0)] <- (var.x / sum.var)[which(sum.var != 0)]
+		var.y[which(sum.var != 0)] <- (var.y / sum.var)[which(sum.var != 0)]
+		x.upper <- data.ttest$x.mean+conf.int * var.x
+		x.lower <- data.ttest$x.mean-conf.int * var.x
+		y.upper <- data.ttest$y.mean+conf.int * var.y
+		y.lower <- data.ttest$y.mean-conf.int * var.y
+	}
+	else {
+		switch(width,
+			range = {
+				x.range <- quantile(x, probs=c(0, 1), type=7, na.rm=TRUE)
+				y.range <- quantile(y, probs=c(0, 1), type=7, na.rm=TRUE)
+				x.upper <- approx(x.range$dose, x.range$quantiles[2,], doses, yright=0, yleft=0)$y
+				x.lower <- approx(x.range$dose, x.range$quantiles[1,], doses, yright=0, yleft=0)$y
+				y.upper <- approx(y.range$dose, y.range$quantiles[2,], doses, yright=0, yleft=0)$y
+				y.lower <- approx(y.range$dose, y.range$quantiles[1,], doses, yright=0, yleft=0)$y
+			},
+			mad = {
+				x.range <- mad(x)
+				x.range <- approx(x.range$dose, x.range$mad*multiplier, doses, yright=0, yleft=0)$y
+				y.range <- mad(y)
+				y.range <- approx(y.range$dose, y.range$mad*multiplier, doses, yright=0, yleft=0)$y
+				x.upper <- data.ttest$x.mean+x.range
+				x.lower <- data.ttest$x.mean-x.range
+				y.upper <- data.ttest$y.mean+y.range
+				y.lower <- data.ttest$y.mean-y.range
+			},
+			IQR = {
+				x.range <- quantile(x, probs=c(0.25, 0.75), type=7, na.rm=TRUE)
+				y.range <- quantile(y, probs=c(0.25, 0.75), type=7, na.rm=TRUE)
+				x.upper <- approx(x.range$dose, x.range$quantiles[2,], doses, yright=0, yleft=0)$y
+				x.lower <- approx(x.range$dose, x.range$quantiles[1,], doses, yright=0, yleft=0)$y
+				y.upper <- approx(y.range$dose, y.range$quantiles[2,], doses, yright=0, yleft=0)$y
+				y.lower <- approx(y.range$dose, y.range$quantiles[1,], doses, yright=0, yleft=0)$y
+			},
+			quantile = {
+				if (length(quantile) != 2) {
+					quantile <- c(0.25, 0.75)
+				}
+				x.range <- quantile(x, probs=quantile, type=7, na.rm=TRUE)
+				y.range <- quantile(y, probs=quantile, type=7, na.rm=TRUE)
+				x.upper <- approx(x.range$dose, x.range$quantiles[2,], doses, yright=0, yleft=0)$y
+				x.lower <- approx(x.range$dose, x.range$quantiles[1,], doses, yright=0, yleft=0)$y
+				y.upper <- approx(y.range$dose, y.range$quantiles[2,], doses, yright=0, yleft=0)$y
+				y.lower <- approx(y.range$dose, y.range$quantiles[1,], doses, yright=0, yleft=0)$y
+			},
+			sd = {
+				x.range <- sd(x)
+				x.range <- approx(x.range$dose, x.range$sd*multiplier, doses, yright=0, yleft=0)$y
+				y.range <- sd(y)
+				y.range <- approx(y.range$dose, y.range$sd*multiplier, doses, yright=0, yleft=0)$y
+				x.upper <- data.ttest$x.mean+x.range
+				x.lower <- data.ttest$x.mean-x.range
+				y.upper <- data.ttest$y.mean+y.range
+				y.lower <- data.ttest$y.mean-y.range
+			},
+			var = {
+				x.range <- var(x)
+				x.range <- approx(x.range$dose, x.range$var*multiplier, doses, yright=0, yleft=0)$y
+				y.range <- var(y)
+				y.range <- approx(y.range$dose, y.range$var*multiplier, doses, yright=0, yleft=0)$y
+				x.upper <- data.ttest$x.mean+x.range
+				x.lower <- data.ttest$x.mean-x.range
+				y.upper <- data.ttest$y.mean+y.range
+				y.lower <- data.ttest$y.mean-y.range
+			}
+		)		
+	}
 	y.max <- par("usr")[3]+par("usr")[4]
-	x.upper <- pmin(data.ttest$x.mean+conf.int * var.x, y.max)
-	x.lower <- pmax(data.ttest$x.mean-conf.int * var.x, 0)
-	y.upper <- pmin(data.ttest$y.mean+conf.int * var.y, y.max)
-	y.lower <- pmax(data.ttest$y.mean-conf.int * var.y, 0)
+	x.upper <- pmin(x.upper, y.max)
+	x.lower <- pmax(x.lower, 0)
+	y.upper <- pmin(y.upper, y.max)
+	y.lower <- pmax(y.lower, 0)
 	points(doses, x.upper, type="l",col=rgb(col.x[1],col.x[2],col.x[3],fill.transparency[1]), lty=fill.lty[1])
 	points(doses, x.lower, type="l",col=rgb(col.x[1],col.x[2],col.x[3],fill.transparency[1]), lty=fill.lty[1])
 	points(doses, y.upper, type="l",col=rgb(col.y[1],col.y[2],col.y[3],fill.transparency[2]), lty=fill.lty[2])
@@ -242,6 +310,7 @@ plot.DVH.wilcox <- function(x, y, ..., alternative=c("two.sided", "greater", "le
 		plot(NULL, xlim=range(doses), ylim=if (volume == "relative") {c(0, 100)} else {range(unlist(lapply(c(x, y), slot, "volumes")), na.rm=TRUE)}, xlab=if (dose == "absolute") {paste("Dose (", dose.units, ")",sep="")} else {"Dose (%)"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main="")
 	}
 	conf.int <- abs(data.wilcox$conf.int2 - data.wilcox$conf.int1)/2
+#	conf.int <- data.wilcox$y.med + data.wilcox$conf.int2 - data.wilcox$x.med	
 	conf.int[which(is.na(conf.int))] <- 0
 	mad.x <- mad(x)
 	mad.x <- approx(mad.x$dose, mad.x$mad, doses, yright=0, yleft=0)$y
@@ -385,12 +454,12 @@ plot.DVH.individual <- function(x, ..., col="black", lty ="solid", lwd=1, line.t
 	}
 }
 
-plot.DVH.groups <- function(x, ..., col="black", lty ="solid", lwd=1, line.transparency=1, fill.transparency=line.transparency/2, new=TRUE, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), width=c("range", "mad", "IQR", "quantile", "var", "sd"), main="", multiplier=1, quantile=c(0.25, 0.75), fill=TRUE, angle=45, density=NULL, fill.lty=lty) {
+plot.DVH.groups <- function(x, ..., col="black", lty ="solid", lwd=1, line.transparency=1, fill.transparency=line.transparency/2, new=TRUE, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), width=NULL, main="", multiplier=1, quantile=c(0.25, 0.75), fill=TRUE, angle=45, density=NULL, fill.lty=lty) {
 	dose <- match.arg(dose)
 	dose.units <- match.arg(dose.units)
 	volume <- match.arg(volume)
 	type <- match.arg(type)
-	width <- match.arg(width)
+	width <- match.arg(width, choices=c("range", "mad", "IQR", "quantile", "var", "sd"))
 	multiplier <- max(0, multiplier, na.rm=TRUE)
 	legend <- match.arg(legend)
 	groups <- c(list(x), list(...))

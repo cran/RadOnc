@@ -112,6 +112,12 @@ setMethod("[", "DVH",
 							result.units <- c(result.units, NA)
 							next
 						}
+						if (length(x@doses) < 1) {
+							warning("Empty DVH data")
+							result <- c(result, NA)
+							result.units <- c(result.units, NA)
+							next
+						}
 						switch(x@type,
 							cumulative = {
 								switch(x@dose.type,
@@ -223,7 +229,13 @@ setMethod("[", "DVH",
 									}
 									next
 								}
-								else if (value[count] == "INTEGRAL") {
+								if (length(x@doses) < 1) {
+									warning("Empty DVH data")
+									result <- c(result, NA)
+									result.units <- c(result.units, NA)
+									next
+								}																
+								if (value[count] == "INTEGRAL") {
 									if (type3[count]) {
 										if (grepl("(>|<)[.0-9]+([%]|GY|CGY)*$", type4[count])) {
 											if (grepl(">", type4[count])) {
@@ -367,6 +379,12 @@ setMethod("[", "DVH",
 								}
 							},
 							differential = {
+								if (length(x@doses) < 1) {
+									warning("Empty DVH data")
+									result <- c(result, NA)
+									result.units <- c(result.units, NA)
+									next
+								}								
 								if (value[count] == "INTEGRAL") {
 									if (type3[count]) {
 										if (grepl("(>|<)[.0-9]+([%]|GY|CGY)*$", type4[count])) {

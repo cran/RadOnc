@@ -103,6 +103,7 @@ setMethod("initialize",
 		.Object@gradient <- max(0, gradient, na.rm=TRUE)
 		.Object@dose.rx <- max(0, dose.rx, na.rm=FALSE)
 		.Object@dose.fx <- max(0, dose.fx, na.rm=TRUE)
+		if (is.na(rx.isodose)) rx.isodose <- 100
 		.Object@rx.isodose <- max(0, rx.isodose, na.rm=TRUE)
 		.Object@dose.type <- match.arg(dose.type)
 		.Object@dose.units <- match.arg(dose.units)
@@ -140,7 +141,7 @@ setValidity("DVH",
 #		if (length(object@doses) < 2) return(FALSE)
 		if (any(is.na(object@doses))) return(FALSE)
 		if (!is.na(object@dose.rx) & (object@dose.rx <= 0)) return(FALSE)
-		if (object@rx.isodose <= 0) return(FALSE) 
+		if (is.na(object@rx.isodose) | (object@rx.isodose <= 0)) return(FALSE) 
 		if (object@dose.min > object@dose.max) return(FALSE)
 		if ((object@dose.mean > object@dose.max) | (object@dose.mean < object@dose.min)) return(FALSE)
 		if (!identical(order(object@doses, decreasing=FALSE), 1:length(object@doses))) return(FALSE)
@@ -220,6 +221,7 @@ setMethod("initialize",
 		.Object@gradient <- max(0, gradient, na.rm=TRUE)
 		.Object@dose.rx <- max(0, dose.rx, na.rm=FALSE)
 		.Object@dose.fx <- max(0, dose.fx, na.rm=TRUE)
+		if (is.na(rx.isodose)) rx.isodose <- 100
 		.Object@rx.isodose <- max(0, rx.isodose, na.rm=TRUE)
 		.Object@dose.type <- match.arg(dose.type)
 		.Object@dose.units <- match.arg(dose.units)
@@ -257,7 +259,7 @@ setValidity("zDVH",
 #		if (length(object@doses) < 2) return(FALSE)
 		if (any(is.na(object@doses))) return(FALSE)
 		if (!is.na(object@dose.rx) & (object@dose.rx <= 0)) return(FALSE)
-		if (object@rx.isodose <= 0) return(FALSE) 
+		if (is.na(object@rx.isodose) | (object@rx.isodose <= 0)) return(FALSE) 
 		if (object@dose.min > object@dose.max) return(FALSE)
 		if ((object@dose.mean > object@dose.max) | (object@dose.mean < object@dose.min)) return(FALSE)
 		if (!identical(order(object@doses, decreasing=FALSE), 1:length(object@doses))) return(FALSE)
@@ -494,9 +496,15 @@ setMethod("initialize",
 		...
 	) {
 		.Object@name <- name
+		if (class(CT) != "array") {
+			CT <- array(dim=c(0,0,0))
+		}
 		.Object@CT <- CT
+		if (class(dose) != "array") {
+			dose <- array(dim=c(0,0,0))
+		}
 		.Object@dose <- dose
-		attr(.Object@dose.units, "dose.units") <- character()
+		attr(.Object@dose, "dose.units") <- character()
 		if (class(structures) == "structure.list") {
 			.Object@structures <- structures
 		}

@@ -90,16 +90,16 @@
 			An overall title for the plot (see \code{\link{title}}, default is \code{""}).
 		}
 		\item{\code{multiplier}}{
-			A single numerical value (default is \code{1}) specifying the degree to which group display width should be shrunken or magnified. This parameter is only processed when \code{plot.type="grouped"}.
+			A single numerical value (default is \code{1}) specifying the degree to which group display width should be shrunken or magnified. This parameter is only processed when \code{plot.type="grouped"} or \code{"ttest"} and \code{width="mad"}, \code{"sd"}, or \code{"var"}.
 		}
 		\item{\code{new}}{
 			Logical, defaulting to \code{TRUE}. If set to \code{FALSE}, the next high-level plotting command (actually \code{\link{plot.new}}) should \emph{not clean} the frame before drawing \emph{as if it were on a \strong{new} device}. It is an error (ignored with a warning) to try to use \code{new=FALSE} on a device that does not currently contain a high-level plot.
 		}
 		\item{\code{quantile}}{
-			A numeric vector containing two values in \emph{[0,1]} (default is the interquartile range: \code{(0.25, 0.75)}), specifying the lower and upper probabilities (respectively) to be used when \code{width="quantile"} and \code{plot.type="grouped"}. See \code{\link{quantile}} for more details.
+			A numeric vector containing two values in \emph{[0,1]} (default is the interquartile range: \code{(0.25, 0.75)}), specifying the lower and upper probabilities (respectively) to be used when \code{width="quantile"} and \code{plot.type="grouped"} or \code{"ttest"}. See \code{\link{quantile}} for more details.
 		}
 		\item{\code{width}}{
-			A character vector specifying the width of shading to use, when relevant (for a group of DVHs). Value must be one of \code{"range"} (default), \code{"mad"}, \code{"IQR"}, \code{"quantile"}, \code{"var"}, or \code{"sd"}, specifying the absolute range, the mean-absolute-deviation, the interquartile (25-75\%) range, the arbitrary inter-quantile range (see \code{quantile} parameter), the group variance, or standard deviation, respectively. This parameter is ignored unless \code{plot.type="grouped"}.
+			A character vector specifying the width of shading to use, when relevant (for a group of DVHs). Value must be one of \code{"range"} (default), \code{"mad"}, \code{"IQR"}, \code{"quantile"}, \code{"var"}, or \code{"sd"}, specifying the absolute range, the mean-absolute-deviation, the interquartile (25-75\%) range, the arbitrary inter-quantile range (see \code{quantile} parameter), the group variance, or standard deviation, respectively. This parameter is ignored unless \code{plot.type="grouped"}. If \code{plot.type="ttest"}, the parameter can be optionally specified (if \code{width=NULL} (default), shading will default to the confidence interval).
 		}
 	}
 }

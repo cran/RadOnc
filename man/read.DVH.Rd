@@ -7,7 +7,7 @@ Read DVH data from input file
 Function to extract DVH data from input file(s). Supported file formats include Aria (v8-11), DICOM-RT, CadPlan, and TomoTherapy.
 }
 \usage{
-read.DVH(file, type=NA, verbose=TRUE)
+read.DVH(file, type=NA, verbose=TRUE, collapse=TRUE)
 }
 \arguments{
   \item{file}{
@@ -18,6 +18,9 @@ Character vector specifying the DVH file format corresonding to each element in 
 }
   \item{verbose}{
 Single logical value indicating whether or not to output verbose information and status in text
+}
+  \item{collapse}{
+Single logical value indicating whether or not to collapse input from multiple files into a single \code{DVH.list} with all structures (default) or to output a nested list of individual \code{DVH.list} objects with each one corresponding to a single input file
 }
 }
 \value{
@@ -35,5 +38,6 @@ file1 <- system.file("extdata/John_Doe.dvh", package="RadOnc")
 johndoe <- read.DVH(file=file1, type="aria10", verbose=TRUE)
 file2 <- system.file("extdata/Jane_Doe.dvh", package="RadOnc")
 janedoe <- read.DVH(file=file2, type="aria10", verbose=TRUE)
+combined <- read.DVH(file=c(file1, file2), type="aria10", collapse=TRUE)
 }
 \keyword{ file }

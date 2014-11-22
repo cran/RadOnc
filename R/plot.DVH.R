@@ -84,7 +84,7 @@ setMethod("plot", c("DVH.list", "ANY"),
 	}
 ) 
 
-plot.DVH.ttest <- function(x, y, ..., paired=FALSE, col="black", lty="solid", lwd=1, alpha=0.05, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), width=NULL, main="", multiplier=1, quantile=c(0.25, 0.75), line.transparency=1, fill.transparency=line.transparency/2, angle=45, density=NULL, fill.lty=lty, fill=TRUE, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, new=TRUE, highlight="lightyellow") {
+plot.DVH.ttest <- function(x, y, ..., paired=FALSE, col="black", lty="solid", lwd=1, alpha=0.05, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), width=NULL, main="", xlim=NULL, ylim=NULL, multiplier=1, quantile=c(0.25, 0.75), line.transparency=1, fill.transparency=line.transparency/2, angle=45, density=NULL, fill.lty=lty, fill=TRUE, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, new=TRUE, highlight="lightyellow") {
 	dose <- match.arg(dose)
 	dose.units <- match.arg(dose.units)
 	volume <- match.arg(volume)
@@ -132,12 +132,24 @@ plot.DVH.ttest <- function(x, y, ..., paired=FALSE, col="black", lty="solid", lw
 	if (length(density) != 2) {
 		density <- rep(density[1], 2)
 	}	
-	data.ttest <- t.test(x, y, paired=paired, conf.level=1-alpha)
+	data.ttest <- t.test(x, y, paired=paired, conf.level=1-alpha, volume=volume)
 	doses <- data.ttest$dose
 	if (new) {
 		layout(c(2,1),heights=c(1,4))
 		par(mar=c(4.1, 4.1, 0.5, 2.1))
-		plot(NULL, xlim=range(doses), ylim=if (volume == "relative") {c(0, 100)} else {range(unlist(lapply(c(x, y), slot, "volumes")), na.rm=TRUE)}, xlab=if (dose == "absolute") {paste("Dose (", dose.units, ")",sep="")} else {"Dose (%)"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main="")
+		if (is.null(xlim) | length(xlim) != 2) {
+			xlim <- range(doses)
+		}
+		if (is.null(ylim) | length(ylim) != 2) {
+			if (volume == "relative") {
+				ylim <- c(0, 100)
+			}
+			else {
+				ylim <- range(unlist(lapply(c(x, y), slot, "volumes")), na.rm=TRUE)
+			}
+		}
+		
+		plot(NULL, xlim=xlim, ylim=ylim, xlab=if (dose == "absolute") {paste("Dose (", dose.units, ")",sep="")} else {"Dose (%)"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main="")
 	}
 	if (is.na(width)) {
 		conf.int <- data.ttest$y.mean + data.ttest$conf.int2 - data.ttest$x.mean
@@ -215,11 +227,10 @@ plot.DVH.ttest <- function(x, y, ..., paired=FALSE, col="black", lty="solid", lw
 			}
 		)		
 	}
-	y.max <- par("usr")[3]+par("usr")[4]
-	x.upper <- pmin(x.upper, y.max)
-	x.lower <- pmax(x.lower, 0)
-	y.upper <- pmin(y.upper, y.max)
-	y.lower <- pmax(y.lower, 0)
+	x.upper <- pmin(x.upper, ylim[2])
+	x.lower <- pmax(x.lower, ylim[1])
+	y.upper <- pmin(y.upper, ylim[2])
+	y.lower <- pmax(y.lower, ylim[1])
 	points(doses, x.upper, type="l",col=rgb(col.x[1],col.x[2],col.x[3],fill.transparency[1]), lty=fill.lty[1])
 	points(doses, x.lower, type="l",col=rgb(col.x[1],col.x[2],col.x[3],fill.transparency[1]), lty=fill.lty[1])
 	points(doses, y.upper, type="l",col=rgb(col.y[1],col.y[2],col.y[3],fill.transparency[2]), lty=fill.lty[2])
@@ -243,7 +254,7 @@ plot.DVH.ttest <- function(x, y, ..., paired=FALSE, col="black", lty="solid", lw
 	if (new) {
 		par(mar=c(0.1,4.1,2.1,2.1))
 		p <- data.ttest$p
-		plot(range(doses), c(min(p, na.rm=TRUE)/10,1), type="n", xlab="", ylab="P-value", log="y", xaxt="n", yaxt="n", main=main)
+		plot(xlim, c(min(p, na.rm=TRUE)/10,1), type="n", xlab="", ylab="P-value", log="y", xaxt="n", yaxt="n", main=main)
 		rect(doses[which(p<alpha)],rep(alpha, length(which(p<alpha))), doses[which(p<alpha)], p[which(p<alpha)], col=highlight, border=highlight)
 		abline(h=alpha,lty="dotted",col="gray")
 		points(doses,p, type="l")
@@ -257,13 +268,14 @@ plot.DVH.ttest <- function(x, y, ..., paired=FALSE, col="black", lty="solid", lw
 }
 
 
-plot.DVH.wilcox <- function(x, y, ..., alternative=c("two.sided", "greater", "less"), mu=0, paired=FALSE, exact=TRUE, correct=TRUE, alpha=0.05, col="black", lty="solid", lwd=1, line.transparency=1, fill.transparency=line.transparency/2, angle=45, density=NULL, fill=TRUE, fill.lty=lty, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), main="", legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, new=TRUE, highlight="lightyellow") {
+plot.DVH.wilcox <- function(x, y, ..., alternative=c("two.sided", "greater", "less"), mu=0, paired=FALSE, exact=TRUE, correct=TRUE, alpha=0.05, col="black", lty="solid", lwd=1, line.transparency=1, fill.transparency=line.transparency/2, angle=45, density=NULL, fill=TRUE, fill.lty=lty, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), main="", xlim=NULL, ylim=NULL, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, new=TRUE, highlight="lightyellow", panel.lower=c("wilcox", "grouped")) {
 	dose <- match.arg(dose)
 	dose.units <- match.arg(dose.units)
 	volume <- match.arg(volume)
 	type <- match.arg(type)
 	alternative <- match.arg(alternative)
 	legend <- match.arg(legend)	
+	panel.lower <- match.arg(panel.lower)
 	x <- new("DVH.list", lapply(x, convert.DVH, type=type, dose=dose, dose.units=dose.units, volume=volume))
 	x <- x[!unlist(lapply(x, is.empty))]
 	N.x <- length(x)
@@ -302,52 +314,48 @@ plot.DVH.wilcox <- function(x, y, ..., alternative=c("two.sided", "greater", "le
 	if (length(density) != 2) {
 		density <- rep(density[1], 2)
 	}	
-	data.wilcox <- wilcox.test(x, y, paired=paired, conf.level=1-alpha, alternative=alternative, mu=mu, exact=exact, correct=correct)
+	data.wilcox <- wilcox.test(x, y, paired=paired, conf.level=1-alpha, alternative=alternative, mu=mu, exact=exact, correct=correct, volume=volume)
 	doses <- data.wilcox$dose
 	if (new) {
 		layout(c(2,1),heights=c(1,4))
 		par(mar=c(4.1, 4.1, 0.5, 2.1))
-		plot(NULL, xlim=range(doses), ylim=if (volume == "relative") {c(0, 100)} else {range(unlist(lapply(c(x, y), slot, "volumes")), na.rm=TRUE)}, xlab=if (dose == "absolute") {paste("Dose (", dose.units, ")",sep="")} else {"Dose (%)"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main="")
-	}
-	conf.int <- abs(data.wilcox$conf.int2 - data.wilcox$conf.int1)/2
-#	conf.int <- data.wilcox$y.med + data.wilcox$conf.int2 - data.wilcox$x.med	
-	conf.int[which(is.na(conf.int))] <- 0
-	mad.x <- mad(x)
-	mad.x <- approx(mad.x$dose, mad.x$mad, doses, yright=0, yleft=0)$y
-	mad.y <- mad(y)
-	mad.y <- approx(mad.y$dose, mad.y$mad, doses, yright=0, yleft=0)$y
-	sum.mad <- mad.x + mad.y
-	mad.x[which(sum.mad != 0)] <- (mad.x / sum.mad)[which(sum.mad != 0)]
-	mad.y[which(sum.mad != 0)] <- (mad.y / sum.mad)[which(sum.mad != 0)]
-	y.max <- par("usr")[3]+par("usr")[4]
-	x.upper <- pmin(data.wilcox$x.med+conf.int * mad.x, y.max)
-	x.lower <- pmax(data.wilcox$x.med-conf.int * mad.x, 0)
-	y.upper <- pmin(data.wilcox$y.med+conf.int * mad.y, y.max)
-	y.lower <- pmax(data.wilcox$y.med-conf.int * mad.y, 0)
-	points(doses, x.upper, type="l",col=rgb(col.x[1],col.x[2],col.x[3],fill.transparency[1]), lty=fill.lty[1])
-	points(doses, x.lower, type="l",col=rgb(col.x[1],col.x[2],col.x[3],fill.transparency[1]), lty=fill.lty[1])
-	points(doses, y.upper, type="l",col=rgb(col.y[1],col.y[2],col.y[3],fill.transparency[2]), lty=fill.lty[2])
-	points(doses, y.lower, type="l",col=rgb(col.y[1],col.y[2],col.y[3],fill.transparency[2]), lty=fill.lty[2])
-	use.x <- (!(is.na(x.upper) | is.na(x.lower)))
-	use.y <- (!(is.na(y.upper) | is.na(y.lower)))
-	if (fill) {
-		polygon(c(doses[use.x], rev(doses[use.x])), c(x.upper[use.x], rev(x.lower[use.x])), col=rgb(col.x[1],col.x[2],col.x[3],fill.transparency[1]), border=NA, angle=angle[1], density=density[1], lty=fill.lty[1])
-   		polygon(c(doses[use.y], rev(doses[use.y])), c(y.upper[use.y], rev(y.lower[use.y])), col=rgb(col.y[1],col.y[2],col.y[3],fill.transparency[2]), border=NA, angle=angle[2], density=density[2],lty=fill.lty[2])
-	}
-	points(doses, data.wilcox$x.med, type="l", col=rgb(col.x[1],col.x[2],col.x[3],line.transparency[1]), lty=lty[1], lwd=lwd[1])
-	points(doses, data.wilcox$y.med, type="l", col=rgb(col.y[1],col.y[2],col.y[3],line.transparency[2]), lty=lty[2], lwd=lwd[2])
-	if (!is.na(legend)) {
-		if (length(legend.labels) >= 2) { 
-			legend(legend, legend=legend.labels[1:2], lty=lty, lwd=lwd, col=c(rgb(col.x[1],col.x[2],col.x[3],line.transparency[1]), rgb(col.y[1],col.y[2],col.y[3],line.transparency[2])), fill=if (fill) {c(rgb(col.x[1],col.x[2],col.x[3],fill.transparency[1]), rgb(col.y[1],col.y[2],col.y[3],fill.transparency[2]))} else {NULL}, density=density, angle=angle)
+
+		if (is.null(xlim) | length(xlim) != 2) {
+			xlim <- range(doses)
 		}
-		else {
-			legend(legend, legend=c("Group 1", "Group 2"), lty=lty, lwd=lwd, col=c(rgb(col.x[1],col.x[2],col.x[3],line.transparency[1]), rgb(col.y[1],col.y[2],col.y[3],line.transparency[2])), fill=if (fill) {c(rgb(col.x[1],col.x[2],col.x[3],fill.transparency[1]), rgb(col.y[1],col.y[2],col.y[3],fill.transparency[2]))} else {NULL}, density=density, angle=angle)
+		if (is.null(ylim) | length(ylim) != 2) {
+			if (panel.lower == "wilcox") {
+				ylim <- range(c(data.wilcox$conf.int1, data.wilcox$conf.int2), na.rm=TRUE)
+			}
+			else if (volume == "relative") {
+				ylim <- c(0, 100)
+			}
+			else {
+				ylim <- range(unlist(lapply(c(x, y), slot, "volumes")), na.rm=TRUE)
+			}
 		}
+		
+		plot(NULL, xlim=xlim, ylim=ylim, xlab=if (dose == "absolute") {paste("Dose (", dose.units, ")",sep="")} else {"Dose (%)"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main="")
+	}
+	if (panel.lower == "wilcox") {
+		x.upper <- pmax(pmin(data.wilcox$conf.int1, ylim[2]), ylim[1])
+		x.lower <- pmin(pmax(data.wilcox$conf.int2, ylim[1]), ylim[2])
+		abline(h=0,lty="dotted",col="gray")
+		points(doses, x.upper, type="l",col=rgb(col.x[1],col.x[2],col.x[3],fill.transparency[1]), lty=fill.lty[1])
+		points(doses, x.lower, type="l",col=rgb(col.x[1],col.x[2],col.x[3],fill.transparency[1]), lty=fill.lty[1])
+		use.x <- (!(is.na(x.upper) | is.na(x.lower)))
+		if (fill) {
+			polygon(c(doses[use.x], rev(doses[use.x])), c(x.upper[use.x], rev(x.lower[use.x])), col=rgb(col.x[1],col.x[2],col.x[3],fill.transparency[1]), border=NA, angle=angle[1], density=density[1], lty=fill.lty[1])
+		}
+		points(doses, data.wilcox$estimate, type="l", col=rgb(col.x[1],col.x[2],col.x[3],line.transparency[1]), lty=lty[1], lwd=lwd[1])
+	}
+	else if (panel.lower == "grouped") {
+		plot.DVH.groups(x, y, new=FALSE, col=col, lty=lty, lwd=lwd, line.transparency=line.transparency, fill.transparency=fill.transparency, legend=legend, legend.labels=legend.labels, dose=dose, dose.units=dose.units, volume=volume, type=type, xlim=xlim, ylim=ylim, fill=fill, angle=angle, density=density, fill.lty=fill.lty, ...)
 	}
 	if (new) {
 		par(mar=c(0.1,4.1,2.1,2.1))
 		p <- data.wilcox$p
-		plot(range(doses), c(min(p, na.rm=TRUE)/10,1), type="n", xlab="", ylab="P-value", log="y", xaxt="n", yaxt="n", main=main)
+		plot(xlim, c(min(p, na.rm=TRUE)/10,1), type="n", xlab="", ylab="P-value", log="y", xaxt="n", yaxt="n", main=main)
 		rect(doses[which(p<alpha)],rep(alpha, length(which(p<alpha))), doses[which(p<alpha)], p[which(p<alpha)], col=highlight, border=highlight)
 		abline(h=alpha,lty="dotted",col="gray")
 		suppressWarnings(points(doses,p, type="l"))
@@ -418,7 +426,7 @@ plot.DVH.bars <- function(x, ..., new=TRUE, legend=TRUE, legend.labels=NULL, dos
 }
 
 
-plot.DVH.individual <- function(x, ..., col="black", lty ="solid", lwd=1, line.transparency=1, new=TRUE, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), main="") {
+plot.DVH.individual <- function(x, ..., col="black", lty ="solid", lwd=1, line.transparency=1, new=TRUE, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), main="", xlim=NULL, ylim=NULL) {
 	dose <- match.arg(dose)
 	dose.units <- match.arg(dose.units)
 	volume <- match.arg(volume)
@@ -443,7 +451,15 @@ plot.DVH.individual <- function(x, ..., col="black", lty ="solid", lwd=1, line.t
 		line.transparency <- rep(line.transparency[1], N)
 	}
 	if (new) {	
-		plot(NULL, xlim=range(x), ylim=range(unlist(lapply(x, slot, "volumes"))), xlab=if (dose == "absolute") {paste("Dose (", dose.units, ")",sep="")} else {"Dose (%)"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main=main)
+
+		if (is.null(xlim) | length(xlim) != 2) {
+			xlim <- range(x)
+		}
+		if (is.null(ylim) | length(ylim) != 2) {
+			ylim <- range(unlist(lapply(x, slot, "volumes")))
+		}
+
+		plot(NULL, xlim=xlim, ylim=ylim, xlab=if (dose == "absolute") {paste("Dose (", dose.units, ")",sep="")} else {"Dose (%)"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main=main)
 	}
 	for (i in 1:N) {
 		col.i <- col2rgb(col[i])/255
@@ -454,7 +470,7 @@ plot.DVH.individual <- function(x, ..., col="black", lty ="solid", lwd=1, line.t
 	}
 }
 
-plot.DVH.groups <- function(x, ..., col="black", lty ="solid", lwd=1, line.transparency=1, fill.transparency=line.transparency/2, new=TRUE, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), width=NULL, main="", multiplier=1, quantile=c(0.25, 0.75), fill=TRUE, angle=45, density=NULL, fill.lty=lty) {
+plot.DVH.groups <- function(x, ..., col="black", lty ="solid", lwd=1, line.transparency=1, fill.transparency=line.transparency/2, new=TRUE, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), width=NULL, main="", xlim=NULL, ylim=NULL, multiplier=1, quantile=c(0.25, 0.75), fill=TRUE, angle=45, density=NULL, fill.lty=lty) {
 	dose <- match.arg(dose)
 	dose.units <- match.arg(dose.units)
 	volume <- match.arg(volume)
@@ -507,9 +523,17 @@ plot.DVH.groups <- function(x, ..., col="black", lty ="solid", lwd=1, line.trans
 		}
 	}
 	if (new) {
-		plot(NULL, xlim=range.dose, ylim=range.volume, xlab=if (dose == "absolute") {paste("Dose (", dose.units, ")",sep="")} else {"Dose (%)"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main=main)
+
+		if (is.null(xlim) | length(xlim) != 2) {
+			xlim <- range.dose
+		}
+		if (is.null(ylim) | length(ylim) != 2) {
+			ylim <- range.volume
+		}
+
+		plot(NULL, xlim=xlim, ylim=ylim, xlab=if (dose == "absolute") {paste("Dose (", dose.units, ")",sep="")} else {"Dose (%)"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main=main)
 	}
-	y.max <- par("usr")[3]+par("usr")[4]
+	y.max <- par("usr")[4]
 	for (i in 1:N) {
 		col.i <- col2rgb(col[i])/255
 		if (classes[i] == "DVH.list") {
@@ -557,9 +581,10 @@ plot.DVH.groups <- function(x, ..., col="black", lty ="solid", lwd=1, line.trans
 			points(groups[[i]]$doses, groups[[i]]$volumes, type="l", lty=lty[i], lwd=lwd[i], col=rgb(col.i[1],col.i[2],col.i[3],line.transparency[i]))
 		}		
 	}	
-	if (!is.na(legend)) {		 
-		legend(legend, legend=if (length(legend.labels) >= N) {legend.labels[1:N]} else {paste("Group", 1:N)}, lty=lty, lwd=lwd, col=col)
-	}
+	if (!is.na(legend)) {
+		col <- col2rgb(col)/255
+		legend(legend, legend=if (length(legend.labels) >= N) {legend.labels[1:N]} else {paste("Group", 1:N)}, lty=lty, lwd=lwd, col=rgb(col[1,],col[2,],col[3,],line.transparency), fill=if (fill) {rgb(col[1,],col[2,],col[3,],fill.transparency)} else {NULL}, density=density, angle=angle)
+	}	
 }
 
 

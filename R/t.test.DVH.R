@@ -23,6 +23,9 @@ setMethod("t.test", "DVH.list",
 		if (N.y < 2) {
 			stop("not enough 'y' observations")
 		}
+		if (paired & (N.x != N.y)) {
+			stop("'x' and 'y' must have the same length")
+		}
 		doses <- var(c(x, y))$dose
 		data.x <- matrix(NA, nrow=length(doses), ncol=N.x)
 		for (i in 1:N.x) {

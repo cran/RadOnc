@@ -23,6 +23,9 @@ setMethod("wilcox.test", "DVH.list",
 		if (N.y < 1) {
 			stop("not enough 'y' observations")
 		}
+		if (paired & (N.x != N.y)) {
+			stop("'x' and 'y' must have the same length")
+		}
 		doses <- var(c(x, y))$dose
 		data.x <- matrix(NA, nrow=length(doses), ncol=N.x)
 		for (i in 1:N.x) {
@@ -48,7 +51,12 @@ setMethod("wilcox.test", "DVH.list",
 				wilcox.p <- c(wilcox.p, w.i$p.value)
 				wilcox.conf1 <- c(wilcox.conf1, w.i$conf.int[1])
 				wilcox.conf2 <- c(wilcox.conf2, w.i$conf.int[2])
-				wilcox.est <- c(wilcox.est, w.i$estimate)
+				if (paired) {
+					wilcox.est <- c(wilcox.est, median(data.x[i,]-data.y[i,], na.rm=TRUE))
+				}
+				else {
+					wilcox.est <- c(wilcox.est, w.i$estimate)
+				}
 			}
 		}
 		return(list(dose=doses, x.med=wilcox.x, y.med=wilcox.y, p=wilcox.p, conf.int1=wilcox.conf1, conf.int2=wilcox.conf2, estimate=wilcox.est))

@@ -34,6 +34,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ conf.index      : num 0
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
+  .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ rx.isodose      : num 100
@@ -80,6 +81,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ conf.index      : num 0
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
+  .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ rx.isodose      : num 100
@@ -103,6 +105,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ conf.index      : num 0
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
+  .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ rx.isodose      : num 100
@@ -126,6 +129,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ conf.index      : num 0
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
+  .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ rx.isodose      : num 100
@@ -149,6 +153,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ conf.index      : num 0
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
+  .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ rx.isodose      : num 100
@@ -172,6 +177,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ conf.index      : num 0
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
+  .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ rx.isodose      : num 100
@@ -195,6 +201,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ conf.index      : num 0
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
+  .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ rx.isodose      : num 100
@@ -218,6 +225,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ conf.index      : num 0
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
+  .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ rx.isodose      : num 100
@@ -241,6 +249,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ conf.index      : num 0
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
+  .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ rx.isodose      : num 100
@@ -270,6 +279,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ conf.index      : num 0
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
+  .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ rx.isodose      : num 100
@@ -293,6 +303,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ conf.index      : num 0
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
+  .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ rx.isodose      : num 100
@@ -316,6 +327,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ conf.index      : num 0
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
+  .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ rx.isodose      : num 100
@@ -339,6 +351,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ conf.index      : num 0
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
+  .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ rx.isodose      : num 100
@@ -362,6 +375,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ conf.index      : num 0
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
+  .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ rx.isodose      : num 100
@@ -385,6 +399,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ conf.index      : num 0
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
+  .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ rx.isodose      : num 100
@@ -408,6 +423,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ conf.index      : num 0
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
+  .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ rx.isodose      : num 100
@@ -431,6 +447,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ conf.index      : num 0
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
+  .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ rx.isodose      : num 100
@@ -454,6 +471,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ conf.index      : num 0
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
+  .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ rx.isodose      : num 100
@@ -477,6 +495,7 @@ Formal class 'DVH.list' [package "RadOnc"] with 1 slots
   .. .. .. ..@ conf.index      : num 0
   .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. ..@ gradient        : num 0
+  .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. ..@ dose.rx         : num 5500
   .. .. .. ..@ dose.fx         : num 25
   .. .. .. ..@ rx.isodose      : num 100
@@ -576,6 +595,7 @@ Formal class 'RTdata' [package "RadOnc"] with 4 slots
   .. .. .. .. .. .. .. ..@ conf.index      : num 0
   .. .. .. .. .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. .. .. .. .. ..@ gradient        : num 0
+  .. .. .. .. .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. .. .. .. .. ..@ dose.rx         : num 55
   .. .. .. .. .. .. .. ..@ dose.fx         : num 25
   .. .. .. .. .. .. .. ..@ rx.isodose      : num 100
@@ -632,6 +652,7 @@ Formal class 'RTdata' [package "RadOnc"] with 4 slots
   .. .. .. .. .. .. .. ..@ conf.index      : num 0
   .. .. .. .. .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. .. .. .. .. ..@ gradient        : num 0
+  .. .. .. .. .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. .. .. .. .. ..@ dose.rx         : num 55
   .. .. .. .. .. .. .. ..@ dose.fx         : num 25
   .. .. .. .. .. .. .. ..@ rx.isodose      : num 100
@@ -692,6 +713,7 @@ Formal class 'RTdata' [package "RadOnc"] with 4 slots
   .. .. .. .. .. .. .. ..@ conf.index      : num 0
   .. .. .. .. .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. .. .. .. .. ..@ gradient        : num 0
+  .. .. .. .. .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. .. .. .. .. ..@ dose.rx         : num 55
   .. .. .. .. .. .. .. ..@ dose.fx         : num 25
   .. .. .. .. .. .. .. ..@ rx.isodose      : num 100
@@ -832,6 +854,7 @@ Formal class 'structure3D' [package "RadOnc"] with 9 slots
   .. .. ..@ conf.index      : num 0
   .. .. ..@ equiv.sphere    : num 0
   .. .. ..@ gradient        : num 0
+  .. .. ..@ plan.sum        : log FALSE
   .. .. ..@ dose.rx         : num 0
   .. .. ..@ dose.fx         : num 0
   .. .. ..@ rx.isodose      : num 100
@@ -972,6 +995,7 @@ Formal class 'structure3D' [package "RadOnc"] with 9 slots
   .. .. ..@ conf.index      : num 0
   .. .. ..@ equiv.sphere    : num 0
   .. .. ..@ gradient        : num 0
+  .. .. ..@ plan.sum        : log FALSE
   .. .. ..@ dose.rx         : num 0
   .. .. ..@ dose.fx         : num 0
   .. .. ..@ rx.isodose      : num 100
@@ -1034,6 +1058,7 @@ Formal class 'structure.list' [package "RadOnc"] with 1 slots
   .. .. .. .. .. ..@ conf.index      : num 0
   .. .. .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. .. .. ..@ gradient        : num 0
+  .. .. .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. .. .. ..@ dose.rx         : num 0
   .. .. .. .. .. ..@ dose.fx         : num 0
   .. .. .. .. .. ..@ rx.isodose      : num 100
@@ -1091,6 +1116,7 @@ Formal class 'structure.list' [package "RadOnc"] with 1 slots
   .. .. .. .. .. ..@ conf.index      : num 0
   .. .. .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. .. .. ..@ gradient        : num 0
+  .. .. .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. .. .. ..@ dose.rx         : num 0
   .. .. .. .. .. ..@ dose.fx         : num 0
   .. .. .. .. .. ..@ rx.isodose      : num 100
@@ -1148,6 +1174,7 @@ Formal class 'structure.list' [package "RadOnc"] with 1 slots
   .. .. .. .. .. ..@ conf.index      : num 0
   .. .. .. .. .. ..@ equiv.sphere    : num 0
   .. .. .. .. .. ..@ gradient        : num 0
+  .. .. .. .. .. ..@ plan.sum        : log FALSE
   .. .. .. .. .. ..@ dose.rx         : num 0
   .. .. .. .. .. ..@ dose.fx         : num 0
   .. .. .. .. .. ..@ rx.isodose      : num 100
@@ -1175,6 +1202,7 @@ Formal class 'zDVH' [package "RadOnc"] with 22 slots
   ..@ conf.index      : num 0
   ..@ equiv.sphere    : num 0
   ..@ gradient        : num 0
+  ..@ plan.sum        : log FALSE
   ..@ dose.rx         : num 55
   ..@ dose.fx         : num 25
   ..@ rx.isodose      : num 100

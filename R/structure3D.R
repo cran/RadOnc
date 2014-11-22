@@ -47,7 +47,7 @@ setMethod("c", "structure3D",
 
 setMethod("range", "structure3D",
 	function (x, ..., na.rm=TRUE) {
-		if (dim(x$vertices)[1] > 1) {
+		if (dim(x$vertices)[1] >= 1) {
 			range <- apply(x$vertices, 2, range, na.rm=na.rm)
 		}
 		else {

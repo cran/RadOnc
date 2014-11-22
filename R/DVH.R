@@ -80,10 +80,11 @@ setMethod("[", "DVH",
 			if (any(IDs)) {
 				type[IDs] <- "ID"
 			}
-			value <- sub("[VD]([.0-9]+|MAX|MIN|MEAN|RX|INTEGRAL).*", "\\1", i)
-			type2 <- sub("[VD]([.0-9]+|MAX|MIN|MEAN|RX|INTEGRAL)([%]|GY|CGY|CC)*.*$", "\\2", i)
+			value <- sub("[VD]([-<.0-9]+|MAX|MIN|MEAN|RX|INTEGRAL).*", "\\1", i)
+			type2 <- sub("[VD]([-<.0-9]+|MAX|MIN|MEAN|RX|INTEGRAL)([%]|GY|CGY|CC)*.*$", "\\2", i)
 			type3 <- grepl(".*[(](.*)[)]$", i)
 			type4 <- sub(".*[(](.*)[)]$", "\\1", i)
+			type5 <- grepl("[-<]", value)
 			for (count in 1:length(i)) {
 				switch(type[count],
 					PATIENT = {
@@ -105,7 +106,30 @@ setMethod("[", "DVH",
 						}
 					},
 					V = {
-						value[count] <- suppressWarnings(as.numeric(value[count]))
+						if (type5[count]) {
+							values <- suppressWarnings(as.numeric(unlist(strsplit(value[count], "[-<]"))))
+							if (length(values) != 2) {
+								warning("Improper format '", input[count], "' (dose must be specified as numeric range, e.g. 'V10-20Gy' or 'V<500cGy')")
+								result <- c(result, NA)
+								result.units <- c(result.units, NA)
+								next
+							}
+							if (is.na(values[1])) {
+								values[1] <- 0
+							}
+							if (x@type == "differential") {
+								values <- convert.DVH(x, type="cumulative")[paste("V", values, type2[count], if (type3[count]) { paste("(", type4[count], ")", sep="")}, sep="")]
+							}
+							else {
+								values <- x[paste("V", values, type2[count], if (type3[count]) { paste("(", type4[count], ")", sep="")}, sep="")]
+							}
+							result <- c(result, as.numeric(values[1])-as.numeric(values[2]))
+							result.units <- c(result.units, names(values)[1])
+							next
+						}
+						else {
+							value[count] <- suppressWarnings(as.numeric(value[count]))
+						}
 						if (is.na(value[count])) {
 							warning("Improper format '", input[count], "' (dose must be numeric, e.g. 'V20Gy')")
 							result <- c(result, NA)

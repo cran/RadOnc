@@ -15,13 +15,13 @@ options(width=75)
 
 
 ###################################################
-### code chunk number 3: RadOnc.Rnw:75-76
+### code chunk number 3: RadOnc.Rnw:77-78
 ###################################################
 news(package="RadOnc")
 
 
 ###################################################
-### code chunk number 4: RadOnc.Rnw:88-92
+### code chunk number 4: RadOnc.Rnw:90-94
 ###################################################
 temp <- c(readLines(paste(data.path, 'Jane_Doe.dvh', sep='/'),n=50), "...", "...")
 for (i in 1:52) {
@@ -30,31 +30,31 @@ cat(temp[i], "\n")
 
 
 ###################################################
-### code chunk number 5: RadOnc.Rnw:95-96
+### code chunk number 5: RadOnc.Rnw:97-98
 ###################################################
 johndoe <- read.DVH(file=system.file("extdata/John_Doe.dvh", package="RadOnc"), type="aria10", verbose=TRUE)
 
 
 ###################################################
-### code chunk number 6: RadOnc.Rnw:99-100 (eval = FALSE)
+### code chunk number 6: RadOnc.Rnw:101-102 (eval = FALSE)
 ###################################################
 ## read.DVH(file="Jane_Doe.dvh", type="aria10", verbose=TRUE)
 
 
 ###################################################
-### code chunk number 7: RadOnc.Rnw:102-103
+### code chunk number 7: RadOnc.Rnw:104-105
 ###################################################
 janedoe <- read.DVH(file=system.file("extdata/Jane_Doe.dvh", package="RadOnc"), type="aria10", verbose=TRUE)
 
 
 ###################################################
-### code chunk number 8: RadOnc.Rnw:106-107 (eval = FALSE)
+### code chunk number 8: RadOnc.Rnw:109-110 (eval = FALSE)
 ###################################################
 ## DVHs <- read.DVH(file=c("Jane_Doe.dvh", "John_Doe.dvh"), type="aria10")
 
 
 ###################################################
-### code chunk number 9: RadOnc.Rnw:109-111
+### code chunk number 9: RadOnc.Rnw:112-114
 ###################################################
 DVHs <- read.DVH(file=system.file(paste("extdata", c("Jane_Doe.dvh", "John_Doe.dvh"), sep="/"), package="RadOnc"), type="aria10")
 DVHs
@@ -68,20 +68,20 @@ plot(janedoe[c(3,6:7)],new=FALSE,col="red",lwd=1.25)
 
 
 ###################################################
-### code chunk number 11: RadOnc.Rnw:135-137
+### code chunk number 11: RadOnc.Rnw:138-140
 ###################################################
 janedoe[1:4]
 c(janedoe["PTV"], johndoe[c("CTV", "DUODENUM")])
 
 
 ###################################################
-### code chunk number 12: RadOnc.Rnw:139-140
+### code chunk number 12: RadOnc.Rnw:142-143
 ###################################################
 temp <- janedoe
 
 
 ###################################################
-### code chunk number 13: RadOnc.Rnw:142-145
+### code chunk number 13: RadOnc.Rnw:145-148
 ###################################################
 johndoe[["CTV"]]
 janedoe[[1]] <- johndoe[["CTV"]]
@@ -89,13 +89,13 @@ janedoe[1:4]
 
 
 ###################################################
-### code chunk number 14: RadOnc.Rnw:147-148
+### code chunk number 14: RadOnc.Rnw:150-151
 ###################################################
 janedoe <- temp
 
 
 ###################################################
-### code chunk number 15: RadOnc.Rnw:152-155
+### code chunk number 15: RadOnc.Rnw:155-158
 ###################################################
 janedoe["KIDNEY$"]
 janedoe[c(2,"IGHT.*")]
@@ -103,7 +103,7 @@ janedoe["(?i)liver"] ## (case insensitive matching) ##
 
 
 ###################################################
-### code chunk number 16: RadOnc.Rnw:160-164
+### code chunk number 16: RadOnc.Rnw:163-167
 ###################################################
 names(janedoe)[1:4] <- c("A1", "B2", "C3", "D4")
 names(rev(janedoe[1:4]))
@@ -112,20 +112,26 @@ lapply(johndoe, function(DVH) { DVH[c("DMIN", "D50%", "DMAX", "V20%")] })
 
 
 ###################################################
-### code chunk number 17: RadOnc.Rnw:166-167
+### code chunk number 17: RadOnc.Rnw:169-170
 ###################################################
 janedoe <- temp
 
 
 ###################################################
-### code chunk number 18: RadOnc.Rnw:171-173
+### code chunk number 18: RadOnc.Rnw:174-176
 ###################################################
 janedoe[1:2]$patients
 janedoe[3:4]$ID
 
 
 ###################################################
-### code chunk number 19: RadOnc.Rnw:180-184
+### code chunk number 19: RadOnc.Rnw:180-181
+###################################################
+getStructureList(DVHs, "(?i)Liver")
+
+
+###################################################
+### code chunk number 20: RadOnc.Rnw:188-192
 ###################################################
 johndoe[["DUODENUM"]]["V20Gy"]
 johndoe[["DUODENUM"]]["D2.5%"]
@@ -134,33 +140,33 @@ johndoe[["DUODENUM"]]["D2.3286cc"]
 
 
 ###################################################
-### code chunk number 20: RadOnc.Rnw:187-189
+### code chunk number 21: RadOnc.Rnw:195-197
 ###################################################
 johndoe[["DUODENUM"]][c("V5%", "V20Gy", "D2.5%", "D2.3286cc", "Dmax")]
-johndoe[1:4]$"V20Gy,Dmax"
+johndoe[1:4]$"V10-20Gy,V20Gy,Dmax"
 
 
 ###################################################
-### code chunk number 21: RadOnc.Rnw:192-193
+### code chunk number 22: RadOnc.Rnw:200-201
 ###################################################
 johndoe[["DUODENUM"]][c("V5", "VGy", "volume", 2.5, "", "Dmax%")]
 
 
 ###################################################
-### code chunk number 22: RadOnc.Rnw:196-197
+### code chunk number 23: RadOnc.Rnw:204-205
 ###################################################
 johndoe[["LIVER"]][c("V10Gy(%)","D25%","D25%(Gy)")]
 
 
 ###################################################
-### code chunk number 23: RadOnc.Rnw:200-202
+### code chunk number 24: RadOnc.Rnw:208-210
 ###################################################
 johndoe[["LIVER"]][c("Dintegral","Dintegral(>0cGy)")]
 johndoe[["LIVER"]][c("Dintegral(<20Gy)","Dintegral(10-20Gy)")]
 
 
 ###################################################
-### code chunk number 24: RadOnc.Rnw:210-214
+### code chunk number 25: RadOnc.Rnw:218-222
 ###################################################
 gEUD(janedoe[1:3], 6:8)
 gEUD(janedoe[1:3], 1) == unlist(janedoe[1:3]$"Dmean")
@@ -169,27 +175,27 @@ gEUD(janedoe[1:3], -Inf) == unlist(janedoe[1:3]$"Dmin")
 
 
 ###################################################
-### code chunk number 25: RadOnc.Rnw:221-223
+### code chunk number 26: RadOnc.Rnw:229-231
 ###################################################
 LQE(c(4500, 5500, 6000), aB=3, fractions=c(300, 200))
 LQE(c(4500, 5500, 6000), aB=3, N=c(20, 36))
 
 
 ###################################################
-### code chunk number 26: fig2
+### code chunk number 27: fig2
 ###################################################
 plot(janedoe[[3]], volume="relative", dose="absolute", type="cumulative")
 
 
 ###################################################
-### code chunk number 27: fig3
+### code chunk number 28: fig3
 ###################################################
 plot(janedoe[1:3], plot.type="i", col=c("red", "green", "blue"), 
 legend="topright", legend.labels=names(janedoe[1:3]))
 
 
 ###################################################
-### code chunk number 28: fig4
+### code chunk number 29: fig4
 ###################################################
 plot(c(johndoe["STOMACH"],janedoe["STOMACH"]), #group 1
 c(janedoe["LIVER"],johndoe["LIVER"]), #group 2
@@ -199,7 +205,7 @@ lwd=2, lty="dashed", fill.lty="solid", fill.transparency=0.3)
 
 
 ###################################################
-### code chunk number 29: fig5
+### code chunk number 30: fig5
 ###################################################
 group1 <- c("CTV", "PTV")
 group2 <- c("LIVER", "STOMACH", "SMALL_BOWEL")
@@ -210,26 +216,26 @@ col=c("red", "blue"), lty="dashed", fill.lty="solid")
 
 
 ###################################################
-### code chunk number 30: fig6
+### code chunk number 31: fig6
 ###################################################
 plot(janedoe[2:9], plot.type="b", volume="abs", dose="rel")
 
 
 ###################################################
-### code chunk number 31: RadOnc.Rnw:298-299 (eval = FALSE)
+### code chunk number 32: RadOnc.Rnw:306-307 (eval = FALSE)
 ###################################################
 ## plot(stomach, col="lightblue")
 
 
 ###################################################
-### code chunk number 32: fig7
+### code chunk number 33: fig7
 ###################################################
 par(mar=c(2,2,2,2))
 persp(stomach$doses,as.numeric(colnames(stomach$volumes)),stomach$volumes,border=NA,col="lightblue",shade=0.65,xlab="Dose (Gy)",zlab="Volume (cc)",ylab="z (mm)",ticktype="detailed",phi=30, theta=30)
 
 
 ###################################################
-### code chunk number 33: fig8
+### code chunk number 34: fig8
 ###################################################
 plot(janedoe)
 plot(median(janedoe), new=FALSE, col="red", lwd=2)
@@ -237,7 +243,7 @@ plot(mean(janedoe), new=FALSE, col="blue", lwd=2, lty="dashed")
 
 
 ###################################################
-### code chunk number 34: RadOnc.Rnw:329-332
+### code chunk number 35: RadOnc.Rnw:337-340
 ###################################################
 L.kidney <- janedoe[["LEFT_KIDNEY"]]
 R.kidney <- janedoe[["RIGHT_KIDNEY"]]
@@ -245,7 +251,7 @@ total.kidney <- sum(janedoe[c("LEFT_KIDNEY", "RIGHT_KIDNEY")])
 
 
 ###################################################
-### code chunk number 35: RadOnc.Rnw:334-340 (eval = FALSE)
+### code chunk number 36: RadOnc.Rnw:342-348 (eval = FALSE)
 ###################################################
 ## L.kidney <- janedoe[["LEFT_KIDNEY"]]
 ## R.kidney <- janedoe[["RIGHT_KIDNEY"]]
@@ -256,7 +262,7 @@ total.kidney <- sum(janedoe[c("LEFT_KIDNEY", "RIGHT_KIDNEY")])
 
 
 ###################################################
-### code chunk number 36: fig9
+### code chunk number 37: fig9
 ###################################################
 plot(total.kidney, type="diff", volume="abs")
 plot(L.kidney, new=FALSE, type="diff", volume="abs", col="red")
@@ -264,7 +270,7 @@ plot(R.kidney, new=FALSE, type="diff", volume="abs", col="blue")
 
 
 ###################################################
-### code chunk number 37: RadOnc.Rnw:356-359
+### code chunk number 38: RadOnc.Rnw:364-367
 ###################################################
 groupA <- janedoe[c("LIVER","LEFT_KIDNEY","RIGHT_KIDNEY","CORD")]
 groupB <- janedoe[c("CTV", "PTV")]
@@ -272,14 +278,14 @@ t.test(unlist(groupA$"V20Gy"), unlist(groupB$"V20Gy"))
 
 
 ###################################################
-### code chunk number 38: RadOnc.Rnw:364-366 (eval = FALSE)
+### code chunk number 39: RadOnc.Rnw:372-374 (eval = FALSE)
 ###################################################
 ## AvB <- t.test(groupA, groupB)
 ## plot(AvB$dose, AvB$p, type="l", log="y", xlab="Dose (cGy)", ylab="p-value")
 
 
 ###################################################
-### code chunk number 39: fig10
+### code chunk number 40: fig10
 ###################################################
 AvB <- t.test(groupA, groupB)
 plot(AvB$dose, AvB$p, type="l", log="y", xlab="Dose (cGy)", ylab="p-value")
@@ -289,32 +295,32 @@ text(2000,approx(AvB$dose, AvB$p, 2000)$y, col="red", labels="V20Gy (p=5.347e-05
 
 
 ###################################################
-### code chunk number 40: RadOnc.Rnw:391-392 (eval = FALSE)
+### code chunk number 41: RadOnc.Rnw:399-400 (eval = FALSE)
 ###################################################
 ## data <- read.DICOM.RT(path="<<DICOM directory>>", verbose=TRUE)
 
 
 ###################################################
-### code chunk number 41: RadOnc.Rnw:396-397
+### code chunk number 42: RadOnc.Rnw:404-405
 ###################################################
 data("RadOnc")
 
 
 ###################################################
-### code chunk number 42: RadOnc.Rnw:404-406
+### code chunk number 43: RadOnc.Rnw:412-414
 ###################################################
 teeth[1:2]
 c(cord, mandible)
 
 
 ###################################################
-### code chunk number 43: RadOnc.Rnw:408-409
+### code chunk number 44: RadOnc.Rnw:416-417
 ###################################################
 temp <- teeth
 
 
 ###################################################
-### code chunk number 44: RadOnc.Rnw:411-414
+### code chunk number 45: RadOnc.Rnw:419-422
 ###################################################
 teeth[[1]]
 teeth[[1]] <- teeth[["Tooth #3"]]
@@ -322,19 +328,19 @@ teeth
 
 
 ###################################################
-### code chunk number 45: RadOnc.Rnw:416-417
+### code chunk number 46: RadOnc.Rnw:424-425
 ###################################################
 teeth <- temp
 
 
 ###################################################
-### code chunk number 46: RadOnc.Rnw:421-422
+### code chunk number 47: RadOnc.Rnw:429-430
 ###################################################
 teeth["Tooth.*"]
 
 
 ###################################################
-### code chunk number 47: RadOnc.Rnw:427-431
+### code chunk number 48: RadOnc.Rnw:435-439
 ###################################################
 names(teeth) <- c("Larry", "Curly", "Moe")
 names(rev(teeth[1:3]))
@@ -343,61 +349,61 @@ lapply(teeth, function(tooth) { range(tooth) })
 
 
 ###################################################
-### code chunk number 48: RadOnc.Rnw:433-434
+### code chunk number 49: RadOnc.Rnw:441-442
 ###################################################
 teeth <- temp
 
 
 ###################################################
-### code chunk number 49: fig11 (eval = FALSE)
+### code chunk number 50: fig11 (eval = FALSE)
 ###################################################
 ## plot(mandible)
 
 
 ###################################################
-### code chunk number 50: fig12 (eval = FALSE)
+### code chunk number 51: fig12 (eval = FALSE)
 ###################################################
 ## plot(cord)
 
 
 ###################################################
-### code chunk number 51: RadOnc.Rnw:472-473 (eval = FALSE)
+### code chunk number 52: RadOnc.Rnw:480-481 (eval = FALSE)
 ###################################################
 ## compareStructures(teeth, method="axial", plot=TRUE)
 
 
 ###################################################
-### code chunk number 52: fig13
+### code chunk number 53: fig13
 ###################################################
 compareStructures(teeth, method="axial", plot=TRUE, pixels=40)
 
 
 ###################################################
-### code chunk number 53: RadOnc.Rnw:485-486
+### code chunk number 54: RadOnc.Rnw:493-494
 ###################################################
 teeth <- teeth[c(1,3)]
 
 
 ###################################################
-### code chunk number 54: RadOnc.Rnw:488-489
+### code chunk number 55: RadOnc.Rnw:496-497
 ###################################################
 compareStructures(teeth, method="hausdorff", hausdorff.method="mean")
 
 
 ###################################################
-### code chunk number 55: RadOnc.Rnw:491-492
+### code chunk number 56: RadOnc.Rnw:499-500
 ###################################################
 teeth <- temp
 
 
 ###################################################
-### code chunk number 56: RadOnc.Rnw:496-497
+### code chunk number 57: RadOnc.Rnw:504-505
 ###################################################
 compareStructures(teeth, method="DSC")
 
 
 ###################################################
-### code chunk number 57: RadOnc.Rnw:526-527
+### code chunk number 58: RadOnc.Rnw:536-537
 ###################################################
 news(package="RadOnc")
 

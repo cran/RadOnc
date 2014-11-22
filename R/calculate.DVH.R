@@ -85,7 +85,7 @@ calc.DVH.ATC <- function(x, dose, resolution.xyz=c(0.2,0.2,NA), resolution.dose=
 #	placeholder for implementation of multiple DVH calculation algorithms (currrently implemented algorithm makes use of evenly spaced voxel grid and tests every point to see whether or not inside every slice on axial-by-axial basis -- note that this assumes "straight walls" i.e. stepwise surface, no angles/curves between z slices)
 #	next step will be to take 3D surface and interpolate dose along z direction as well!!!!
 #   also consider different bounding box for each slice?  or use same larger bounding box for overall?  I'll implement both ways and do a timing test to see which one compares better . . . keep current function as-is as baseline check to see performance difference!!!!!!!!!
-	if (!is.null(attr(dose, "dose.units"))) {
+	if (length(attr(dose, "dose.units")) > 0) {
 		dose.units <- attr(dose, "dose.units")	
 	}
 	dose.units <- match.arg(dose.units, choices=c("cGy", "Gy"))	
@@ -93,10 +93,18 @@ calc.DVH.ATC <- function(x, dose, resolution.xyz=c(0.2,0.2,NA), resolution.dose=
 		warning("Structure '", names(x), "' is empty (it contains no pre-defined axial slices)")	
 		return()	
 	}
+	if (dim(x$vertices)[1] <= 2) {
+		warning("Structure '", names(x), "' must contain at least three points to calculate a DVH")	
+		return()	
+	}
 	dose.xrange <- range(as.numeric(dimnames(dose)[[1]]), na.rm=TRUE)
 	dose.yrange <- range(as.numeric(dimnames(dose)[[2]]), na.rm=TRUE)
 	dose.zrange <- range(as.numeric(dimnames(dose)[[3]]), na.rm=TRUE)
 	range.struct <- range(x)
+	if (any(is.na(range.struct))) {
+		warning("Structure '", names(x), "' contains undefined points (coordinate range is undefined)")
+		return()
+	}
 	if ((range.struct[1,1] < dose.xrange[1]) | (range.struct[2,1] > dose.xrange[2]) | 
 		(range.struct[1,2] < dose.yrange[1]) | (range.struct[2,2] > dose.yrange[2]) |
 		(range.struct[1,3] < dose.zrange[1]) | (range.struct[2,3] > dose.zrange[2])) {
@@ -108,14 +116,19 @@ calc.DVH.ATC <- function(x, dose, resolution.xyz=c(0.2,0.2,NA), resolution.dose=
 		resolution.xyz[3] <- median(abs(diff(z.unique)))
 	}
 	offset.x <- ((range.struct[2,1]-range.struct[1,1]) %% resolution.xyz[1]) / 2
+	if (is.na(offset.x)) {
+		warning("Structure '", names(x), "' is not three-dimensional (all points coplanar along x-axis)")
+		return()
+	}
 	xseq <- seq(from=range.struct[1,1]+offset.x, to=range.struct[2,1]-offset.x, by=resolution.xyz[1])
 	N.x <- length(xseq)
 	offset.y <- ((range.struct[2,2]-range.struct[1,2]) %% resolution.xyz[2]) / 2
+	if (is.na(offset.x)) {
+		warning("Structure '", names(x), "' is not three-dimensional (all points coplanar along y-axis)")
+		return()
+	}
 	yseq <- seq(from=range.struct[1,2]+offset.y, to=range.struct[2,2]-offset.y, by=resolution.xyz[2])
 	N.y <- length(yseq)
-#	offset.z <- ((range.struct[2,3]-range.struct[1,3]) %% resolution.xyz[3]) / 2
-#	zseq <- seq(from=range.struct[1,3]+offset.z, to=range.struct[2,3]-offset.z, by=resolution.xyz[3])
-#	N.z <- length(zseq)
 	poly.z <- unlist(lapply(x$closed.polys, function(poly) {return(poly[1,3])}))
 	N.z <- length(z.unique)
 	if (dose.units == "cGy") {
@@ -147,7 +160,7 @@ calc.DVH.surface <- function(x, dose, resolution.xyz=c(0.2,0.2,NA), resolution.d
 		warning("Structure '", names(x), "' contains no pre-defined triangular mesh")	
 		return()	
 	}
-	if (!is.null(attr(dose, "dose.units"))) {
+	if (length(attr(dose, "dose.units")) > 0) {
 		dose.units <- attr(dose, "dose.units")	
 	}
 	dose.units <- match.arg(dose.units, choices=c("cGy", "Gy"))	
@@ -160,7 +173,7 @@ calc.DVH.axial <- function(x, dose, resolution.xyz=c(0.2,0.2,NA), resolution.dos
 #	placeholder for implementation of multiple DVH calculation algorithms (currrently implemented algorithm makes use of evenly spaced voxel grid and tests every point to see whether or not inside every slice on axial-by-axial basis -- note that this assumes "straight walls" i.e. stepwise surface, no angles/curves between z slices)
 #	next step will be to take 3D surface and interpolate dose along z direction as well!!!!
 #   also consider different bounding box for each slice?  or use same larger bounding box for overall?  I'll implement both ways and do a timing test to see which one compares better . . . keep current function as-is as baseline check to see performance difference!!!!!!!!!
-	if (!is.null(attr(dose, "dose.units"))) {
+	if (length(attr(dose, "dose.units")) > 0) {
 		dose.units <- attr(dose, "dose.units")	
 	}
 	dose.units <- match.arg(dose.units, choices=c("cGy", "Gy"))	

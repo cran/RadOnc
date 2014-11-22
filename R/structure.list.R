@@ -154,6 +154,10 @@ setMethod("names<-", "structure.list",
 
 setMethod("range", "structure.list",
 	function (x, ..., na.rm=TRUE) {
+		if (length(x) < 1) {
+			warning("Cannot calculate range of an empty structure list")
+			return(matrix(NA, nrow=2, ncol=3, dimnames=list(c("min", "max"), c("x", "y", "z"))))
+		}
 		ranges <- lapply(x, range)
 		range <- matrix(rep(c(Inf, -Inf), 3), nrow=2, ncol=3, dimnames=list(c("min", "max"), c("x", "y", "z")))
 		for (i in 1:length(ranges)) {

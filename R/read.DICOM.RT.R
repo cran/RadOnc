@@ -409,7 +409,7 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 			struct.i <- data$points[[i]][[j]]
 			if (length(unlist(struct.i, recursive=FALSE)) > limit) {
 				if (verbose) {
-					cat("  ", data$set[[i]], ": ", data$name[[i]][j], " [", length(struct.i), " axial slice(s), ", length(unlist(struct.i, recursive=FALSE)), " point(s)] ... skipped\n", sep="")
+					cat("  ", data$set[[i]], ": ", data$name[[i]][j], " [", length(struct.i), " axial slice(s), ", length(unlist(struct.i, recursive=FALSE))/3, " point(s)] ... skipped\n", sep="")
 				}
 				if (DVH) {
 					struct.list <- c(struct.list, new("structure3D", name=paste(data$name[[i]][j], data$set[[i]]), DVH=data$DVH[[i]][[j]]))
@@ -455,7 +455,7 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 						next						
 					}
 					struct.i$DVH <- dvh.i
-					struct.i$DVH$dose.rx <- dose.rx
+					struct.i$DVH$dose.rx <- as.numeric(dose.rx)
 					struct.i$DVH$dose.fx <- N.fractions
 				}
 				else if (DVH) {
@@ -468,7 +468,7 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 			}
 			else if ((length(unlist(struct.i, recursive=FALSE)) == 1) & (!is.na(struct.i))) {
 				if (verbose) {
-					cat("  ", data$set[[i]], ": ", data$name[[i]][j], " [", length(struct.i), " axial slice(s), ", length(unlist(struct.i, recursive=FALSE)), " point(s)] ... ", sep="")
+					cat("  ", data$set[[i]], ": ", data$name[[i]][j], " [", length(struct.i), " axial slice(s), ", length(unlist(struct.i, recursive=FALSE))/3, " point(s)] ... ", sep="")
 				}
 				if (identical(struct.i, NA)) {
 					pts.i <- matrix(nrow=0, ncol=3)
@@ -502,7 +502,7 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 						next						
 					}
 					struct.i$DVH <- dvh.i
-					struct.i$DVH$dose.rx <- dose.rx
+					struct.i$DVH$dose.rx <- as.numeric(dose.rx)
 					struct.i$DVH$dose.fx <- N.fractions
 				}
 				else if (DVH) {

@@ -32,7 +32,7 @@
 	May contain any number of objects of class \code{DVH} or \code{DVH.list}. Note that at least one object of either class is required if \code{plot.type = "ttest"} or \code{"wilcox"}. Specification of more than one \code{zDVH} will reduce all input \code{zDVH} objects to \code{DVH} objects for standard plotting.
 }
   \item{plot.type}{
-	A character string specifying the type of plot to generate, must be one of \code{"individual"} (default), \code{"grouped"}, \code{"ttest"}, \code{"wilcox"} or \code{"bars"}. \code{plot.type} parameter will be ignored if \code{x} is a \code{zDVH} object.
+	A character string specifying the type of plot to generate, must be one of \code{"individual"} (default), \code{"grouped"}, \code{"ttest"}, \code{"wilcox"} or \code{"bars"}. Parameter \code{plot.type} will be ignored if \code{x} is a \code{zDVH} object.
 }
 }
 \section{Graphical Parameters}{
@@ -70,7 +70,9 @@
 		\item{\code{legend}}{
 			Value specifying the location to draw a figure legend, must be one of \code{"topright"}, \code{"bottomright"}, \code{"bottom"}, \code{"bottomleft"}, \code{"left"}, \code{"topleft"}, \code{"top"}, \code{"right"}, or \code{"center"}. These keywords place the legend on the inside of the plot frame at the location specified. Partial argument matching is used. If \code{legend=NA} (default), the legend is not drawn.
 			
-			When \code{plot.type="bars"}, \code{legend} is interpreted instead as a logical value and must be either \code{TRUE} (default) or \code{FALSE}.	If \code{TRUE}, labels are drawn at the bottom of the plot, outside of the actual plotting frame.		
+			When \code{plot.type="bars"}, \code{legend} is interpreted instead as a logical value and must be either \code{TRUE} (default) or \code{FALSE}.	If \code{TRUE}, labels are drawn at the bottom of the plot, outside of the actual plotting frame.	
+			
+			Note that \code{legend} parameter is ignored when \code{plot.type="wilcox"} and \code{panel.lower="difference"}.	
 		}
 		\item{\code{legend.labels}}{
 			A character or \code{\link{expression}} vector specifying the text to appear in the legend, when relevant. Length of \code{legend.labels} must match the numer of \code{DVH} and \code{DVH.list} objects, otherwise legend text will default to the form: \code{"Group 1", "Group 2", ...}
@@ -95,11 +97,21 @@
 		\item{\code{new}}{
 			Logical, defaulting to \code{TRUE}. If set to \code{FALSE}, the next high-level plotting command (actually \code{\link{plot.new}}) should \emph{not clean} the frame before drawing \emph{as if it were on a \strong{new} device}. It is an error (ignored with a warning) to try to use \code{new=FALSE} on a device that does not currently contain a high-level plot.
 		}
+		\item{\code{panel.lower}}{
+			Value specifying the lower panel plot content when \code{plot.type="wilcox"} (\code{panel.lower} must be one of \code{"grouped"} or \code{"wilcox"} [default]). Partial argument matching is used.			
+			When \code{panel.lower="wilcox"}, the median groupwise differences will be displayed with associated confidence intervals obtained from \code{wilcox.test()}. When \code{panel.lower="grouped"}, the individual groups are displayed with surrounding user-specified intervals (see \code{width}, \code{quantile}, and \code{multiplier} parameters).
+		}
 		\item{\code{quantile}}{
 			A numeric vector containing two values in \emph{[0,1]} (default is the interquartile range: \code{(0.25, 0.75)}), specifying the lower and upper probabilities (respectively) to be used when \code{width="quantile"} and \code{plot.type="grouped"} or \code{"ttest"}. See \code{\link{quantile}} for more details.
 		}
 		\item{\code{width}}{
 			A character vector specifying the width of shading to use, when relevant (for a group of DVHs). Value must be one of \code{"range"} (default), \code{"mad"}, \code{"IQR"}, \code{"quantile"}, \code{"var"}, or \code{"sd"}, specifying the absolute range, the mean-absolute-deviation, the interquartile (25-75\%) range, the arbitrary inter-quantile range (see \code{quantile} parameter), the group variance, or standard deviation, respectively. This parameter is ignored unless \code{plot.type="grouped"}. If \code{plot.type="ttest"}, the parameter can be optionally specified (if \code{width=NULL} (default), shading will default to the confidence interval).
+		}
+		\item{\code{xlim}}{
+			A numeric vector of length 2 specifying the minimum and maximum x coordinates for plotting (note that this parameter is ignored when \code{plot.type="bars"}, \code{new=FALSE}, or plotting object(s) of class \code{zDVH}).
+		}
+		\item{\code{ylim}}{
+			A numeric vector of length 2 specifying the minimum and maximum y coordinates for plotting (note that this parameter is ignored when \code{plot.type="bars"}, \code{new=FALSE}, or plotting object(s) of class \code{zDVH}).
 		}
 	}
 }

@@ -61,6 +61,8 @@ It is assumed that the reader is already familiar with DVH analysis. If this is 
 
 Throughout this vignette, we will be exploring actual data for 2 patients, each possessing a set of 10 structures (including organs at risk and treatment planning volumes). We will also demonstrate rudimentary three-dimensional structural processing and a number of other features.
 
+For additional reference and details, please consult our published report on the \Rpackage{RadOnc} package\citep{radonc}.
+
 \newpage
 \section{Changes for \Rpackage{RadOnc} in current release}
 \label{current.version.changes}
@@ -102,6 +104,7 @@ read.DVH(file="Jane_Doe.dvh", type="aria10", verbose=TRUE)
 <<echo=FALSE,results=verbatim>>=
 janedoe <- read.DVH(file=system.file("extdata/Jane_Doe.dvh", package="RadOnc"), type="aria10", verbose=TRUE)
 @
+\newpage
 Multiple files can be imported simultaneously, generating a list of \Rfunction{DVH.list} objects:
 <<echo=TRUE,eval=FALSE,results=hide>>=
 DVHs <- read.DVH(file=c("Jane_Doe.dvh", "John_Doe.dvh"), type="aria10")
@@ -173,6 +176,11 @@ janedoe[1:2]$patients
 janedoe[3:4]$ID
 @
 
+For nested DVH list data generated using \Rfunction{read.DVH()} on multiple input files, the \Rfunction{getStructureList()} function provides access to individual structures.  Using \Rfunction{getStructureList()}, desired instances of a given structure are selected from among a list of \Rfunction{DVH.list} objects).
+<<echo=TRUE,results=verbatim>>=
+getStructureList(DVHs, "(?i)Liver")
+@
+
 \newpage
 \subsection{DVH data}
 \label{DVH.data}
@@ -183,10 +191,10 @@ johndoe[["DUODENUM"]]["D2.5%"]
 johndoe[["DUODENUM"]]["volume"] * 0.025
 johndoe[["DUODENUM"]]["D2.3286cc"]
 @
-These parameters are entirely flexible and multiple parameters can be requested for a given DVH object at the same time.  This functionality can also be applied to a DVH list using the \Rfunction{\$} modifier.
+These parameters are entirely flexible and may even specify a summarized range of dosimetric values, for instance \texttt{"V10-20Gy"} specifies the volume of a structure receiving between 10 and 20Gy.  In addition, multiple parameters can be requested for a given DVH object at the same time.  This functionality can also be applied to a DVH list using the \Rfunction{\$} modifier.
 <<echo=TRUE,results=verbatim>>=
 johndoe[["DUODENUM"]][c("V5%", "V20Gy", "D2.5%", "D2.3286cc", "Dmax")]
-johndoe[1:4]$"V20Gy,Dmax"
+johndoe[1:4]$"V10-20Gy,V20Gy,Dmax"
 @
 Note that specific parameter keywords include: \texttt{"Dmax"} (maximum dose), \texttt{"Dmin"} (minimum dose), \texttt{"Dmean"} (mean dose), \texttt{"Dintegral"} (estimated integral dose), \texttt{"DRx"} (prescription dose), and \texttt{"volume"} (total structure volume). If an improper parameter is specified however, \texttt{NA} results will be returned for the affected parameter(s):
 <<echo=TRUE,results=verbatim>>=
@@ -520,7 +528,9 @@ Many thanks to Brandon Whitcher for his phenomenal and generous support regardin
 \item Subsequent release (v1.0.4) on 2014-01-31
 \item Subsequent release (v1.0.5) on 2014-02-19
 \item Subsequent release (v1.0.6) on 2014-02-20
-\item Last release (v1.0.7) on 2014-02-27
+\item Subsequent release (v1.0.7) on 2014-02-27
+\item Last release (v1.0.8) on 2014-05-31
+\item Current release (v1.0.9) on 2014-11-21
 \end{itemize}
 Please refer to NEWS.Rd file for more details.
 <<echo=TRUE,results=hide>>=

@@ -17,6 +17,7 @@ setClass("DVH",
 		conf.index = "numeric",
 		equiv.sphere = "numeric",
 		gradient = "numeric",
+		plan.sum = "logical",
 		dose.rx = "numeric",
 		dose.fx = "numeric",
 		rx.isodose = "numeric",
@@ -41,6 +42,7 @@ setClass("DVH",
 		conf.index = numeric(),
 		equiv.sphere = numeric(),
 		gradient = numeric(),
+		plan.sum = logical(),
 		dose.rx = numeric(),
 		dose.fx = numeric(),
 		rx.isodose = numeric(),
@@ -69,6 +71,7 @@ setMethod("initialize",
 		conf.index = numeric(),
 		equiv.sphere = numeric(),
 		gradient = numeric(),
+		plan.sum = FALSE,
 		dose.rx = NA,
 		dose.fx = numeric(),
 		rx.isodose = 100,
@@ -101,6 +104,7 @@ setMethod("initialize",
 		.Object@conf.index <- max(0, conf.index, na.rm=TRUE)
 		.Object@equiv.sphere <- max(0, equiv.sphere, na.rm=TRUE)
 		.Object@gradient <- max(0, gradient, na.rm=TRUE)
+		.Object@plan.sum <- plan.sum
 		.Object@dose.rx <- max(0, dose.rx, na.rm=FALSE)
 		.Object@dose.fx <- max(0, dose.fx, na.rm=TRUE)
 		if (is.na(rx.isodose)) rx.isodose <- 100
@@ -138,14 +142,13 @@ setValidity("DVH",
 	function(object) {
 		if (length(object@doses) != length(object@volumes)) return(FALSE)
 		if (length(object@doses) == 0) return(TRUE)
-#		if (length(object@doses) < 2) return(FALSE)
 		if (any(is.na(object@doses))) return(FALSE)
 		if (!is.na(object@dose.rx) & (object@dose.rx <= 0)) return(FALSE)
-		if (is.na(object@rx.isodose) | (object@rx.isodose <= 0)) return(FALSE) 
+		if (!object@plan.sum & (is.na(object@rx.isodose) | (object@rx.isodose <= 0))) return(FALSE) 
 		if (object@dose.min > object@dose.max) return(FALSE)
 		if ((object@dose.mean > object@dose.max) | (object@dose.mean < object@dose.min)) return(FALSE)
 		if (!identical(order(object@doses, decreasing=FALSE), 1:length(object@doses))) return(FALSE)
-		if ((object@dose.type == "relative") & (range(object@doses, na.rm=TRUE)[2] > 250)) return(FALSE)		
+		if ((object@dose.type == "relative") & (range(object@doses, na.rm=TRUE)[2] > 250)) return(FALSE)
 		if (any(is.na(object@volumes))) return(FALSE)		
 		# ENSURE RELATIVE DVH VOLUMES ARE ON SCALE UP TO 100% MAXIMUM (VOLUME SHOULD NEVER BE >100%)		if ((object@volume.type == "relative") & (max(object@volumes, na.rm=TRUE) > 100.00000000001)) return(FALSE)	
 		# ENSURE STRUCTURE VOLUME IS SUFFICIENTLY LARGE TO ENCOMPASS ALL LISTED DVH INFORMATION	
@@ -187,6 +190,7 @@ setMethod("initialize",
 		conf.index = numeric(),
 		equiv.sphere = numeric(),
 		gradient = numeric(),
+		plan.sum = FALSE,
 		dose.rx = NA,
 		dose.fx = numeric(),
 		rx.isodose = 100,
@@ -219,6 +223,7 @@ setMethod("initialize",
 		.Object@conf.index <- max(0, conf.index, na.rm=TRUE)
 		.Object@equiv.sphere <- max(0, equiv.sphere, na.rm=TRUE)
 		.Object@gradient <- max(0, gradient, na.rm=TRUE)
+		.Object@plan.sum <- plan.sum
 		.Object@dose.rx <- max(0, dose.rx, na.rm=FALSE)
 		.Object@dose.fx <- max(0, dose.fx, na.rm=TRUE)
 		if (is.na(rx.isodose)) rx.isodose <- 100
@@ -259,7 +264,7 @@ setValidity("zDVH",
 #		if (length(object@doses) < 2) return(FALSE)
 		if (any(is.na(object@doses))) return(FALSE)
 		if (!is.na(object@dose.rx) & (object@dose.rx <= 0)) return(FALSE)
-		if (is.na(object@rx.isodose) | (object@rx.isodose <= 0)) return(FALSE) 
+		if (!object@plan.sum & (is.na(object@rx.isodose) | (object@rx.isodose <= 0))) return(FALSE) 
 		if (object@dose.min > object@dose.max) return(FALSE)
 		if ((object@dose.mean > object@dose.max) | (object@dose.mean < object@dose.min)) return(FALSE)
 		if (!identical(order(object@doses, decreasing=FALSE), 1:length(object@doses))) return(FALSE)

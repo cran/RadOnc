@@ -3,6 +3,48 @@
 \title{ RadOnc News }
 \encoding{UTF-8}
 
+\section{CHANGES IN VERSION 1.0.9}{
+
+  \subsection{NEW FEATURES}{
+    \itemize{
+    	\item New parameter \code{panel.lower} to specify plotting behavior when using \code{plot(..., plot.type="wilcox")}.
+      \item Enabled \code{xlim} and \code{ylim} specification when plotting \code{DVH} object(s).
+      \item Enabled import of a single collapsed \code{DVH.list} from multiple input files (previously only able to import a nested list of individual \code{DVH.list} objects corresponding to each input file).
+      \item Enabled dose range specification on parameter export (e.g. can now calculate \code{"V10-20Gy"} or \code{"V<1500cGy"}) for a given \code{DVH} object.
+    }
+  }
+
+  \subsection{BUG FIXES}{
+    \itemize{
+    	\item \code{range()} calculation for an empty structure list failed, and calculation for a structure defined by a single point inappropriately returned value of \code{NA}.
+    	\item \code{calculate.DVH()} failed when structure contained fewer than three points or was confined to a single plane along the x or y axes.
+    	\item \code{read.DICOM.RT()} failed when calculating DVHs from dose grid
+    	\item \code{calculate.DVH()} subroutines improperly ignored \code{dose.unit} parameter input
+    	\item DVHs containing plan sum data without prescription dose/isodose information were considered as invalid DVH objects.
+    	\item DVH plotting using \code{plot(..., plot.type="ttest")} or \code{plot(..., plot.type="wilcox")} improperly displayed relative volume information along an absolute volume y-axis when parameter \code{volume="absolute"} was specified.
+    	\item DVH plotting using \code{plot(..., plot.type="wilcox")} displayed inaccurate confidence intervals.
+     }
+  }
+
+  \subsection{OTHER UPDATES}{
+    \itemize{
+      \item Updated behavior of \code{wilcox.test(..., paired=TRUE)} to return parameter \code{"estimate"} as the true median of pairwise differences in lieu of the statistical (pseudo)median calculated by wilcoxon signed-rank test.
+      \item Enhanced legend when using \code{plot(..., plot.type="grouped")} (now supports filling/shading)
+      \item Added \code{demo()} functionality as a package tutorial.
+    }
+   }
+
+  \subsection{ACKNOWLEDGEMENTS}{
+    \itemize{
+      \item Thanks to Maura Kirk for identifying the plan sum DVH class validation bug.
+      \item Thanks to Eric Ojerholm for identifying the DVH plotting bugs, for suggesting user-modifiable \code{xlim}/\code{ylim} specification as well as dose ranges on volumetric parameter export, and for suggesting DVH plotting enhancements when using \code{plot(..., plot.type="wilcox")}.
+      \item Thanks to Abodunde Adegunloye for identifying the error in structure \code{range()} calculation as well as the error in \code{calculate.DVH()} and \code{read.DICOM.RT()}.
+    }
+  }
+
+ }
+
+
 \section{CHANGES IN VERSION 1.0.8}{
 
   \subsection{NEW FEATURES}{

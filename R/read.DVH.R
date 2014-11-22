@@ -1,4 +1,4 @@
-read.DVH <- function (file, type=NA, verbose=TRUE) {
+read.DVH <- function (file, type=NA, verbose=TRUE, collapse=TRUE) {
 	type <- match.arg(tolower(type), choices=c(NA, "aria10", "aria11", "aria8", "dicom", "cadplan", "tomo"), several.ok=TRUE)
 	if (length(file) < 1) {
 		warning("argument 'file' is missing, with no default")
@@ -42,7 +42,12 @@ read.DVH <- function (file, type=NA, verbose=TRUE) {
 	}
 	DVH.list <- mapply(function(x, y, z) {list(read.DVH.file(x, y, z))}, file, type, verbose)
     names(DVH.list) <- sapply(DVH.list, function(x) {if (is.null(x)) {return("")} else {paste(x[[1]]@ID, x[[1]]@patient, sep="_")}})
-	return(DVH.list)
+    if (collapse) {
+		return(as(DVH.list, "DVH.list"))    	
+    }
+    else {
+		return(DVH.list)
+    }
 }
 
 
@@ -171,7 +176,7 @@ read.DVH.Aria10 <- function (file, verbose=TRUE) {
 				data.dose <- c(temp.doses, (2*data.dose - temp.doses)[length(temp.doses)])
 				data <- diffinv(-data, xi=sum(data))
 			}
-			return(new("DVH", patient=patient, ID=ID, dose.min=dose.min, dose.max=dose.max, dose.mean=dose.mean, dose.mode=dose.mode, dose.median=dose.median, dose.STD=dose.STD, equiv.sphere=equiv.sphere, conf.index=conf.ind, gradient=gradient, dose.rx=dose.rx, rx.isodose=rx.isodose, structure.name=name, structure.volume=volume, doses=data.dose, volumes=data, type="cumulative", dose.type=dose.type, dose.units=dose.units, volume.type=volume.type))	
+			return(new("DVH", patient=patient, ID=ID, dose.min=dose.min, dose.max=dose.max, dose.mean=dose.mean, dose.mode=dose.mode, dose.median=dose.median, dose.STD=dose.STD, equiv.sphere=equiv.sphere, conf.index=conf.ind, gradient=gradient, plan.sum=plan.sum, dose.rx=dose.rx, rx.isodose=rx.isodose, structure.name=name, structure.volume=volume, doses=data.dose, volumes=data, type="cumulative", dose.type=dose.type, dose.units=dose.units, volume.type=volume.type))	
 		}
 	)
 	

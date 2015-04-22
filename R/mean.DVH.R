@@ -56,12 +56,7 @@ setMethod("mean", "DVH",
 			return(sum(x@doses*x@volumes, na.rm=na.rm)/sum(x@volumes, na.rm=na.rm))
 		}
 		else {
-			if (x@dose.type == "absolute") {
-				return(x@dose.mean)
-			}
-			else {
-				return(x@dose.mean*x@rx.isodose/x@dose.rx)
-			}
+			return(x@dose.mean)
 		}
 	}
 )
@@ -370,12 +365,7 @@ setMethod("max", "DVH",
 			return(max(x@doses, na.rm=na.rm))
 		}
 		else {
-			if (x@dose.type == "absolute") {
-				return(x@dose.max)
-			}
-			else {
-				return(x@dose.max*x@rx.isodose/x@dose.rx)
-			}
+			return(x@dose.max)
 		}
 	}
 )
@@ -394,12 +384,7 @@ setMethod("min", "DVH",
 			return(min(x@doses, na.rm=na.rm))
 		}
 		else {
-			if (x@dose.type == "absolute") {
-				return(x@dose.min)
-			}
-			else {
-				return(x@dose.min*x@rx.isodose/x@dose.rx)
-			}
+			return(x@dose.min)
 		}
 	}
 )
@@ -419,12 +404,7 @@ setMethod("range", "DVH",
 			return(range(x@doses, na.rm=na.rm))
 		}
 		else {
-			if (x@dose.type == "absolute") {
-				return(c(x@dose.min, x@dose.max))
-			}
-			else {
-				return(x@rx.isodose*c(x@dose.min, x@dose.max)/x@dose.rx)				
-			}
+			return(c(x@dose.min, x@dose.max))
 		}
 	}
 )

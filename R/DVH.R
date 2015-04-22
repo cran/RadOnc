@@ -80,11 +80,14 @@ setMethod("[", "DVH",
 			if (any(IDs)) {
 				type[IDs] <- "ID"
 			}
-			value <- sub("[VD]([-<.0-9]+|MAX|MIN|MEAN|RX|INTEGRAL).*", "\\1", i)
-			type2 <- sub("[VD]([-<.0-9]+|MAX|MIN|MEAN|RX|INTEGRAL)([%]|GY|CGY|CC)*.*$", "\\2", i)
+			value <- sub("[VD]([-<.0-9]+|MAX|MIN|MEAN|MEDIAN|RX|INTEGRAL).*", "\\1", i)
+			type2 <- sub("[VD]([-<.0-9]+|MAX|MIN|MEAN|MEDIAN|RX|INTEGRAL)([%]|GY|CGY|CC)*.*$", "\\2", i)
 			type3 <- grepl(".*[(](.*)[)]$", i)
 			type4 <- sub(".*[(](.*)[)]$", "\\1", i)
 			type5 <- grepl("[-<]", value)
+			type6 <- grepl(" (=|==|<=|>=|<|>|!=) [.0-9]+", i)
+			type7 <- sub(".* (=|==|<=|>=|<|>|!=) [.0-9]+.*", "\\1", i)
+			type8 <- suppressWarnings(as.numeric(sub(".* (=|==|<=|>=|<|>|!=) ([.0-9]+).*([(].*[)])*$", "\\2", i)))
 			for (count in 1:length(i)) {
 				switch(type[count],
 					PATIENT = {
@@ -215,18 +218,27 @@ setMethod("[", "DVH",
 					D = {
 						switch(x@type,
 							cumulative = {
-								if (value[count] %in% c("MAX", "MIN", "MEAN", "RX")) {
+								if (value[count] %in% c("MAX", "MIN", "MEAN", "MEDIAN", "RX")) {
 									switch(value[count],
 										MAX = value[count] <- x@dose.max,
 										MIN = value[count] <- x@dose.min,
 										MEAN = value[count] <- x@dose.mean,
-										RX = value[count] <- x@dose.rx
+										MEDIAN = value[count] <- x@dose.median,
+										RX = if (x@dose.type == "absolute") { value[count] <- x@dose.rx } else { value[count] <- 100 * 100 / x@rx.isodose }
 									)
 									if ((type2[count] == "%") | (type4[count] == "%")) {
-										result <- c(result, as.numeric(value[count]) * x@rx.isodose / x@dose.rx)
+										if (x@dose.type == "relative") {
+											result <- c(result, as.numeric(value[count]))
+										}
+										else {
+											result <- c(result, as.numeric(value[count]) * x@rx.isodose / x@dose.rx)
+										}
 										result.units <- c(result.units, "%")
 									}
 									else if (type4[count] == "CGY") {
+										if (x@dose.type == "relative") {
+											value[count] <- as.numeric(value[count]) * x@dose.rx / x@rx.isodose
+										}
 										if (x@dose.units == "Gy") {
 											result <- c(result, as.numeric(value[count]) * 100)
 										}
@@ -236,6 +248,9 @@ setMethod("[", "DVH",
 										result.units <- c(result.units, "cGy")
 									}
 									else if (type4[count] == "GY") {
+										if (x@dose.type == "relative") {
+											value[count] <- as.numeric(value[count]) * x@dose.rx / x@rx.isodose
+										}
 										if (x@dose.units == "cGy") {
 											result <- c(result, as.numeric(value[count]) / 100)
 										}
@@ -478,6 +493,7 @@ setMethod("[", "DVH",
 								result.units <- c(result.units, NA)
 							}
 						)
+						
 					},
 					{
 						warning("Improper format '", input[count], "' (dose/volume specifier missing, e.g. 'V__' or 'D__')")
@@ -485,6 +501,20 @@ setMethod("[", "DVH",
 						result.units <- c(result.units, NA)
 					}
 				)
+			}
+			if (any(type6)) {
+				for (count in which(type6)) {
+					switch(type7[count],
+						"==" = result[count] <- as.logical(result[count] == type8[count]),
+						"=" = result[count] <- as.logical(result[count] == type8[count]),
+						"<=" = result[count] <- as.logical(result[count] <= type8[count]),
+						">=" = result[count] <- as.logical(result[count] >= type8[count]),
+						"<" = result[count] <- as.logical(result[count] < type8[count]),
+						">" = result[count] <- as.logical(result[count] > type8[count]),
+						"!=" = result[count] <- as.logical(result[count] != type8[count])
+					)	
+					result.units[count] <- "logical"					
+				}				
 			}
 		}
 		else {

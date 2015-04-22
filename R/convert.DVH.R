@@ -22,16 +22,28 @@ convert.DVH <- function(..., type=NULL, dose=NULL, volume=NULL, dose.units=NULL)
 		}
 		if ((!is.na(dose)) & (dose != x@dose.type)) {
 			if (is.na(x@dose.rx)) {
-				warning(paste("Cannot convert DVH (", x@structure.name, ") because prescription dose is not specified", sep=""))
+				warning(paste("Cannot convert DVH (", x@structure.name, ") doses because prescription dose is not specified", sep=""), immediate.=TRUE, call.=FALSE)
 				arglist[[i]] <- x
 				next	
 			}
 			if (dose == "absolute") {
 				x@doses <- x@doses * x@dose.rx / x@rx.isodose
+				x@dose.max <- x@dose.max * x@dose.rx / x@rx.isodose
+				x@dose.min <- x@dose.min * x@dose.rx / x@rx.isodose
+				x@dose.mean <- x@dose.mean * x@dose.rx / x@rx.isodose
+				x@dose.median <- x@dose.median * x@dose.rx / x@rx.isodose
+				x@dose.mode <- x@dose.mode * x@dose.rx / x@rx.isodose
+				x@dose.STD <- x@dose.STD * x@dose.rx / x@rx.isodose
 				x@dose.type <- "absolute"
 			}
 			else {
 				x@doses <- x@doses * x@rx.isodose / x@dose.rx
+				x@dose.max <- x@dose.max * x@rx.isodose / x@dose.rx
+				x@dose.min <- x@dose.min * x@rx.isodose / x@dose.rx
+				x@dose.mean <- x@dose.mean * x@rx.isodose / x@dose.rx
+				x@dose.median <- x@dose.median * x@rx.isodose / x@dose.rx
+				x@dose.mode <- x@dose.mode * x@rx.isodose / x@dose.rx
+				x@dose.STD <- x@dose.STD * x@rx.isodose / x@dose.rx
 				x@dose.type <- "relative"
 			}
 		}
@@ -40,6 +52,10 @@ convert.DVH <- function(..., type=NULL, dose=NULL, volume=NULL, dose.units=NULL)
 		}
 		if ((!is.na(volume)) & (volume != x@volume.type)) {
 			if (volume == "absolute") {
+				if (x@structure.volume == 0) {
+					print(x@structure.volume)
+					warning(paste("Cannot convert DVH (", x@structure.name, ") to 'absolute' volume units, because structure has zero volume", sep=""), immediate.=TRUE, call.=FALSE)
+				}
 				x@volumes <- x@volumes * x@structure.volume / 100
 				x@volume.type <- "absolute"
 			}
@@ -50,6 +66,33 @@ convert.DVH <- function(..., type=NULL, dose=NULL, volume=NULL, dose.units=NULL)
 		}
 		else {
 			volume <- x@volume.type
+		}
+		if ((!is.na(dose.units)) & (dose.units != x@dose.units)) {
+			if (dose.units == "cGy") {
+				x@dose.rx <- x@dose.rx * 100
+				if (x@dose.type == "absolute") {
+					x@doses <- x@doses * 100
+					x@dose.max <- x@dose.max * 100
+					x@dose.min <- x@dose.min * 100
+					x@dose.mean <- x@dose.mean * 100
+					x@dose.median <- x@dose.median * 100
+					x@dose.mode <- x@dose.mode * 100
+					x@dose.STD <- x@dose.STD * 100
+				}
+			}
+			else {
+				x@dose.rx <- x@dose.rx / 100
+				if (x@dose.type == "absolute") {
+					x@doses <- x@doses / 100
+					x@dose.max <- x@dose.max / 100
+					x@dose.min <- x@dose.min / 100
+					x@dose.mean <- x@dose.mean / 100
+					x@dose.median <- x@dose.median / 100
+					x@dose.mode <- x@dose.mode / 100
+					x@dose.STD <- x@dose.STD / 100
+				}
+			}
+			x@dose.units <- dose.units
 		}
 		if ((!is.na(type)) & (type != x@type)) {
 			if (type == "cumulative") {
@@ -92,33 +135,6 @@ convert.DVH <- function(..., type=NULL, dose=NULL, volume=NULL, dose.units=NULL)
 				x@doses <- x@doses[1:(length(x@doses)-1)] + diff(x@doses)/2
 				x@type <- "differential"
 			}
-		}
-		if ((!is.na(dose.units)) & (dose.units != x@dose.units)) {
-			if (dose.units == "cGy") {
-				if (x@dose.type == "absolute") {
-					x@doses <- x@doses * 100
-				}
-				x@dose.rx <- x@dose.rx * 100
-				x@dose.max <- x@dose.max * 100
-				x@dose.min <- x@dose.min * 100
-				x@dose.mean <- x@dose.mean * 100
-				x@dose.median <- x@dose.median * 100
-				x@dose.mode <- x@dose.mode * 100
-				x@dose.STD <- x@dose.STD * 100
-			}
-			else {
-				if (x@dose.type == "absolute") {
-					x@doses <- x@doses / 100
-				}
-				x@dose.rx <- x@dose.rx / 100
-				x@dose.max <- x@dose.max / 100
-				x@dose.min <- x@dose.min / 100
-				x@dose.mean <- x@dose.mean / 100
-				x@dose.median <- x@dose.median / 100
-				x@dose.mode <- x@dose.mode / 100
-				x@dose.STD <- x@dose.STD / 100
-			}
-			x@dose.units <- dose.units
 		}
 		arglist[[i]] <- x
 	}

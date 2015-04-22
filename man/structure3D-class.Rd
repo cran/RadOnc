@@ -57,8 +57,9 @@ Reid F. Thompson (\email{reid.thompson@gmail.com})
 \examples{
 # Description of structure/slots in class
 showClass("structure3D")
-data(list="RadOnc", package="RadOnc")
-plot(mandible)
-points3d(range(mandible), col="red")
+
+# data(list="RadOnc", package="RadOnc")
+# plot(mandible)
+# points3d(range(mandible), col="red")
 }
 \keyword{classes}

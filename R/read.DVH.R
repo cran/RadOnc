@@ -1,5 +1,5 @@
 read.DVH <- function (file, type=NA, verbose=TRUE, collapse=TRUE) {
-	type <- match.arg(tolower(type), choices=c(NA, "aria10", "aria11", "aria8", "dicom", "cadplan", "tomo"), several.ok=TRUE)
+	type <- match.arg(tolower(type), choices=c(NA, "aria10", "aria11", "aria8", "dicom", "cadplan", "tomo", "monaco"), several.ok=TRUE)
 	if (length(file) < 1) {
 		warning("argument 'file' is missing, with no default")
 		return()
@@ -13,6 +13,7 @@ read.DVH <- function (file, type=NA, verbose=TRUE, collapse=TRUE) {
 			dicom = return(read.DVH.DICOM(path=file, verbose=verbose)),
 			cadplan = return(read.DVH.CadPlan(file=file, verbose=verbose)),
 			tomo = return(read.DVH.TomoTherapy(file=file, verbose=verbose)),
+			monaco = return(read.DVH.Monaco(file=file, verbose=verbose)),
 			warning("DVH file format not specified for file '", file, "'")
 		)
 		return()
@@ -124,31 +125,6 @@ read.DVH.Aria10 <- function (file, verbose=TRUE) {
 				warning("Invalid DVH file format, could not extract structure volume information")
 				return(new("DVH"))
 		    }
-			getDose <- function(dose) {
-				if (grepl("[[]%[]]", dose)) {
-					dose <- suppressWarnings(as.numeric(sub(".*: ", "", dose)))*dose.rx/100		
-				}
-				else {
-					dose <- suppressWarnings(as.numeric(sub(".*: ", "", dose)))
-				}
-				return(dose)				
-			}
-
-			dose.min <- max(0, getDose(data[grep("^Min Dose.*: ", data, ignore.case=TRUE, perl=TRUE)]), na.rm=TRUE)
-			dose.max <- max(0, getDose(data[grep("^Max Dose.*: ", data, ignore.case=TRUE, perl=TRUE)]), na.rm=TRUE)
-			dose.mean <- max(0, getDose(data[grep("^Mean Dose.*: ", data, ignore.case=TRUE, perl=TRUE)]), na.rm=TRUE)
-			if (verbose) {
-				cat("  ..Importing structure: ", name, "  [volume: ", volume, "cc, dose: ", dose.min, " - ", dose.max, dose.units, "]\n", sep="")
-			}
-
-			dose.mode <- max(0, getDose(data[grep("^Modal Dose.*: ", data, ignore.case=TRUE, perl=TRUE)]), na.rm=TRUE)
-			dose.median <- max(0, getDose(data[grep("^Median Dose.*: ", data, ignore.case=TRUE, perl=TRUE)]), na.rm=TRUE)
-			dose.STD <- max(0, getDose(data[grep("^STD.*: ", data, ignore.case=TRUE, perl=TRUE)]), na.rm=TRUE)
-
-		    equiv.sphere <- suppressWarnings(as.numeric(sub("^.*: (.+$)", "\\1", data[grep("^Equiv. Sphere Diam.*: ", data, ignore.case=TRUE, perl=TRUE)])))
-		    conf.ind <- suppressWarnings(as.numeric(sub("^.*: (.+$)", "\\1", data[grep("^Conformity Index.*: ", data, ignore.case=TRUE, perl=TRUE)])))
-		    gradient <- suppressWarnings(as.numeric(sub("^.*: (.+$)", "\\1", data[grep("^Gradient Measure.*: ", data, ignore.case=TRUE, perl=TRUE)])))
-
         	header <- grep("Dose [[](%|Gy|cGy)[]].*Volume", data, ignore.case=TRUE, perl=TRUE)
 			if (grepl("^\\s*Dose [[](cGy|Gy)[]].*Volume", data[header], ignore.case=TRUE, perl=TRUE)) {
 				dose.type <- "absolute"
@@ -162,7 +138,44 @@ read.DVH.Aria10 <- function (file, verbose=TRUE) {
 			else {
 				volume.type <- "absolute"
 			}
-			dvh <- read.table(textConnection(data[(header+1):length(data)]), header=FALSE, stringsAsFactors=FALSE)
+			getDose <- function(dose) {
+				if (grepl("[[]%[]]", dose)) {
+					if (dose.type == "absolute") {
+						dose <- suppressWarnings(as.numeric(sub(".*: ", "", dose)))*dose.rx/rx.isodose		
+					}
+					else {
+						dose <- suppressWarnings(as.numeric(sub(".*: ", "", dose)))
+					}
+				}
+				else {
+					if (dose.type == "absolute") {
+						dose <- suppressWarnings(as.numeric(sub(".*: ", "", dose)))
+					}
+					else {
+						dose <- suppressWarnings(as.numeric(sub(".*: ", "", dose)))*rx.isodose/dose.rx		
+					}
+				}
+				return(dose)				
+			}
+
+			dose.min <- getDose(data[grep("^Min Dose.*: ", data, ignore.case=TRUE, perl=TRUE)])
+			dose.max <- getDose(data[grep("^Max Dose.*: ", data, ignore.case=TRUE, perl=TRUE)])
+			dose.mean <- max(0, getDose(data[grep("^Mean Dose.*: ", data, ignore.case=TRUE, perl=TRUE)]), na.rm=TRUE)
+			if (verbose) {
+				cat("  ..Importing structure: ", name, "  [volume: ", volume, "cc, dose: ", dose.min, " - ", dose.max, dose.units, "]\n", sep="")
+			}
+
+			dose.mode <- max(0, getDose(data[grep("^Modal Dose.*: ", data, ignore.case=TRUE, perl=TRUE)]), na.rm=TRUE)
+			dose.median <- max(0, getDose(data[grep("^Median Dose.*: ", data, ignore.case=TRUE, perl=TRUE)]), na.rm=TRUE)
+			dose.STD <- max(0, getDose(data[grep("^STD.*: ", data, ignore.case=TRUE, perl=TRUE)]), na.rm=TRUE)
+
+		    equiv.sphere <- suppressWarnings(as.numeric(sub("^.*: (.+$)", "\\1", data[grep("^Equiv. Sphere Diam.*: ", data, ignore.case=TRUE, perl=TRUE)])))
+		    conf.ind <- suppressWarnings(as.numeric(sub("^.*: (.+$)", "\\1", data[grep("^Conformity Index.*: ", data, ignore.case=TRUE, perl=TRUE)])))
+		    gradient <- suppressWarnings(as.numeric(sub("^.*: (.+$)", "\\1", data[grep("^Gradient Measure.*: ", data, ignore.case=TRUE, perl=TRUE)])))
+
+			con <- textConnection(data[(header+1):length(data)])
+			dvh <- read.table(con, header=FALSE, stringsAsFactors=FALSE)
+			close(con)
 			data.dose <- dvh[, 1]
 			if (plan.sum) {
 				data <- dvh[, 2]
@@ -253,7 +266,9 @@ read.DVH.CadPlan <- function(file, verbose=TRUE) {
 		function (data) {
 			# EXTRACT PRESCRIPTION DOSE AND DOSE UNITS
 			dose.rx <- data[grep("^Prescr[.] dose.*:\\s*", data, ignore.case=TRUE, perl=TRUE)]
-		    dose.units <- toupper(sub("^.*[(](.*)[)].*", "\\1", dose.rx, perl=TRUE))
+			rx.isodose <- data[grep("^[%] for dose.*:\\s*", data, ignore.case=TRUE, perl=TRUE)]
+
+    		dose.units <- toupper(sub("^.*[(](.*)[)].*", "\\1", dose.rx, perl=TRUE))
 			if (dose.units == "GY") {
 				dose.units <- "Gy"
 			}
@@ -261,6 +276,7 @@ read.DVH.CadPlan <- function(file, verbose=TRUE) {
 				dose.units <- "cGy"
 			}
 			dose.rx <- suppressWarnings(as.numeric(sub("^Prescr[.] dose.*:\\s*", "", dose.rx, ignore.case=TRUE, perl=TRUE)))
+		    rx.isodose <- suppressWarnings(as.numeric(sub("^[%] for dose.*:\\s*", "", rx.isodose, ignore.case=TRUE)))
 			if (is.na(dose.rx)) {
 				warning("Prescription dose not specified")
 			}
@@ -275,27 +291,6 @@ read.DVH.CadPlan <- function(file, verbose=TRUE) {
 				warning("Invalid DVH file format, could not extract structure volume information")
 				return(new("DVH"))
 		    }
-			getDose <- function(dose) {
-				if (grepl("[(]\\s*[%]\\s*[)]", dose)) {
-					dose <- suppressWarnings(as.numeric(sub(".*:\\s*", "", dose)))*dose.rx/100		
-				}
-				else {
-					dose <- suppressWarnings(as.numeric(sub(".*:\\s*", "", dose)))
-				}
-				return(dose)				
-			}
-
-			dose.min <- max(0, getDose(data[grep("^Dose minimum.*:\\s*", data, ignore.case=TRUE, perl=TRUE)]), na.rm=TRUE)
-			dose.max <- max(0, getDose(data[grep("^Dose maximum.*:\\s*", data, ignore.case=TRUE, perl=TRUE)]), na.rm=TRUE)
-			dose.mean <- max(0, getDose(data[grep("^Dose mean.*:\\s*", data, ignore.case=TRUE, perl=TRUE)]), na.rm=TRUE)
-			if (verbose) {
-				cat("  ..Importing structure: ", name, "  [volume: ", volume, "cc, dose: ", dose.min, " - ", dose.max, dose.units, "]\n", sep="")
-			}
-
-			dose.mode <- max(0, getDose(data[grep("^Dose modal.*:\\s*", data, ignore.case=TRUE, perl=TRUE)]), na.rm=TRUE)
-			dose.median <- max(0, getDose(data[grep("^Dose median.*:\\s*", data, ignore.case=TRUE, perl=TRUE)]), na.rm=TRUE)
-			dose.STD <- max(0, getDose(data[grep("^Standard dev.*:\\s*", data, ignore.case=TRUE, perl=TRUE)]), na.rm=TRUE)
-
         	header <- grep("Dose\\s*[(]\\s*(%|Gy|cGy)\\s*[)].*Volume", data, ignore.case=TRUE, perl=TRUE)
 			if (grepl("^\\s*Dose\\s*[(]\\s*(Gy|cGy)\\s*[)].*Volume", data[header], ignore.case=TRUE, perl=TRUE)) {
 				dose.type <- "absolute"
@@ -309,7 +304,40 @@ read.DVH.CadPlan <- function(file, verbose=TRUE) {
 			else {
 				volume.type <- "absolute"
 			}
-			dvh <- read.table(textConnection(data[(header+1):length(data)]), header=FALSE, stringsAsFactors=FALSE)
+			getDose <- function(dose) {
+				if (grepl("[(]\\s*[%]\\s*[)]", dose)) {
+					if (dose.type == "absolute") {
+						dose <- suppressWarnings(as.numeric(sub(".*:\\s*", "", dose)))*dose.rx/rx.isodose	
+					}
+					else {
+						dose <- suppressWarnings(as.numeric(sub(".*:\\s*", "", dose)))
+					}
+				}
+				else {
+					if (dose.type == "absolute") {
+						dose <- suppressWarnings(as.numeric(sub(".*:\\s*", "", dose)))
+					}
+					else {
+						dose <- suppressWarnings(as.numeric(sub(".*:\\s*", "", dose)))*rx.isodose/dose.rx
+					}
+				}
+				return(dose)				
+			}
+
+			dose.min <- getDose(data[grep("^Dose minimum.*:\\s*", data, ignore.case=TRUE, perl=TRUE)])
+			dose.max <- getDose(data[grep("^Dose maximum.*:\\s*", data, ignore.case=TRUE, perl=TRUE)])
+			dose.mean <- max(0, getDose(data[grep("^Dose mean.*:\\s*", data, ignore.case=TRUE, perl=TRUE)]), na.rm=TRUE)
+			if (verbose) {
+				cat("  ..Importing structure: ", name, "  [volume: ", volume, "cc, dose: ", dose.min, " - ", dose.max, dose.units, "]\n", sep="")
+			}
+
+			dose.mode <- max(0, getDose(data[grep("^Dose modal.*:\\s*", data, ignore.case=TRUE, perl=TRUE)]), na.rm=TRUE)
+			dose.median <- max(0, getDose(data[grep("^Dose median.*:\\s*", data, ignore.case=TRUE, perl=TRUE)]), na.rm=TRUE)
+			dose.STD <- max(0, getDose(data[grep("^Standard dev.*:\\s*", data, ignore.case=TRUE, perl=TRUE)]), na.rm=TRUE)
+
+			con <- textConnection(data[(header+1):length(data)])
+			dvh <- read.table(con, header=FALSE, stringsAsFactors=FALSE)
+			close(con)
 			data.dose <- dvh[, 1]
 			data <- dvh[, 2]
 			if (DVH.type == "differential") {
@@ -318,7 +346,7 @@ read.DVH.CadPlan <- function(file, verbose=TRUE) {
 				data.dose <- c(temp.doses, (2*data.dose - temp.doses)[length(temp.doses)])
 				data <- diffinv(-data, xi=sum(data))
 			}
-			return(new("DVH", dose.min=dose.min, dose.max=dose.max, dose.mean=dose.mean, dose.mode=dose.mode, dose.median=dose.median, dose.STD=dose.STD, dose.rx=dose.rx, structure.name=name, structure.volume=volume, doses=data.dose, volumes=data, type="cumulative", dose.type=dose.type, dose.units=dose.units, volume.type=volume.type))	
+			return(new("DVH", dose.min=dose.min, dose.max=dose.max, dose.mean=dose.mean, dose.mode=dose.mode, dose.median=dose.median, dose.STD=dose.STD, dose.rx=dose.rx, rx.isodose=rx.isodose, structure.name=name, structure.volume=volume, doses=data.dose, volumes=data, type="cumulative", dose.type=dose.type, dose.units=dose.units, volume.type=volume.type))	
 		}
 	)
 	
@@ -332,4 +360,64 @@ read.DVH.TomoTherapy <- function (file, verbose=TRUE) {
 	warning("TomoTherapy format not currently supported")
 	return()
 #	data <- read.table(file, header=TRUE, sep=",")
+}
+
+
+read.DVH.Monaco <- function (file, verbose=TRUE) {
+	if (!(fid <- file(file, open="r"))) {
+		warning(paste("Could not open file '", file, "'", sep=""))		
+		return()
+	}
+	if (verbose) {
+		cat("Reading DVH file ('", file, "')... ", sep="")
+	}
+	header <- unlist(strsplit(readLines(fid, n=3),"[ ]*[|][ ]*", perl=TRUE))
+	data <- readLines(fid)
+	close(fid)
+    patient <- sub("^.*: (.*)[~].*", "\\1", header[grep("^Patient ID.*:\\s*", header, ignore.case=TRUE, perl=TRUE)])
+    ID <- sub("^.*: .*[~](.*)", "\\1", header[grep("^Patient ID.*:\\s*", header, ignore.case=TRUE, perl=TRUE)])
+    date <- data[length(data)]
+	plan <- sub("^Plan Name:\\s*(.+$)", "\\1", header[grep("^Plan Name.*:\\s*", header, ignore.case=TRUE, perl=TRUE)])
+	dose.units <- sub("^Dose Units:\\s*(.+$)", "\\1", header[grep("^Dose Units.*:\\s*", header, ignore.case=TRUE, perl=TRUE)])
+	if (dose.units == "%") {
+		dose.type <- "relative"
+		dose.units <- sub("^Bin Width:.*[(](.*)[)]", "\\1", header[grep("^Bin Width.*:", header, ignore.case=TRUE, perl=TRUE)])
+	}
+	else {
+		dose.type <- "absolute"
+	}
+	volume.units <- sub("^Volume Units:\\s*(.+$)", "\\1", header[grep("^Volume Units.*:\\s*", header, ignore.case=TRUE, perl=TRUE)])
+	if (volume.units == "%") {
+		volume.type <- "relative"
+	}
+	else {
+		volume.type <- "absolute"
+	}
+
+	if (verbose) {
+		cat("[exported on ", date, "]\n", sep="")
+		cat("  Patient: ", patient, " (", ID, ")\n", sep="")
+		cat("  Plan: ", plan, "\n", sep="")		
+	}
+	data <- strsplit(data[1:(length(data)-3)],"[ ]+")
+	data.structures <- unlist(lapply(data, function(x) {x[1]}))
+	data.dose <- as.numeric(unlist(lapply(data, function(x) {x[2]})))
+	data.volume <- as.numeric(unlist(lapply(data, function(x) {x[3]})))
+	structures <- unique(data.structures)
+	# EXTRACT DVH DATA FOR EACH STRUCTURE
+	DVH.list <- lapply(structures,
+		function (structure) {
+			which.data <- which(data.structures == structure)
+			which.dose <- data.dose[which.data]
+			which.volume <- data.volume[which.data]	
+			if (identical(which.volume,sort(which.volume,decreasing=TRUE))) {
+				DVH.type <- "cumulative"
+			}
+			else {
+				DVH.type <- "differential"
+			}
+			return(new("DVH", patient=patient, ID=ID, structure.name=structure, doses=which.dose, dose.units=dose.units, volumes=which.volume, type=DVH.type, dose.type=dose.type, volume.type=volume.type))	
+		})
+
+	return(DVH.list)
 }

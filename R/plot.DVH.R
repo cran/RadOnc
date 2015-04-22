@@ -84,12 +84,12 @@ setMethod("plot", c("DVH.list", "ANY"),
 	}
 ) 
 
-plot.DVH.ttest <- function(x, y, ..., paired=FALSE, col="black", lty="solid", lwd=1, alpha=0.05, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), width=NULL, main="", xlim=NULL, ylim=NULL, multiplier=1, quantile=c(0.25, 0.75), line.transparency=1, fill.transparency=line.transparency/2, angle=45, density=NULL, fill.lty=lty, fill=TRUE, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, new=TRUE, highlight="lightyellow") {
+plot.DVH.ttest <- function(x, y, ..., paired=FALSE, col="black", lty="solid", lwd=1, alpha=0.05, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), width=NULL, main="", xlim=NULL, ylim=NULL, multiplier=1, quantile=c(0.25, 0.75), line.transparency=1, fill.transparency=line.transparency/2, angle=45, density=NULL, fill.lty=lty, fill=TRUE, legend=NULL, legend.labels=NULL, new=TRUE, highlight="lightyellow", grid=FALSE) {
 	dose <- match.arg(dose)
 	dose.units <- match.arg(dose.units)
 	volume <- match.arg(volume)
 	type <- match.arg(type)
-	legend <- match.arg(legend)
+	legend <- match.arg(legend, choices=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"))
 	width <- match.arg(width, choices=c(NA, "range", "mad", "IQR", "quantile", "var", "sd"))
 	x <- new("DVH.list", lapply(x, convert.DVH, type=type, dose=dose, dose.units=dose.units, volume=volume))
 	x <- x[!unlist(lapply(x, is.empty))]
@@ -150,6 +150,7 @@ plot.DVH.ttest <- function(x, y, ..., paired=FALSE, col="black", lty="solid", lw
 		}
 		
 		plot(NULL, xlim=xlim, ylim=ylim, xlab=if (dose == "absolute") {paste("Dose (", dose.units, ")",sep="")} else {"Dose (%)"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main="")
+		if (grid) grid()
 	}
 	if (is.na(width)) {
 		conf.int <- data.ttest$y.mean + data.ttest$conf.int2 - data.ttest$x.mean
@@ -268,7 +269,7 @@ plot.DVH.ttest <- function(x, y, ..., paired=FALSE, col="black", lty="solid", lw
 }
 
 
-plot.DVH.wilcox <- function(x, y, ..., alternative=c("two.sided", "greater", "less"), mu=0, paired=FALSE, exact=TRUE, correct=TRUE, alpha=0.05, col="black", lty="solid", lwd=1, line.transparency=1, fill.transparency=line.transparency/2, angle=45, density=NULL, fill=TRUE, fill.lty=lty, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), main="", xlim=NULL, ylim=NULL, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, new=TRUE, highlight="lightyellow", panel.lower=c("wilcox", "grouped")) {
+plot.DVH.wilcox <- function(x, y, ..., alternative=c("two.sided", "greater", "less"), mu=0, paired=FALSE, exact=TRUE, correct=TRUE, alpha=0.05, col="black", lty="solid", lwd=1, line.transparency=1, fill.transparency=line.transparency/2, angle=45, density=NULL, fill=TRUE, fill.lty=lty, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), main="", xlim=NULL, ylim=NULL, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, new=TRUE, highlight="lightyellow", panel.lower=c("wilcox", "grouped"), grid=FALSE) {
 	dose <- match.arg(dose)
 	dose.units <- match.arg(dose.units)
 	volume <- match.arg(volume)
@@ -336,6 +337,7 @@ plot.DVH.wilcox <- function(x, y, ..., alternative=c("two.sided", "greater", "le
 		}
 		
 		plot(NULL, xlim=xlim, ylim=ylim, xlab=if (dose == "absolute") {paste("Dose (", dose.units, ")",sep="")} else {"Dose (%)"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main="")
+		if (grid) grid()
 	}
 	if (panel.lower == "wilcox") {
 		x.upper <- pmax(pmin(data.wilcox$conf.int1, ylim[2]), ylim[1])
@@ -371,7 +373,7 @@ plot.DVH.wilcox <- function(x, y, ..., alternative=c("two.sided", "greater", "le
 
 
 
-plot.DVH.bars <- function(x, ..., new=TRUE, legend=TRUE, legend.labels=NULL, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), main="", col=rev(rainbow(n=10, start=0, end=2/3))) {
+plot.DVH.bars <- function(x, ..., new=TRUE, legend=TRUE, legend.labels=NULL, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), main="", col=rev(rainbow(n=10, start=0, end=2/3))) {
 	dose <- match.arg(dose)
 	dose.units <- match.arg(dose.units)
 	volume <- match.arg(volume)
@@ -426,12 +428,12 @@ plot.DVH.bars <- function(x, ..., new=TRUE, legend=TRUE, legend.labels=NULL, dos
 }
 
 
-plot.DVH.individual <- function(x, ..., col="black", lty ="solid", lwd=1, line.transparency=1, new=TRUE, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), main="", xlim=NULL, ylim=NULL) {
+plot.DVH.individual <- function(x, ..., col="black", lty ="solid", lwd=1, line.transparency=1, new=TRUE, legend=NULL, legend.labels=NULL, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), main="", xlim=NULL, ylim=NULL, grid=FALSE) {
 	dose <- match.arg(dose)
 	dose.units <- match.arg(dose.units)
 	volume <- match.arg(volume)
 	type <- match.arg(type)
-	legend <- match.arg(legend)
+	legend <- match.arg(legend, choices=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"))
 	x <- c(x, ...)
 	x <- new("DVH.list", lapply(x, convert.DVH, type=type, dose=dose, dose.units=dose.units, volume=volume))
 	N <- length(x)
@@ -460,6 +462,7 @@ plot.DVH.individual <- function(x, ..., col="black", lty ="solid", lwd=1, line.t
 		}
 
 		plot(NULL, xlim=xlim, ylim=ylim, xlab=if (dose == "absolute") {paste("Dose (", dose.units, ")",sep="")} else {"Dose (%)"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main=main)
+		if (grid) grid()
 	}
 	for (i in 1:N) {
 		col.i <- col2rgb(col[i])/255
@@ -470,7 +473,7 @@ plot.DVH.individual <- function(x, ..., col="black", lty ="solid", lwd=1, line.t
 	}
 }
 
-plot.DVH.groups <- function(x, ..., col="black", lty ="solid", lwd=1, line.transparency=1, fill.transparency=line.transparency/2, new=TRUE, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), width=NULL, main="", xlim=NULL, ylim=NULL, multiplier=1, quantile=c(0.25, 0.75), fill=TRUE, angle=45, density=NULL, fill.lty=lty) {
+plot.DVH.groups <- function(x, ..., col="black", lty ="solid", lwd=1, line.transparency=1, fill.transparency=line.transparency/2, new=TRUE, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), width=NULL, main="", xlim=NULL, ylim=NULL, multiplier=1, quantile=c(0.25, 0.75), fill=TRUE, angle=45, density=NULL, fill.lty=lty, grid=FALSE) {
 	dose <- match.arg(dose)
 	dose.units <- match.arg(dose.units)
 	volume <- match.arg(volume)
@@ -532,6 +535,7 @@ plot.DVH.groups <- function(x, ..., col="black", lty ="solid", lwd=1, line.trans
 		}
 
 		plot(NULL, xlim=xlim, ylim=ylim, xlab=if (dose == "absolute") {paste("Dose (", dose.units, ")",sep="")} else {"Dose (%)"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main=main)
+		if (grid) grid()
 	}
 	y.max <- par("usr")[4]
 	for (i in 1:N) {

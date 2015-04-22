@@ -44,6 +44,7 @@ The \Rpackage{RadOnc} package provides a number of tools for the import and anal
 \item Varian's Aria/Eclipse platform (v.10 and v.11)
 \item CadPlan (for historical/archival data)
 \item TomoTherapy
+\item Elekta's Monaco platform
 \item DICOM-RT files
 \end{itemize}
 
@@ -67,11 +68,11 @@ For additional reference and details, please consult our published report on the
 \section{Changes for \Rpackage{RadOnc} in current release}
 \label{current.version.changes}
 \begin{itemize}
-      \item Added attribute \Rfunction{dose.units} to dose grid in class \Rfunction{RTdata} to enable specification and processing of dose units.
-      \item New class \Rfunction{zDVH} (along with relevant methods) to store one or more axially-segmented and calculated dose-volume histograms. The class otherwise contains all elements of the \Rfunction{DVH} class and is largely interchangeable with other \Rfunction{DVH} objects.
-      \item Added \Rfunction{janedoe.RTdata} and \Rfunction{stomach} to package data contents in order to provide an example of a \Rfunction{RTdata} and \Rfunction{zDVH} object, respectively.
-      \item New plot functionality for axial dose-volume histogram displayed from one or more \Rfunction{zDVH} objects.
-      \item New method for \Rfunction{compareStructures()} ("DSC") which calculates Dice similarity coefficients between pairs of structures.
+      \item Added ability to display gridlines when plotting DVH graphs.
+      \item Added ability to extract median dose as a dosimetric parameter.
+      \item Added ability to check for arbitrary dose constraints (e.g. \Rfunction{V20Gy < 15(\%)}).
+      \item New function \Rfunction{subset()} to extract a desired subset of a \Rfunction{DVH.list} object based upon patient identifiers, structure name, and/or dosimetric constraints.
+      \item Extended \Rfunction{read.DVH()} function to import Elekta Monaco files.
 \end{itemize}
 Please refer to NEWS.Rd file for a more extensive revision history.
 <<echo=TRUE,results=hide>>=
@@ -83,7 +84,7 @@ news(package="RadOnc")
 \label{DVHs}
 \subsection{DVH file import}
 \label{DVH.import}
-The \Rfunction{read.DVH()} function is designed to take an input text file and output a list of DVH data objects containing all relevant data. Supported file types currently include Varian's Aria/Eclipse platform (v.10 and v.11), CadPlan (for archival/historical data), and TomoTherapy. Other treatment planning systems are not currently supported however will be included in future releases.
+The \Rfunction{read.DVH()} function is designed to take an input text file and output a list of DVH data objects containing all relevant data. Supported file types currently include Varian's Aria/Eclipse platform (v.10 and v.11), CadPlan (for archival/historical data), TomoTherapy, and Elekta's Monaco platform. Other treatment planning systems are not currently supported however will be included in future releases.
 
 For Varian-specific file types, data must be exported directly from the treatment planning system and should include all DVH structures of interest. In Eclipse, this is accomplished via the ``Export DVH in Tabular Format..." option, accessed by right-clicking over DVHs in Plan Evaluation mode. Exported files will adhere to the following form (an example file, 50 lines of which are shown here, is contained within this release of the \Rpackage{RadOnc} package):
 
@@ -134,7 +135,7 @@ plot(janedoe[c(3,6:7)],new=FALSE,col="red",lwd=1.25)
 \newpage
 \subsection{DVH list manipulation}
 \label{DVH.manipulation}
-The \Rfunction{read.DVH()} function returns a DVH list that can be manipulated in multiple ways. Subsets of DVH lists can be obtained using the \Rfunction{[]} modifier, and any number of DVH lists can be combined using the \Rfunction{c()} function. Additionally, single DVH objects can be directly accessed using the \Rfunction{[[]]} modifier, and individual elements of a DVH list may be directly replaced with other DVH objects using the \Rfunction{[[<-} function.
+The \Rfunction{read.DVH()} function returns a DVH list that can be manipulated in multiple ways. Subsets of DVH lists can be obtained using the \Rfunction{subset()} function or \Rfunction{[]} modifier, and any number of DVH lists can be combined using the \Rfunction{c()} function. Additionally, single DVH objects can be directly accessed using the \Rfunction{[[]]} modifier, and individual elements of a DVH list may be directly replaced with other DVH objects using the \Rfunction{[[<-} function.
 <<echo=TRUE,results=verbatim>>=
 janedoe[1:4]
 c(janedoe["PTV"], johndoe[c("CTV", "DUODENUM")])
@@ -158,6 +159,14 @@ janedoe[c(2,"IGHT.*")]
 janedoe["(?i)liver"] ## (case insensitive matching) ##
 @
 
+Additionally, the \Rfunction{subset()} function has been extended to support DVH lists. In particular, a user may specify which patient(s) to include (pattern matching is applied to patient names), which structures (pattern matching for structures as described above), and/or which DVHs according to specific dose constraints (e.g. select all structures satisfying a specific parameter):
+<<echo=TRUE,results=verbatim>>=
+subset(janedoe, structure=c("liver", "kidney"), ignore.case=TRUE)
+subset(janedoe, constraint="volume > 200(cc)")
+subset(janedoe, constraint="Dmean <= 500(cGy)")
+subset(janedoe, constraint="D2cc < 20(Gy)")
+@
+
 Other list processing functions may be applied to DVH lists, enabling further data manipulation. The \Rfunction{rev()} function may be used to reverse the order of a DVH list, while the \Rfunction{names()} function may be used to extract (or set) the structure names for each DVH contained within the list. The \Rfunction{length()} function may be used to find the number of DVH objects contained within a DVH list, and the \Rfunction{lapply()} function can be used to perform a customizable set of operations on a DVH list and return a customizable set of values. Here are some examples employing each of these functions:
 
 <<echo=TRUE,results=verbatim>>=
@@ -176,10 +185,7 @@ janedoe[1:2]$patients
 janedoe[3:4]$ID
 @
 
-For nested DVH list data generated using \Rfunction{read.DVH()} on multiple input files, the \Rfunction{getStructureList()} function provides access to individual structures.  Using \Rfunction{getStructureList()}, desired instances of a given structure are selected from among a list of \Rfunction{DVH.list} objects).
-<<echo=TRUE,results=verbatim>>=
-getStructureList(DVHs, "(?i)Liver")
-@
+Note: for nested DVH list data generated using \Rfunction{read.DVH(..., collapse=FALSE)} on multiple input files, the \Rfunction{as(.., Class="DVH.list")} command can convert this list to a single DVH.list object.  Subsequent structure processing may then proceed, as above.
 
 \newpage
 \subsection{DVH data}
@@ -516,7 +522,7 @@ compareStructures(teeth, method="DSC")
 \appendix
 \section{Acknowledgements}
 \label{acknowledgements}
-Many thanks to Brandon Whitcher for his phenomenal and generous support regarding the \Rpackage{oro.dicom} pacakge, and to Daniel Wollschlaeger for his insights and contributions regarding DVH file formatting, dose unit interconversion, and inclusion of CadPlan data. Thank you to Lukasz Matulewicz for his contributions regarding inclusion of TomoTherapy-formatted data.
+Many thanks to Brandon Whitcher for his phenomenal and generous support regarding the \Rpackage{oro.dicom} pacakge, and to Daniel Wollschlaeger for his insights and contributions regarding DVH file formatting, dose unit interconversion, and inclusion of CadPlan data. Thank you to Francis Gibbons, Usman Lula, and Lukasz Matulewicz for their contributions regarding inclusion of Elekta and TomoTherapy-formatted data. Thank you to Maura Kirk, Eric Ojerholm, and Abodunde Adegunloye for their help in identifying software bugs and suggesting additional package features.
 
 \section{Previous Release Notes}
 \label{previous}
@@ -529,8 +535,9 @@ Many thanks to Brandon Whitcher for his phenomenal and generous support regardin
 \item Subsequent release (v1.0.5) on 2014-02-19
 \item Subsequent release (v1.0.6) on 2014-02-20
 \item Subsequent release (v1.0.7) on 2014-02-27
-\item Last release (v1.0.8) on 2014-05-31
-\item Current release (v1.0.9) on 2014-11-21
+\item Subsequent release (v1.0.8) on 2014-05-31
+\item Subsequent release (v1.0.9) on 2014-11-22
+\item Last release (v1.1.0) on 2015-04-21
 \end{itemize}
 Please refer to NEWS.Rd file for more details.
 <<echo=TRUE,results=hide>>=

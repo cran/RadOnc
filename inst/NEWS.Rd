@@ -3,6 +3,52 @@
 \title{ RadOnc News }
 \encoding{UTF-8}
 
+\section{CHANGES IN VERSION 1.1.0}{
+
+  \subsection{NEW FEATURES}{
+    \itemize{
+      \item Extended \code{read.DVH()} function to import Elekta Monaco files.
+      \item Added ability to display gridlines when plotting DVH graphs.
+      \item Added ability to extract median dose as a dosimetric parameter.
+      \item Added ability to check for arbitrary dose constraints (e.g. \code{V20Gy < 15(\%)}).
+      \item New function \code{subset()} to extract a desired subset of a \code{DVH.list} object based upon patient identifiers, structure name, and/or dosimetric constraints.
+    }
+  }
+
+  \subsection{BUG FIXES}{
+    \itemize{
+    	\item \code{read.DVH()} maintained open file connections, problematic for simultaneous import of hundreds of DVH files.
+    	\item \code{oro.dicom} package failed to recognize DICOM files formatted without 128 byte headers (patch applied to \code{oro.dicom} package version 0.5.0). This affected import of DICOM-RT data from TomoTherapy systems and other instances where file format departed from strict DICOM standards.
+    	\item \code{read.DVH()} failed to calculate structure volumes appropriately when structure volumes were not explicitly specified.
+     }
+  }
+
+  \subsection{DEPRECATED AND DEFUNCT}{
+    \itemize{
+      \item Function \code{getStructureList()} has been removed and replaced instead with a wider array of functionality using \code{subset()}.
+    }
+  }
+
+  \subsection{OTHER UPDATES}{
+    \itemize{
+      \item \code{read.DICOM.RT()} behavior updated, such that CT data is now scaled (using DICOM parameters \code{"RescaleSlope"} and \code{"RescaleIntercept"}) to represent Hounsfield Unit data.
+      \item Internal DVH conversion now generates warning when trying to convert from 'relative' to 'absolute' volume units when structure volume is zero.
+      \item DVH class behavior changed to enable relative/absolute dose conversion for stored dose parameters (e.g. \code{dose.max}); changes affect \code{read.DVH()}, \code{mean()}, \code{min()}, \code{max()}, \code{range()}, and other internal DVH specification and conversion functions.
+      \item Isodose line specification support added to \code{read.DVH(..., type="cadplan")}.
+    }
+   }
+
+  \subsection{ACKNOWLEDGEMENTS}{
+    \itemize{
+      \item Thanks to Daniel Wollschlaeger for identifying and fixing the bug in \code{read.DVH()}.
+      \item Thanks to Francis Gibbons for his contributions regarding inclusion of Elekta Monaco-formatted DVH data.
+      \item Thanks to Usman Lula for helping to identify an issue with DICOM-RT import from certain TomoTherapy workstations and to Brandon Whitcher for patching the \code{oro.dicom} package accordingly.
+    }
+  }
+
+ }
+
+
 \section{CHANGES IN VERSION 1.0.9}{
 
   \subsection{NEW FEATURES}{

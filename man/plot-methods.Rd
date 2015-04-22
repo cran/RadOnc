@@ -67,6 +67,9 @@
 		\item{\code{front}}{
 			A character value specifying the front-facing surface fill method when \code{x} is a \code{zDVH} object (the parameter is otherwise ignored). Value must be one of \code{"filled"} (default), \code{"lines"}, \code{"points"}, or \code{"culled"}.
 		}		
+		\item{\code{grid}}{
+			Logical, defaulting to \code{FALSE}. Determines whether or not to draw gridlines on 2D plot. Note that this parameter is relevant when \code{plot.type="individual"}, \code{"grouped"}, \code{"ttest"}, or \code{"wilcox"} (it is ignored when \code{plot.type="bars"} or when plotting \code{zDVH} objects).
+		}		
 		\item{\code{legend}}{
 			Value specifying the location to draw a figure legend, must be one of \code{"topright"}, \code{"bottomright"}, \code{"bottom"}, \code{"bottomleft"}, \code{"left"}, \code{"topleft"}, \code{"top"}, \code{"right"}, or \code{"center"}. These keywords place the legend on the inside of the plot frame at the location specified. Partial argument matching is used. If \code{legend=NA} (default), the legend is not drawn.
 			
@@ -124,7 +127,7 @@
 			Value specifying dose units (must be one of \code{"cGy"} or \code{"Gy"}).
 		}
 		\item{\code{type}}{
-			Value specifying type of dose-volume histogram to plot (must be one of \code{"cumulative"} or \code{"default"}).
+			Value specifying type of dose-volume histogram to plot (must be one of \code{"cumulative"} or \code{"differential"}).
 		}
 		\item{\code{volume}}{
 			Value specifying volume scale (must be one of \code{"relative"} or \code{"absolute"}).

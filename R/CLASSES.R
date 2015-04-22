@@ -114,7 +114,7 @@ setMethod("initialize",
 		.Object@volume.type <- match.arg(volume.type)
 		if (length(volumes) > 0) {
 			.Object@volumes <- as.numeric(volumes)
-			if ((length(.Object@structure.volume) < 1) || (is.na(.Object@structure.volume))) {
+			if ((.Object@structure.volume <= 0) || (is.na(.Object@structure.volume))) {
 				if ((.Object@volume.type == "absolute") & (.Object@type == "differential")) {
 					.Object@structure.volume <- sum(.Object@volumes)
 				}

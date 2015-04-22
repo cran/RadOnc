@@ -45,7 +45,7 @@ Objects can be created by calls of the form \code{new("DVH.list", structures, ..
 }
 \section{Methods}{
   \describe{
-    \item{[}{Extract subset of DVH list (regular expressions may be specified if desired, see \code{\link{regex}} for more details) }
+    \item{[}{Extract subset of DVH list based on pattern matching with structure names (regular expressions may be specified if desired, see \code{\link{regex}} for more details). Note that case-insensitive matching is supported using the \code{"(?i)"} prefix, such that \code{DVHs["(?i)LIVER"]} will match any combination of upper and lowercase letters spelling "liver". }
     \item{[[}{Extract single \code{DVH} object from DVH list }
     \item{[[<-}{Replace single \code{DVH} object in DVH list }
     \item{[<-}{Replace multiple elements of DVH list }
@@ -66,7 +66,7 @@ Objects can be created by calls of the form \code{new("DVH.list", structures, ..
     \item{rev}{Return a DVH list whose \code{DVH} objects are in reverse order}
     \item{sd}{Compute the standard deviation for all doses extracted from \code{DVH} object list }
     \item{show}{Display summary of DVH list }
-    \item{sum}{Compute the total (summed) \code{DVH} from all \code{DVH} objects within the list. \emph{Note that structures are assumed to be non-overlapping; any overlaps in structure volumes may generate inaccurate dose summation.} }
+    \item{sum}{Compute the total (summed) \code{DVH} from all \code{DVH} objects within the list. \emph{Note that structures are assumed to be non-overlapping; any overlaps in structure volumes may generate inaccurate dose summation.} }    
     \item{t.test}{Apply Student's t-Test to compare two DVH lists  (see also \code{\link{t.test}})}
     \item{var}{Compute the variance for all doses extracted from \code{DVH} object list }
     \item{wilcox.test}{Apply Wilcoxon Rank Sum and Signed Rank Tests to compare two DVH lists (see also \code{\link{wilcox.test}}) }

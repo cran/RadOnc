@@ -70,6 +70,9 @@
 		\item{\code{grid}}{
 			Logical, defaulting to \code{FALSE}. Determines whether or not to draw gridlines on 2D plot. Note that this parameter is relevant when \code{plot.type="individual"}, \code{"grouped"}, \code{"ttest"}, or \code{"wilcox"} (it is ignored when \code{plot.type="bars"} or when plotting \code{zDVH} objects).
 		}		
+		\item{\code{highlight}}{
+			The color to be used for shading p-value data when \code{plot.type="ttest"} or \code{"wilcox"}. See \code{\link{colors}} for more options and information.
+		}		
 		\item{\code{legend}}{
 			Value specifying the location to draw a figure legend, must be one of \code{"topright"}, \code{"bottomright"}, \code{"bottom"}, \code{"bottomleft"}, \code{"left"}, \code{"topleft"}, \code{"top"}, \code{"right"}, or \code{"center"}. These keywords place the legend on the inside of the plot frame at the location specified. Partial argument matching is used. If \code{legend=NA} (default), the legend is not drawn.
 			
@@ -126,6 +129,9 @@
 		\item{\code{dose.units}}{
 			Value specifying dose units (must be one of \code{"cGy"} or \code{"Gy"}).
 		}
+		\item{\code{paired}}{
+			A logical value (default is \code{FALSE}) specifying whether or not to perform paired groupwise comparisons when \code{plot.type="ttest"} or \code{"wilcox"}.
+		}
 		\item{\code{type}}{
 			Value specifying type of dose-volume histogram to plot (must be one of \code{"cumulative"} or \code{"differential"}).
 		}
@@ -162,7 +168,8 @@
 	# plot(x, ..., plot.type="wilcox")
 	# plot(c(johndoe[c("CTV","PTV")],janedoe[c("CTV","PTV")]), #group 1
 	#	c(janedoe[OARs],johndoe[OARs]), #group 2
- 	#	plot.type="w", col=c("red", "blue"), lty=2, fill.lty=1, main="Target v. OAR")
+ 	#	plot.type="w", col=c("red", "blue"), lty=2, fill.lty=1, main="Target v. OAR",
+ 	#	panel.lower="grouped")
 }
 \seealso{
 \code{\link{plot}}

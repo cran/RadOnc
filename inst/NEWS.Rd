@@ -3,6 +3,42 @@
 \title{ RadOnc News }
 \encoding{UTF-8}
 
+
+\section{CHANGES IN VERSION 1.1.1}{
+
+  \subsection{NEW FEATURES}{
+    \itemize{
+      \item Extended \code{read.DVH()} function to import RayStation files.
+      \item Extended \code{read.DVH()} function to import TomoTherapy files.
+    }
+  }
+
+  \subsection{BUG FIXES}{
+    \itemize{
+    	\item Dose-volume histogram interpolation accuracy was decreased when number of datapoints available was very small and the dose gradient was exceedingly steep.
+    	\item Improper scaling of dose units when plotting certain groupwise mean tendencies in some DVH plots.
+     }
+  }
+
+  \subsection{OTHER UPDATES}{
+    \itemize{
+      \item Documentation for \code{plot.DVH()} updated to include \code{highlight} parameter, which specifies shading of p-value data.
+      \item Documentation for \code{plot.DVH()} updated to include \code{paired} parameter, which specifies behavior of \code{t.test()} and \code{wilcox.test()}.
+    }
+   }
+
+  \subsection{ACKNOWLEDGEMENTS}{
+    \itemize{
+      \item Thanks to Maura Kirk for identifying the DVH dose scaling bug.
+      \item Thanks to Daniel Wollschlaeger for his contributions regarding improvement of DVH interpolation accuracy.
+      \item Thanks to Lukasz Matulewicz for his contributions regarding inclusion of TomoTherapy-formatted data.
+      \item Thanks to Michael Young for his contributions regarding inclusion of RayStation-formatted data.
+   }
+  }
+
+ }
+
+
 \section{CHANGES IN VERSION 1.1.0}{
 
   \subsection{NEW FEATURES}{

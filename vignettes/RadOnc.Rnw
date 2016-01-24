@@ -44,6 +44,7 @@ The \Rpackage{RadOnc} package provides a number of tools for the import and anal
 \item Varian's Aria/Eclipse platform (v.10 and v.11)
 \item CadPlan (for historical/archival data)
 \item TomoTherapy
+\item RayStation
 \item Elekta's Monaco platform
 \item DICOM-RT files
 \end{itemize}
@@ -84,7 +85,7 @@ news(package="RadOnc")
 \label{DVHs}
 \subsection{DVH file import}
 \label{DVH.import}
-The \Rfunction{read.DVH()} function is designed to take an input text file and output a list of DVH data objects containing all relevant data. Supported file types currently include Varian's Aria/Eclipse platform (v.10 and v.11), CadPlan (for archival/historical data), TomoTherapy, and Elekta's Monaco platform. Other treatment planning systems are not currently supported however will be included in future releases.
+The \Rfunction{read.DVH()} function is designed to take an input text file and output a list of DVH data objects containing all relevant data. Supported file types currently include Varian's Aria/Eclipse platform (v.10 and v.11), CadPlan (for archival/historical data), TomoTherapy, RayStation, and Elekta's Monaco platform. Other treatment planning systems are not currently supported however will be included in future releases.
 
 For Varian-specific file types, data must be exported directly from the treatment planning system and should include all DVH structures of interest. In Eclipse, this is accomplished via the ``Export DVH in Tabular Format..." option, accessed by right-clicking over DVHs in Plan Evaluation mode. Exported files will adhere to the following form (an example file, 50 lines of which are shown here, is contained within this release of the \Rpackage{RadOnc} package):
 
@@ -522,7 +523,7 @@ compareStructures(teeth, method="DSC")
 \appendix
 \section{Acknowledgements}
 \label{acknowledgements}
-Many thanks to Brandon Whitcher for his phenomenal and generous support regarding the \Rpackage{oro.dicom} pacakge, and to Daniel Wollschlaeger for his insights and contributions regarding DVH file formatting, dose unit interconversion, and inclusion of CadPlan data. Thank you to Francis Gibbons, Usman Lula, and Lukasz Matulewicz for their contributions regarding inclusion of Elekta and TomoTherapy-formatted data. Thank you to Maura Kirk, Eric Ojerholm, and Abodunde Adegunloye for their help in identifying software bugs and suggesting additional package features.
+Many thanks to Brandon Whitcher for his phenomenal and generous support regarding the \Rpackage{oro.dicom} pacakge, and to Daniel Wollschlaeger for his insights and contributions regarding DVH file formatting, dose unit interconversion, and inclusion of CadPlan data. Thank you to Francis Gibbons, Usman Lula, Michael Young, and Lukasz Matulewicz for their contributions regarding inclusion of Elekta, RayStation, and TomoTherapy-formatted data. Thank you to Maura Kirk, Eric Ojerholm, and Abodunde Adegunloye for their help in identifying software bugs and suggesting additional package features.
 
 \section{Previous Release Notes}
 \label{previous}
@@ -537,7 +538,8 @@ Many thanks to Brandon Whitcher for his phenomenal and generous support regardin
 \item Subsequent release (v1.0.7) on 2014-02-27
 \item Subsequent release (v1.0.8) on 2014-05-31
 \item Subsequent release (v1.0.9) on 2014-11-22
-\item Last release (v1.1.0) on 2015-04-21
+\item Subsequent release (v1.1.0) on 2015-04-22
+\item Last release (v1.1.1) on 2016-01-13
 \end{itemize}
 Please refer to NEWS.Rd file for more details.
 <<echo=TRUE,results=hide>>=

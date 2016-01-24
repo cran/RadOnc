@@ -544,7 +544,7 @@ plot.DVH.groups <- function(x, ..., col="black", lty ="solid", lwd=1, line.trans
 			if (fill) {
 				switch(width,
 					range = {
-						DVH.center <- mean(groups[[i]], type=type, dose=dose, volume=volume)
+						DVH.center <- mean(groups[[i]], type=type, dose=dose, dose.units=dose.units, volume=volume)
 						DVH.range <- quantile(groups[[i]], probs=c(0, 1), type=7, na.rm=TRUE)
 						polygon(c(DVH.range$dose, rev(DVH.range$dose)), c(pmax(DVH.range$quantiles[1,], 0), rev(pmin(DVH.range$quantiles[2,], y.max))), col=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), border=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), angle=angle[i], density=density[i], lty=fill.lty[i])
 					},
@@ -568,12 +568,12 @@ plot.DVH.groups <- function(x, ..., col="black", lty ="solid", lwd=1, line.trans
 						polygon(c(DVH.range$dose, rev(DVH.range$dose)), c(pmax(DVH.range$quantiles[1,], 0), rev(pmin(DVH.range$quantiles[2,], y.max))), col=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), border=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), angle=angle[i], density=density[i], lty=fill.lty[i])
 					},
 					sd = {
-						DVH.center <- mean(groups[[i]], type=type, dose=dose, volume=volume)
+						DVH.center <- mean(groups[[i]], type=type, dose=dose, dose.units=dose.units, volume=volume)
 						DVH.range <- sd(groups[[i]])
 						polygon(c(DVH.range$dose, rev(DVH.range$dose)), c(pmax(DVH.center$volumes-DVH.range$sd*multiplier, 0), rev(pmin(DVH.center$volumes+DVH.range$sd*multiplier, y.max))), col=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), border=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), angle=angle[i], density=density[i], lty=fill.lty[i])
 					},
 					var = {
-						DVH.center <- mean(groups[[i]], type=type, dose=dose, volume=volume)
+						DVH.center <- mean(groups[[i]], type=type, dose=dose, dose.units=dose.units, volume=volume)
 						DVH.range <- var(groups[[i]])
 						polygon(c(DVH.range$dose, rev(DVH.range$dose)), c(pmax(DVH.center$volumes-DVH.range$var*multiplier, 0), rev(pmin(DVH.center$volumes+DVH.range$var*multiplier, y.max))), col=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), border=rgb(col.i[1],col.i[2],col.i[3],fill.transparency[i]), angle=angle[i], density=density[i], lty=fill.lty[i])
 					}

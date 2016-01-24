@@ -1,5 +1,5 @@
 read.DVH <- function (file, type=NA, verbose=TRUE, collapse=TRUE) {
-	type <- match.arg(tolower(type), choices=c(NA, "aria10", "aria11", "aria8", "dicom", "cadplan", "tomo", "monaco"), several.ok=TRUE)
+	type <- match.arg(tolower(type), choices=c(NA, "aria10", "aria11", "aria8", "dicom", "cadplan", "tomo", "monaco", "raystation"), several.ok=TRUE)
 	if (length(file) < 1) {
 		warning("argument 'file' is missing, with no default")
 		return()
@@ -14,6 +14,7 @@ read.DVH <- function (file, type=NA, verbose=TRUE, collapse=TRUE) {
 			cadplan = return(read.DVH.CadPlan(file=file, verbose=verbose)),
 			tomo = return(read.DVH.TomoTherapy(file=file, verbose=verbose)),
 			monaco = return(read.DVH.Monaco(file=file, verbose=verbose)),
+			raystation = return(read.DVH.RayStation(file=file, verbose=verbose)),
 			warning("DVH file format not specified for file '", file, "'")
 		)
 		return()
@@ -357,9 +358,39 @@ read.DVH.CadPlan <- function(file, verbose=TRUE) {
 
 
 read.DVH.TomoTherapy <- function (file, verbose=TRUE) {
-	warning("TomoTherapy format not currently supported")
-	return()
-#	data <- read.table(file, header=TRUE, sep=",")
+	if (!(fid <- file(file, open="r"))) {
+		warning(paste("Could not open file '", file, "'", sep=""))		
+		return()
+	}
+	if (verbose) {
+		cat("Reading DVH file ('", file, "')... \n", sep="")
+	}
+	close(fid)
+	data <- read.table(file, header=TRUE, sep=",", quote="\"")
+	dvh <- list()
+	for (i in 1:(dim(data)[2]/3)) {
+		name <- sub("(.*)[.]STANDARD[.](.*)", "\\1\\2", colnames(data)[i*3-2], ignore.case=FALSE, perl=TRUE)
+		dose.units <- toupper(sub("^Dose[.]*(c?Gy).*", "\\1", colnames(data)[i*3-1], ignore.case=TRUE, perl=TRUE))
+		if (dose.units == "GY") {
+			dose.units <- "Gy"
+		}
+		else if (dose.units == "CGY") {
+			dose.units <- "cGy"
+		}
+		if (grepl("^Relative[.]", colnames(data)[i*3], ignore.case=TRUE, perl=TRUE)) {
+			volume.type <- "relative"			
+		}
+		else {
+			volume.type <- "absolute"
+		}
+		if (verbose) {
+			cat("  ..Importing structure: ", name, "\n", sep="")
+		}
+		data.dose <- data[,i*3-1]
+		data.volume <- data[,i*3]
+		dvh <- c(dvh, new("DVH", structure.name=name, doses=data.dose, volumes=data.volume, dose.units=dose.units, volume.type=volume.type, type="cumulative"))
+	}
+	return(new("DVH.list", dvh))
 }
 
 
@@ -420,4 +451,98 @@ read.DVH.Monaco <- function (file, verbose=TRUE) {
 		})
 
 	return(DVH.list)
+}
+
+
+read.DVH.RayStation <- function (file, verbose=TRUE) {
+	if (!(fid <- file(file, open="r"))) {
+		warning(paste("Could not open file '", file, "'", sep=""))		
+		return()
+	}
+	if (verbose) {
+		cat("Reading DVH file ('", file, "')... ", sep="")
+	}
+	header <- readLines(fid, n=3)
+	data <- readLines(fid)
+	close(fid)
+
+	# EXTRACT HEADER INFORMATION
+    patient <- sub("^[#]PatientName.*:\\s*(.*)", "\\1", header[grep("^[#]PatientName.*:\\s*", header, ignore.case=TRUE, perl=TRUE)])
+    ID <- sub("^[#]PatientId.*:\\s*(.*)", "\\1", header[grep("^[#]PatientId.*:\\s*", header, ignore.case=TRUE, perl=TRUE)])
+	plan <- sub("^[#]Dosename:\\s*(.+$)", "\\1", header[grep("^[#]Dosename:\\s*", header, ignore.case=TRUE, perl=TRUE)])
+	# EXTRACT PLAN DOSE (IN CGY)
+	if (grepl("Plan dose:", plan, ignore.case=TRUE)) {
+		dose.rx <- as.numeric(sub("^Plan dose:.+\\s([.0-9]+)c?Gy.*", "\\1", plan, perl=TRUE, ignore.case=TRUE))
+		if (toupper(sub("^Plan dose:.+\\s[.0-9]+(c?Gy).*", "\\1", plan, perl=TRUE, ignore.case=TRUE)) == "GY") {
+			dose.rx <- dose.rx * 100		
+		}
+	}
+	else {
+		dose.rx <- NA
+	}
+		
+    # IDENTIFY STRUCTURES
+    struct.start <- grep("^[#]RoiName:", data, perl=TRUE)
+    struct.end <- struct.start + diff(c(struct.start, length(data)+1)) - 1
+    if (length(struct.start) < 1) {
+		warning(paste("File '", file, "' contained no recognizable DVH structure(s)", sep=""))
+		if (verbose) {
+			cat("ERROR\n")
+		}
+		return()
+    }
+    else if (length(struct.start) == 1) {
+   	 	structures <- list(data[struct.start:struct.end])
+    }
+    else {
+	    structures <- mapply(function(start, end) list(data[start:end]), struct.start, struct.end)
+	}
+
+	if (verbose) {
+		cat("\n  Patient: ", patient, " (", ID, ")\n", sep="")
+		cat("  Plan: ", plan, "\n", sep="")		
+	}
+	DVH.type <- "cumulative"
+	# EXTRACT DVH DATA FOR EACH STRUCTURE
+	DVH.list <- lapply(structures,
+		function (data) {
+			# EXTRACT STRUCTURE NAME
+		    name <- sub("^[#]RoiName:\\s*(.+$)", "\\1", data[grep("^[#]RoiName:\\s*", data, ignore.case=TRUE, perl=TRUE)])
+		    if (length(name) < 1) {
+				warning("Invalid DVH file format, could not extract structure")
+				return(new("DVH"))
+		    }
+			# EXTRACT DOSE UNITS
+			dose.units <- toupper(sub("^[#]Dose unit:\\s*(.+$)", "\\1", data[grep("^[#]Dose unit:\\s*", data, ignore.case=TRUE, perl=TRUE)], perl=TRUE))
+		    if (length(dose.units) < 1) {
+				warning("Invalid DVH file format, could not extract dose units")
+				return(new("DVH"))
+		    }
+			if (dose.units == "GY") {
+				dose.units <- "Gy"
+			}
+			else if (dose.units == "CGY") {
+				dose.units <- "cGy"
+			}
+			
+		    volume <- suppressWarnings(as.numeric(sub("^.*:\\s*(.+)[%]$", "\\1", data[grep("^[#]Roi volume.*:\\s*", data, ignore.case=TRUE, perl=TRUE)], perl=TRUE)))
+		    if ((length(volume) == 1) & (volume > 0))  {
+				warning(paste(volume, "% volume of structure (", name, ") exists outside measureable dose grid, use DVH data with caution", sep=""))
+		    }
+			if (verbose) {
+				cat("  ..Importing structure: ", name, "  [units: ", dose.units, "]\n", sep="")
+			}
+			con <- textConnection(data[4:length(data)])
+			dvh <- read.table(con, header=FALSE, stringsAsFactors=FALSE)
+			close(con)
+			data.dose <- dvh[, 1]
+			data <- dvh[, 2]
+			return(new("DVH", structure.name=name, structure.volume=volume, doses=data.dose, volumes=data, type="cumulative", dose.type="absolute", dose.rx=if (dose.units == "Gy") {dose.rx*100} else {dose.rx}, dose.units=dose.units, volume.type="relative"))	
+		}
+	)
+
+	# RETURN DVH LIST
+	names(DVH.list) <- unlist(lapply(DVH.list, names))
+	return(new("DVH.list", DVH.list))
+
 }

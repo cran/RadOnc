@@ -177,19 +177,19 @@ setMethod("[", "DVH",
 								switch(type4[count],
 									"%" = {
 										if (x@volume.type == "absolute") {
-											result <- c(result, 100 * approx(x@doses, x@volumes, value[count], yright=0)$y / x@structure.volume)
+											result <- c(result, 100 * approx(x@doses, x@volumes, value[count], yright=0, ties=max)$y / x@structure.volume)
 										}
 										else {
-											result <- c(result, approx(x@doses, x@volumes, value[count], yright=0)$y)
+											result <- c(result, approx(x@doses, x@volumes, value[count], yright=0, ties=max)$y)
 										}
 										result.units <- c(result.units, "%")										
 									},
 									CC = {
 										if (x@volume.type == "relative") {
-											result <- c(result, approx(x@doses, x@volumes, value[count], yright=0)$y * x@structure.volume / 100)
+											result <- c(result, approx(x@doses, x@volumes, value[count], yright=0, ties=max)$y * x@structure.volume / 100)
 										}
 										else {
-											result <- c(result, approx(x@doses, x@volumes, value[count], yright=0)$y)
+											result <- c(result, approx(x@doses, x@volumes, value[count], yright=0, ties=max)$y)
 										}
 										result.units <- c(result.units, "cc")
 									},
@@ -198,11 +198,11 @@ setMethod("[", "DVH",
 											warning("Improper format '", input[count], "' (should specify output volume as % or cc, e.g. 'V__(cc)')")
 										}
 										if (x@volume.type == "absolute") {
-											result <- c(result, approx(x@doses, x@volumes, value[count], yright=0)$y)
+											result <- c(result, approx(x@doses, x@volumes, value[count], yright=0, ties=max)$y)
 											result.units <- c(result.units, "cc")
 										}
 										else {
-											result <- c(result, approx(x@doses, x@volumes, value[count], yright=0)$y)
+											result <- c(result, approx(x@doses, x@volumes, value[count], yright=0, ties=max)$y)
 											result.units <- c(result.units, "%")										
 										}
 									}
@@ -322,7 +322,7 @@ setMethod("[", "DVH",
 									if (units.i == "%") {
 										result <- c(result,
 											y@dose.rx * max(0, integrate(function(dose) {
-												return(approx(y@doses, y@volumes*y@doses/dose.bins, dose, yleft=0, yright=0)$y)
+												return(approx(y@doses, y@volumes*y@doses/dose.bins, dose, yleft=0, yright=0, ties=max)$y)
 												}, start.i, end.i, stop.on.error=FALSE, abs.tol=0, rel.tol=100*.Machine$double.eps
 											)$value) / y@rx.isodose
 										)
@@ -330,7 +330,7 @@ setMethod("[", "DVH",
 									else {
 										result <- c(result,
 											max(0, integrate(function(dose) {
-												return(approx(y@doses, y@volumes*y@doses/dose.bins, dose, yleft=0, yright=0)$y)
+												return(approx(y@doses, y@volumes*y@doses/dose.bins, dose, yleft=0, yright=0, ties=max)$y)
 												}, start.i, end.i, stop.on.error=FALSE, abs.tol=0, rel.tol=100*.Machine$double.eps
 											)$value)
 										)
@@ -381,24 +381,24 @@ setMethod("[", "DVH",
 											if (value.count < 0) {
 												warning("Requested value for volume '", input[count], "' is less than 0%")
 											}
-											result <- c(result, x@rx.isodose * min(x@dose.max, max(x@dose.min, approx(x@volumes, x@doses, value.count)$y, na.rm=TRUE), na.rm=TRUE) / x@dose.rx)
+											result <- c(result, x@rx.isodose * min(x@dose.max, max(x@dose.min, approx(x@volumes, x@doses, value.count, ties=max)$y, na.rm=TRUE), na.rm=TRUE) / x@dose.rx)
 											result.units <- c(result.units, "%")										
 										},
 										CGY = {
 											if (x@dose.units == "Gy") {
-												result <- c(result, min(x@dose.max, max(x@dose.min, approx(x@volumes, x@doses, value.count)$y, na.rm=TRUE), na.rm=TRUE) * 100)
+												result <- c(result, min(x@dose.max, max(x@dose.min, approx(x@volumes, x@doses, value.count, ties=max)$y, na.rm=TRUE), na.rm=TRUE) * 100)
 											}
 											else {
-												result <- c(result, min(x@dose.max, max(x@dose.min, approx(x@volumes, x@doses, value.count)$y, na.rm=TRUE), na.rm=TRUE))
+												result <- c(result, min(x@dose.max, max(x@dose.min, approx(x@volumes, x@doses, value.count, ties=max)$y, na.rm=TRUE), na.rm=TRUE))
 											}
 											result.units <- c(result.units, "cGy")
 										},
 										GY = {
 											if (x@dose.units == "cGy") {
-												result <- c(result, min(x@dose.max, max(x@dose.min, approx(x@volumes, x@doses, value.count)$y, na.rm=TRUE), na.rm=TRUE) / 100) 
+												result <- c(result, min(x@dose.max, max(x@dose.min, approx(x@volumes, x@doses, value.count, ties=max)$y, na.rm=TRUE), na.rm=TRUE) / 100) 
 											}
 											else {
-												result <- c(result, min(x@dose.max, max(x@dose.min, approx(x@volumes, x@doses, value.count)$y, na.rm=TRUE), na.rm=TRUE))
+												result <- c(result, min(x@dose.max, max(x@dose.min, approx(x@volumes, x@doses, value.count, ties=max)$y, na.rm=TRUE), na.rm=TRUE))
 											}
 											result.units <- c(result.units, "Gy")
 										},
@@ -406,7 +406,7 @@ setMethod("[", "DVH",
 											if (type3[count]) {
 												warning("Improper format '", input[count], "' (should specify output dose as %, cGy or Gy, e.g. 'D__(cGy)')")
 											}
-											result <- c(result, min(x@dose.max, max(x@dose.min, approx(x@volumes, x@doses, value.count)$y, na.rm=TRUE), na.rm=TRUE))	
+											result <- c(result, min(x@dose.max, max(x@dose.min, approx(x@volumes, x@doses, value.count, ties=max)$y, na.rm=TRUE), na.rm=TRUE))	
 											if (x@dose.type == "absolute") {
 												result.units <- c(result.units, x@dose.units)
 											}
@@ -472,7 +472,7 @@ setMethod("[", "DVH",
 									if (units.i == "%") {
 										result <- c(result,
 											y@dose.rx * max(0, integrate(function(dose) {
-												return(approx(y@doses, y@volumes*y@doses/bin.widths, dose, yleft=0, yright=0)$y)
+												return(approx(y@doses, y@volumes*y@doses/bin.widths, dose, yleft=0, yright=0, ties=max)$y)
 												}, start.i, end.i, stop.on.error=FALSE, abs.tol=0, rel.tol=100*.Machine$double.eps
 											)$value) / y@rx.isodose
 										)
@@ -480,7 +480,7 @@ setMethod("[", "DVH",
 									else {
 										result <- c(result,
 											max(0, integrate(function(dose) {
-												return(approx(y@doses, y@volumes*y@doses/bin.widths, dose, yleft=0, yright=0)$y)
+												return(approx(y@doses, y@volumes*y@doses/bin.widths, dose, yleft=0, yright=0, ties=max)$y)
 												}, start.i, end.i, stop.on.error=FALSE, abs.tol=0, rel.tol=100*.Machine$double.eps
 											)$value)
 										)

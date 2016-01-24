@@ -146,7 +146,7 @@ setValidity("DVH",
 		if (!is.na(object@dose.rx) & (object@dose.rx <= 0)) return(FALSE)
 		if (!object@plan.sum & (is.na(object@rx.isodose) | (object@rx.isodose <= 0))) return(FALSE) 
 		if (object@dose.min > object@dose.max) return(FALSE)
-		if ((object@dose.mean > object@dose.max) | (object@dose.mean < object@dose.min)) return(FALSE)
+		if ((object@dose.mean > object@dose.max) | ((object@dose.mean < object@dose.min) & (object@dose.mean > 0))) return(FALSE)
 		if (!identical(order(object@doses, decreasing=FALSE), 1:length(object@doses))) return(FALSE)
 		if ((object@dose.type == "relative") & (range(object@doses, na.rm=TRUE)[2] > 250)) return(FALSE)
 		if (any(is.na(object@volumes))) return(FALSE)		
@@ -320,9 +320,8 @@ setMethod("initialize",
 
 setValidity("DVH.list",
 	function(object) {
-		if (!is.list(object)) return(FALSE)
 		if (length(object) == 0) return(TRUE)
-		if (!all(unlist(lapply(structures, class)) %in% c("DVH", "zDVH"))) return(FALSE)
+		if (!all(unlist(lapply(object, class)) %in% c("DVH", "zDVH"))) return(FALSE)
 		return(TRUE)
 	}
 )

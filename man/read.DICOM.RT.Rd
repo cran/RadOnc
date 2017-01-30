@@ -8,7 +8,7 @@ Function to extract three-dimensional structural and dosimetric data from input 
 }
 \usage{
 read.DICOM.RT(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limit=NULL, 
-	DVH=TRUE, zDVH=FALSE, ...)
+	DVH=TRUE, zDVH=FALSE, modality=NULL, ...)
 }
 \arguments{
   \item{path}{
@@ -31,6 +31,9 @@ Logical value (default is \code{TRUE}) indicating whether or not to calculate DV
 }
   \item{zDVH}{
 Logical value (default is \code{FALSE}) indicating whether or not to extract axially-segmented (zDVH) data from DICOM-RT files (this parameter is ignored unless \code{DVH=TRUE})
+}
+  \item{modality}{
+Parameter used to specify the scan type expected in importing DICOM-RT data (must be one one of \code{"CT"} [default] or \code{"MR"}).
 }
   \item{\dots}{
 Additional parameters passed to \code{\link{readDICOM}} function

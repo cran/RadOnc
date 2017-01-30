@@ -3,6 +3,29 @@
 \title{ RadOnc News }
 \encoding{UTF-8}
 
+\section{CHANGES IN VERSION 1.1.2}{
+
+  \subsection{NEW FEATURES}{
+    \itemize{
+      \item Added new plotting method, \code{plot(..., plot.type="correlation")}, to enable numerical correlation of dose from a collection of DVHs with an independent variable (for instance toxicity or other clinical outcome).
+    }
+  }
+
+  \subsection{OTHER UPDATES}{
+    \itemize{
+      \item Extended \code{read.DICOM.RT()} function to import MRI data (previous code was unable to import MR data)
+    }
+   }
+
+  \subsection{ACKNOWLEDGEMENTS}{
+    \itemize{
+      \item Thanks to Sonam Sharma and Peter Ahn for their assistance implementing DVH-toxicity correlation plotting.
+      \item Thanks to Matt Moores for his assistance with implementing MR DICOM-RT import.
+   }
+  }
+
+ }
+
 
 \section{CHANGES IN VERSION 1.1.1}{
 

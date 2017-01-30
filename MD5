@@ -1,4 +1,4 @@
-e444b8c54fffb66de56dda82e1108721 *DESCRIPTION
+3da9165f623d438ad680549ad55e6feb *DESCRIPTION
 122ea4cf3b58a87ea69018303073350d *NAMESPACE
 c4828e0e9da159ac0e6708f4d01e6407 *R/CLASSES.R
 47ddd788027fb2df6ddb65f4ef1293a9 *R/DVH.R
@@ -11,8 +11,8 @@ b79a10f56d5585efed98d509170e4d38 *R/LQE.R
 ae48c0ee2f80fb13003b7f9ea8e3e480 *R/convert.DVH.R
 ae21ab08d9230ddb93e47e7fb61121b8 *R/gEUD.R
 c2b6d2c90f858b989c8e41bfe7700516 *R/mean.DVH.R
-81ce51ab1dd4e28b224b2aec1b4b3843 *R/plot.DVH.R
-ec6c32dd7224df96e48ff04a939af247 *R/read.DICOM.RT.R
+71f11f87e936bde956a514471c40ec96 *R/plot.DVH.R
+a488d353f0c5e814e2a56da4dfbde7ed *R/read.DICOM.RT.R
 3fb18d7434738216fdc2fc06d71e4c57 *R/read.DVH.R
 00081f93f1b65ac63b68cae58eef3872 *R/structure.list.R
 b1db4680512abb3926f86a943c4cf446 *R/structure3D.R
@@ -20,12 +20,15 @@ b1db4680512abb3926f86a943c4cf446 *R/structure3D.R
 5e8f9a7227e10631827bb8bf63a18a87 *R/t.test.DVH.R
 3c4108932e2cbe3f3ad1dc9ce5e1d910 *R/wilcox.DVH.R
 ff1c2b182b4429eabe15d93ad3dcdbd4 *R/zDVH.R
+f996e89498944885e93bf10df0c9d4b3 *build/vignette.rds
 b918c9e89071b7e6760e0d7bbb85bd9f *data/RadOnc.RData
 f7d70b80eb399800485a3d1327cf8ea2 *data/datalist
 87ffc5c7930c03df651c3b5615c59acc *demo/00Index
 b5a1e8c78211b03cb3de9deea6da7f5a *demo/RadOnc.R
-9e598330a237c79fc383b66f9fa2778f *inst/NEWS.Rd
-df6688e9a1fbfd271368018dc0102ddb *inst/doc/RadOnc.pdf
+95950183e2d732dc7141239985d2222e *inst/NEWS.Rd
+16f526c09d01beea20059fdfa7855151 *inst/doc/RadOnc.R
+01b13255fbf728bfec432877ebf4f1cf *inst/doc/RadOnc.Rnw
+dfd87d0c19b48d5bcf8c97ae0cf2d507 *inst/doc/RadOnc.pdf
 c35a5d09bf19e85d0b28ba8df2faede3 *inst/extdata/Jane_Doe.dvh
 8dd86d5c83bb6438166134b868326392 *inst/extdata/John_Doe.dvh
 5100c58e9009c89b9a4241dcee903479 *man/DVH-class.Rd
@@ -37,8 +40,8 @@ c68cbd084e88a84a9f499fd5f9505be1 *man/RadOnc.Rd
 cc308dafcdf8a7584560d4bcd6e33179 *man/calculate.DVH.Rd
 41e88fb5c022c9c67194916d839c45cc *man/compareStructures.Rd
 4b4d4461323228aab4033e28916ee6b1 *man/gEUD.Rd
-cc34e1ccdb528f7ed7bc5adf5df6fb7c *man/plot-methods.Rd
-ce19ec01523d28d1921b91d665936bf8 *man/read.DICOM.RT.Rd
+695ce828b27ee54971936bc3e780ecf3 *man/plot-methods.Rd
+8f7bec06e2d31bbaeafebfa2ac567b73 *man/read.DICOM.RT.Rd
 4fb7b71e1a9f3b4e655d4fe4d100c87c *man/read.DVH.Rd
 9c61df62bd8bb7859a9fbd11e3816c7f *man/structure.list-class.Rd
 ad527af7123c0758d4634a94e70dfe97 *man/structure3D-class.Rd

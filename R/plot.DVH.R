@@ -1,5 +1,5 @@
-plot.DVH <- plot.DVH.list <- function(x, ..., plot.type=c("individual", "grouped", "ttest", "wilcox", "bars")) {
-	plot.type <- match.arg(plot.type)
+plot.DVH <- plot.DVH.list <- function(x, ..., plot.type=NULL) {
+	plot.type <- match.arg(plot.type, choices=c("individual", "grouped", "ttest", "wilcox", "bars", "correlation"))
 	switch(plot.type,
 		individual = {
 			plot.DVH.individual(x, ...)
@@ -15,6 +15,9 @@ plot.DVH <- plot.DVH.list <- function(x, ..., plot.type=c("individual", "grouped
 		},
 		bars = {
 			plot.DVH.bars(x, ...)
+		},
+		{
+			plot.DVH.corr(x, ...)
 		}
 	)
 }
@@ -84,11 +87,12 @@ setMethod("plot", c("DVH.list", "ANY"),
 	}
 ) 
 
-plot.DVH.ttest <- function(x, y, ..., paired=FALSE, col="black", lty="solid", lwd=1, alpha=0.05, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), width=NULL, main="", xlim=NULL, ylim=NULL, multiplier=1, quantile=c(0.25, 0.75), line.transparency=1, fill.transparency=line.transparency/2, angle=45, density=NULL, fill.lty=lty, fill=TRUE, legend=NULL, legend.labels=NULL, new=TRUE, highlight="lightyellow", grid=FALSE) {
+plot.DVH.ttest <- function(x, y, ..., alternative=NULL, mu=0, paired=FALSE, col="black", lty="solid", lwd=1, alpha=0.05, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), width=NULL, main="", xlim=NULL, ylim=NULL, multiplier=1, quantile=c(0.25, 0.75), line.transparency=1, fill.transparency=line.transparency/2, angle=45, density=NULL, fill.lty=lty, fill=TRUE, legend=NULL, legend.labels=NULL, new=TRUE, highlight="lightyellow", grid=FALSE) {
 	dose <- match.arg(dose)
 	dose.units <- match.arg(dose.units)
 	volume <- match.arg(volume)
 	type <- match.arg(type)
+	alternative <- match.arg(alternative, choices=c("two.sided", "greater", "less"))
 	legend <- match.arg(legend, choices=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"))
 	width <- match.arg(width, choices=c(NA, "range", "mad", "IQR", "quantile", "var", "sd"))
 	x <- new("DVH.list", lapply(x, convert.DVH, type=type, dose=dose, dose.units=dose.units, volume=volume))
@@ -132,7 +136,7 @@ plot.DVH.ttest <- function(x, y, ..., paired=FALSE, col="black", lty="solid", lw
 	if (length(density) != 2) {
 		density <- rep(density[1], 2)
 	}	
-	data.ttest <- t.test(x, y, paired=paired, conf.level=1-alpha, volume=volume)
+	data.ttest <- t.test(x, y, paired=paired, conf.level=1-alpha, alternative=alternative, mu=mu, volume=volume)
 	doses <- data.ttest$dose
 	if (new) {
 		layout(c(2,1),heights=c(1,4))
@@ -269,12 +273,12 @@ plot.DVH.ttest <- function(x, y, ..., paired=FALSE, col="black", lty="solid", lw
 }
 
 
-plot.DVH.wilcox <- function(x, y, ..., alternative=c("two.sided", "greater", "less"), mu=0, paired=FALSE, exact=TRUE, correct=TRUE, alpha=0.05, col="black", lty="solid", lwd=1, line.transparency=1, fill.transparency=line.transparency/2, angle=45, density=NULL, fill=TRUE, fill.lty=lty, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), main="", xlim=NULL, ylim=NULL, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, new=TRUE, highlight="lightyellow", panel.lower=c("wilcox", "grouped"), grid=FALSE) {
+plot.DVH.wilcox <- function(x, y, ..., alternative=NULL, mu=0, paired=FALSE, exact=TRUE, correct=TRUE, alpha=0.05, col="black", lty="solid", lwd=1, line.transparency=1, fill.transparency=line.transparency/2, angle=45, density=NULL, fill=TRUE, fill.lty=lty, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), main="", xlim=NULL, ylim=NULL, legend=c(NA, "topright", "bottomright", "bottom", "bottomleft", "left", "topleft", "top", "right", "center"), legend.labels=NULL, new=TRUE, highlight="lightyellow", panel.lower=c("wilcox", "grouped"), grid=FALSE) {
 	dose <- match.arg(dose)
 	dose.units <- match.arg(dose.units)
 	volume <- match.arg(volume)
 	type <- match.arg(type)
-	alternative <- match.arg(alternative)
+	alternative <- match.arg(alternative, choices=c("two.sided", "greater", "less"))
 	legend <- match.arg(legend)	
 	panel.lower <- match.arg(panel.lower)
 	x <- new("DVH.list", lapply(x, convert.DVH, type=type, dose=dose, dose.units=dose.units, volume=volume))
@@ -604,4 +608,82 @@ plot.zDVH <- function(x, ..., col="black", front=NULL, back=front, new=TRUE, dos
 		persp3d(x$doses[2:length(x$doses)], as.numeric(colnames(x$volumes)), x$volumes[2:length(x$doses),], col=col, border=NA, shade=0.5, xlab=paste("Dose (", x$dose.units, ")", sep=""), ylab="z (mm)", zlab=paste("Volume (", if (x$volume.type == "relative") {"%"} else {"cc"}, ")", sep=""), add=!new)
 	}
 	persp3d(x$doses, as.numeric(colnames(x$volumes)), x$volumes, col=col, border=NA, shade=0.5, xlab=paste("Dose (", x$dose.units, ")", sep=""), ylab="z (mm)", zlab=paste("Volume (", if (x$volume.type == "relative") {"%"} else {"cc"}, ")", sep=""), add=!new, front=front, back=back)
+}
+
+
+plot.DVH.corr <- function(x, y, ..., col="black", lty="solid", lwd=1, alpha=0.05, dose=c("absolute", "relative"), dose.units=c("cGy", "Gy"), volume=c("relative", "absolute"), type=c("cumulative", "differential"), method=NULL, alternative=NULL, exact=NULL, main="", xlim=NULL, ylim=NULL, new=TRUE, highlight="lightyellow", grid=FALSE, density=NULL, angle=45) {
+	dose <- match.arg(dose)
+	dose.units <- match.arg(dose.units)
+	volume <- match.arg(volume)
+	type <- match.arg(type)
+	method <- match.arg(method, choices=c("pearson", "kendall", "spearman"))
+	alternative <- match.arg(alternative, choices=c("two.sided", "less", "greater"))
+	x <- new("DVH.list", lapply(x, convert.DVH, type=type, dose=dose, dose.units=dose.units, volume=volume))
+	x <- x[!unlist(lapply(x, is.empty))]
+	N.x <- length(x)
+	y <- as.numeric(y)
+	N.y <- length(y)
+	if (N.x < 2) {
+		stop("not enough 'x' observations")
+	}
+	if (N.y < 2) {
+		stop("not enough 'y' observations")
+	}
+	if (N.x != N.y) {
+		stop("'x' and 'y' must have the same length -- cannot compute pairwise correlation")
+	}
+	if (length(lty) != 2) {
+		lty <- rep(lty[1], 2)
+	}
+	if (length(lwd) != 2) {
+		lwd <- rep(lwd[1], 2)
+	}
+	doses <- var(x)$dose
+	data.x <- matrix(NA, nrow=length(doses), ncol=N.x)
+	for (i in 1:N.x) {
+		data.x[,i] <- approx(x[[i]]$doses, x[[i]]$volumes, doses, rule=2)$y
+	}
+	corr <- p <- rep(NA, length(doses))
+	options(warn = -1)
+	for (i in 1:length(doses)) {
+		t.i <- 1
+		try(t.i <- cor.test(data.x[i,], y, alternative=alternative, method=method, exact=exact, conf.level=1-alpha), silent=TRUE)
+		if (identical(t.i, 1)) {
+			corr[i] <- p[i] <- NA
+		}
+		else {
+			corr[i] <- t.i$estimate
+			p[i] <- t.i$p.value
+		}
+	}
+	options(warn = 0)
+
+	if (new) {
+		layout(c(2,1),heights=c(1,4))
+		par(mar=c(4.1, 4.1, 0.5, 2.1))
+		if (is.null(xlim) | length(xlim) != 2) {
+			xlim <- range(doses)
+		}
+		if (is.null(ylim) | length(ylim) != 2) {
+			if (volume == "relative") {
+				ylim <- c(0, 100)
+			}
+			else {
+				ylim <- range(unlist(lapply(x, slot, "volumes")), na.rm=TRUE)
+			}
+		}
+		
+		plot(NULL, xlim=xlim, ylim=ylim, xlab=if (dose == "absolute") {paste("Dose (", dose.units, ")",sep="")} else {"Dose (%)"}, ylab=if (volume == "relative") {"Volume (%)"} else {"Volume (cc)"}, main="")
+		if (grid) grid()
+	}
+	for (i in 1:N.x) {
+		points(doses, data.x[,i], type="l", col="black", lty=lty[1], lwd=lwd[1])
+	}
+	if (new) {
+		par(mar=c(0.1,4.1,2.1,2.1))
+		plot(xlim, c(-1,1), type="n", xlab="", ylab=paste("R (", method, ")", sep=""), xaxt="n", yaxp=c(-1,1,2), main=main)
+		rect(doses[which(p<alpha)],rep(-1, length(which(p<alpha))), doses[which(p<alpha)], rep(1, length(which(p<alpha))), col=highlight, border=highlight)
+		points(doses, corr, type="l", col=col)
+		abline(h=0,lty="dotted",col="gray")
+	}
 }

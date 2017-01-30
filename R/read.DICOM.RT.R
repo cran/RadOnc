@@ -1,5 +1,6 @@
 
-read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limit=NULL, DVH=TRUE, zDVH=FALSE, ...) {
+read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limit=NULL, DVH=TRUE, zDVH=FALSE, modality=NULL, ...) {
+	modality <- match.arg(toupper(modality), choices=c("CT", "MR"))
 	if (length(list.files(path)) == 0 && file.exists(path)) {
     	filenames <- path
 	}
@@ -19,15 +20,15 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 	DICOMs <- readDICOM(path, verbose=FALSE, exclude=exclude, recursive=recursive, ...)
 	
 	if (verbose) {
-		cat("FINISHED\nExtracting CT data ... ", sep="")
+		cat("FINISHED\nExtracting ", modality, " data ... ", sep="")
 	}
 	modalities <- as.character(unlist(lapply(DICOMs$hdr, function(x) {x[which(x[,"name"]=="Modality"), "value"]})))
 
-#############################
-## IMPORT CT IMAGE FILE(S) ##
-#############################	
+################################
+## IMPORT CT/MR IMAGE FILE(S) ##
+################################	
 
-	CT <- as.numeric(which(modalities == "CT"))
+	CT <- as.numeric(which(modalities == modality))
 	frame.ref.CT <- as.character(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "FrameOfReferenceUID"), "value"])
 	## ASSUMES CONSTANT VOXEL SIZE AND SLICE THICKNESS FOR ALL DICOM FILES IN CT!!!!
 	voxel.size <- as.numeric(unlist(strsplit(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "PixelSpacing"), "value"], " ")))
@@ -36,8 +37,8 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 	voxel.size <- c(voxel.size, as.numeric(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "SliceThickness"), "value"]))
 	patient.name <- as.character(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "PatientsName"), "value"])
 	patient.ID <- as.character(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "PatientID"), "value"])
-	slope <- as.numeric(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "RescaleSlope"), "value"])
-	intercept <- as.numeric(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "RescaleIntercept"), "value"])
+	slope <- ifelse(("RescaleSlope" %in% DICOMs$hdr[[CT[1]]][,"name"]), as.numeric(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "RescaleSlope"), "value"]), 1)
+	intercept <- ifelse(("RescaleIntercept" %in% DICOMs$hdr[[CT[1]]][,"name"]), as.numeric(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "RescaleIntercept"), "value"]), 0)
 	CT <- create3D(list(hdr=DICOMs$hdr[CT], img=DICOMs$img[CT]))
 	CT <- CT*slope + intercept
 	dimnames(CT) <- list((1:dim(CT)[1]-1)*voxel.size[1]+image.position[1], (1:dim(CT)[2]-1)*voxel.size[2]+image.position[2], z.slices) 

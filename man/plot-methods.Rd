@@ -20,9 +20,9 @@
  These additional methods extend function \code{plot} in package \pkg{graphics}, enabling DVH visualization in package \pkg{RadOnc}
 }
 \usage{
-\method{plot}{DVH}(x, \dots, plot.type = c("individual", "grouped", "ttest", "wilcox", "bars"))
+\method{plot}{DVH}(x, \dots, plot.type = NULL)
 
-\method{plot}{DVH.list}(x, \dots, plot.type = c("individual", "grouped", "ttest", "wilcox", "bars"))
+\method{plot}{DVH.list}(x, \dots, plot.type = NULL)
 }
 \arguments{
   \item{x}{
@@ -32,11 +32,14 @@
 	May contain any number of objects of class \code{DVH} or \code{DVH.list}. Note that at least one object of either class is required if \code{plot.type = "ttest"} or \code{"wilcox"}. Specification of more than one \code{zDVH} will reduce all input \code{zDVH} objects to \code{DVH} objects for standard plotting.
 }
   \item{plot.type}{
-	A character string specifying the type of plot to generate, must be one of \code{"individual"} (default), \code{"grouped"}, \code{"ttest"}, \code{"wilcox"} or \code{"bars"}. Parameter \code{plot.type} will be ignored if \code{x} is a \code{zDVH} object.
+	A character string specifying the type of plot to generate, must be one of \code{"individual"} (default), \code{"grouped"}, \code{"ttest"}, \code{"wilcox"}, \code{"bars"}, or \code{"correlation"}. Parameter \code{plot.type} will be ignored if \code{x} is a \code{zDVH} object.
 }
 }
 \section{Graphical Parameters}{
 	\describe{
+		\item{\code{alpha}}{
+			When \code{plot.type="ttest"}, \code{"wilcox"}, or \code{"correlation"}, this specifies the numerical value (threshold) used to display significant p-values.
+		}		
 		\item{\code{angle}}{
 			The slope of shading lines, given as an angle in counter-clockwise degrees (default is \code{45}). This parameter is ignored if \code{density=NULL} or \code{NA} or wherever \code{fill=FALSE} or is ignored (e.g. when \code{plot.type="individual"} or \code{"bars"}). Also note that this paramater can represent a list of different angles, with length of the list corresponding to the number of \code{DVH} or \code{DVH.list} objects.
 		}		
@@ -123,11 +126,23 @@
 }
 \section{Additional Parameters}{
 	\describe{
+		\item{\code{alternative}}{
+			When \code{plot.type="ttest"}, \code{"wilcox"}, or \code{"correlation"}, \code{alternative} indicates the alternative hypothesis and must be one of \code{"two.sided"}, \code{"greater"} or \code{"less"}. You can specify just the initial letter. \code{"greater"} corresponds to positive association, \code{"less"} to negative association. See \code{\link{cor.test}} for more details.
+		}
 		\item{\code{dose}}{
 			Value specifying dose scale (must be one of \code{"relative"} or \code{"absolute"}).
 		}
 		\item{\code{dose.units}}{
 			Value specifying dose units (must be one of \code{"cGy"} or \code{"Gy"}).
+		}
+		\item{\code{exact}}{
+			When \code{plot.type="wilcox"} or \code{plot.type="correlation"} and \code{method="kendall"} or \code{"spearman"}, \code{exact} specifies a logical indicating whether an exact p-value should be computed.  See \code{\link{cor.test}} or \code{\link{wilcox.test}} for more details.
+		}
+		\item{\code{method}}{
+			When \code{plot.type="correlation"}, \code{method} specifies a character string indicating which correlation coefficient is to be computed. Value must be one of \code{"pearson"} (default), \code{"kendall"}, or \code{"spearman"}.  See \code{\link{cor.test}} for more details. 
+		}
+		\item{\code{mu}}{
+			When \code{plot.type="ttest"} or \code{"wilcox"}, specifies an optional parameter used to form the null hypothesis.  See \code{\link{t.test}} or \code{\link{wilcox.test}} for more details.
 		}
 		\item{\code{paired}}{
 			A logical value (default is \code{FALSE}) specifying whether or not to perform paired groupwise comparisons when \code{plot.type="ttest"} or \code{"wilcox"}.
@@ -170,6 +185,10 @@
 	#	c(janedoe[OARs],johndoe[OARs]), #group 2
  	#	plot.type="w", col=c("red", "blue"), lty=2, fill.lty=1, main="Target v. OAR",
  	#	panel.lower="grouped")
+ 	
+ 	# plot(x, ..., plot.type="correlation")
+	# plot(janedoe, sample(1:100, 10), plot.type="correlation", method="kendall")
+	
 }
 \seealso{
 \code{\link{plot}}

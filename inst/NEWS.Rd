@@ -3,6 +3,22 @@
 \title{ RadOnc News }
 \encoding{UTF-8}
 
+\section{CHANGES IN VERSION 1.1.3}{
+
+  \subsection{NEW FEATURES}{
+    \itemize{
+      \item Added a new function, \code{get.HU()}, which is able to extract corresponding Hounsfield Unit (HU) values from \code{RTdata} for one or more structures.
+    }
+  }
+
+  \subsection{ACKNOWLEDGEMENTS}{
+    \itemize{
+      \item Thanks to Hans-Erik Kallman for his suggestion to include the capability to extract Hounsfield Unit (HU) details for a structure3D object (\code{get.HU()} function).
+   }
+  }
+
+ }
+
 \section{CHANGES IN VERSION 1.1.2}{
 
   \subsection{NEW FEATURES}{

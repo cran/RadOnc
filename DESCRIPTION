@@ -1,8 +1,8 @@
 Package: RadOnc
 Type: Package
 Title: Analytical Tools for Radiation Oncology
-Version: 1.1.2
-Date: 2017-01-23
+Version: 1.1.3
+Date: 2017-03-27
 Author: Reid F. Thompson <reid.thompson@gmail.com>
 Maintainer: Reid F. Thompson <reid.thompson@gmail.com>
 Imports: stats, utils
@@ -13,6 +13,6 @@ License: GPL (>= 2)
 LazyData: yes
 LazyLoad: yes
 NeedsCompilation: no
-Packaged: 2017-01-30 08:02:08 UTC; reidt
+Packaged: 2017-03-28 01:08:03 UTC; reidt
 Repository: CRAN
-Date/Publication: 2017-01-30 12:36:37
+Date/Publication: 2017-03-28 06:06:02 UTC

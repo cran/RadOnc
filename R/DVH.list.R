@@ -113,7 +113,7 @@ setMethod("[[<-", "DVH.list",
 
 setMethod("c", "DVH.list",
 	function (x, ..., recursive = FALSE) {
-		return(new("DVH.list", c(as.list(x), as.list(c(... , recursive=FALSE)))))
+		return(new("DVH.list", c(as.list(x), as.list(c(... , recursive=recursive)), recursive=recursive)))
 	}
 )
 

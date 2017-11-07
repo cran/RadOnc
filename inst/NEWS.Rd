@@ -3,6 +3,22 @@
 \title{ RadOnc News }
 \encoding{UTF-8}
 
+\section{CHANGES IN VERSION 1.1.4}{
+
+  \subsection{NEW FEATURES}{
+    \itemize{
+      \item Added support for plan sum import from Aria 13 using \code{read.DVH(..., type="aria13")}
+    }
+  }
+
+  \subsection{ACKNOWLEDGEMENTS}{
+    \itemize{
+      \item Thanks to Maura Kirk for her assistance with Aria 13 plan sum import.
+   }
+  }
+
+ }
+
 \section{CHANGES IN VERSION 1.1.3}{
 
   \subsection{NEW FEATURES}{

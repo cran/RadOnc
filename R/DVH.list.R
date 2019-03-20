@@ -50,7 +50,7 @@ setMethod("length", "DVH.list",
 
 setMethod("[", "DVH.list",
 	function (x, i, ...) {
-		if (missing(i) || (length(i) < 1) || is.na(i)) {
+		if (missing(i) || (length(i) < 1) || all(is.na(i))) {
 			return(new("DVH.list"))
 		}
 		if (all(is.logical(i))) {
@@ -113,7 +113,7 @@ setMethod("[[<-", "DVH.list",
 
 setMethod("c", "DVH.list",
 	function (x, ..., recursive = FALSE) {
-		return(new("DVH.list", c(as.list(x), as.list(c(... , recursive=recursive)), recursive=recursive)))		
+		return(new("DVH.list", c(as.list(x), as.list(c(... , recursive=recursive)), recursive=recursive)))
 	}
 )
 

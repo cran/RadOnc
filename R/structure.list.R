@@ -32,7 +32,7 @@ setMethod("length", "structure.list",
 
 setMethod("[", "structure.list",
 	function (x, i, ...) {
-		if (missing(i) || (length(i) < 1) || is.na(i)) {
+		if (missing(i) || (length(i) < 1) || all(is.na(i))) {
 			return(new("structure.list"))
 		}
 		if (all(is.logical(i))) {

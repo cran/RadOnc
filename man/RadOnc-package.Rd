@@ -3,24 +3,31 @@
 \alias{RadOnc}
 \docType{package}
 \title{
-Analytical Tools for Radiation Oncology
+\packageTitle{RadOnc}
 }
 \description{
-This package is designed for the import, analysis, and visualization of dosimetric and volumetric data in Radiation Oncology.  The tools herein enable import of DVH information from Varian's Aria/Eclipse platform and 3D structural representations from DICOM-RT files.  These tools also enable subsequent visualization and statistical analysis of this data.
+\packageDescription{RadOnc}
 }
 \details{
-\tabular{ll}{
-Package: \tab RadOnc\cr
-Type: \tab Package\cr
-Version: \tab 1.0.4\cr
-Date: \tab 2014-01-21\cr
-License: \tab GPL (>=2)\cr
-}
+
+The DESCRIPTION file:
+\packageDESCRIPTION{RadOnc}
+\packageIndices{RadOnc}
 }
 \author{
-Reid F. Thompson <reid.thompson@gmail.com>
+\packageAuthor{RadOnc}
+
+Maintainer: \packageMaintainer{RadOnc}
+}
+\references{
+Thompson, R.F. (2014)
+RadOnc: An R Package for Analysis of Dose-Volume Histogram and Three-Dimensional Structural Data.
+\emph{J Radiat Oncol Inform} \bold{6}(1):98-110.
 }
 \keyword{ package }
 \seealso{
 \code{\link[RadOnc:DVH-class]{DVH}}, \code{\link[RadOnc:DVH.list-class]{DVH.list}}, \code{\link[RadOnc:structure3D-class]{structure3D}}, \code{\link[RadOnc:structure.list-class]{structure.list}}, \code{\link[RadOnc:RTdata-class]{RTdata}}
+}
+\examples{
+## See sub-documentation for detailed examples of important package functions ##
 }

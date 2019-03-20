@@ -3,6 +3,37 @@
 \title{ RadOnc News }
 \encoding{UTF-8}
 
+\section{CHANGES IN VERSION 1.1.5}{
+
+  \subsection{NEW FEATURES}{
+    \itemize{
+      \item [currently in development] Adds a modified Earth-Mover's Distance to \code{compareStructures()}
+    }
+  }
+
+  \subsection{BUG FIXES}{
+    \itemize{
+    	\item Adds \code{modality} argument to \code{read.DVH()} to fix problem calculating DVH from DICOM-RT data via \code{read.DVH()} function.
+    	\item Fixes bug in \code{read.DICOM.RT()} that was occurring for rare files with improperly formatted reference frame UIDs.
+     }
+  }
+
+  \subsection{OTHER UPDATES}{
+    \itemize{
+      \item Updated \code{RadOnc-package.Rd} file to conform with latest CRAN requirements
+      \item Updated package vignette to correct a typo re: instructions for use
+    }
+   }
+
+  \subsection{ACKNOWLEDGEMENTS}{
+    \itemize{
+      \item Credit to Abhinav Nellore and Zachary Fried for their work on \code{compareStructures()}.
+      \item Thank you to Enrico Clementel and Fadoua Raouassi for helping to fix a bug in reading DVHs from DICOM-RT data.
+      \item Thank you to Alessandro Savini for helping to uncover the issue in DICOM reference frame UID handling.
+   }
+  }
+ }
+ 
 \section{CHANGES IN VERSION 1.1.4}{
 
   \subsection{NEW FEATURES}{

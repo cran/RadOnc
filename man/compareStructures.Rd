@@ -1,6 +1,7 @@
 \name{compareStructures}
 \alias{compareStructures}
 \alias{compareStructures.axial}
+\alias{compareStructures.EMD}
 \alias{compareStructures.hausdorff}
 \alias{compareStructures.grid}
 \alias{compareStructures.surface}
@@ -19,7 +20,7 @@ compareStructures(structures, method = NULL,
 	An object of class \code{\link[RadOnc:structure.list-class]{structure.list}} containing two or more \code{\link[RadOnc:structure3D-class]{structure3D}} objects.
 }
   \item{method}{
-One of \code{"axial"}, \code{"surface"}, \code{"hausdorff"}, or \code{"DSC"} specifying the comparison between structures. For the \code{"axial"} method (default), the volumetric region of comparison is divided into discrete evenly-spaced voxels and the degree of overlap is measured across each voxel in axial cross-sections. For the \code{"surface"} method, overlap is calculated for each point on each structure's surface. For the \code{"hausdorff"} method, Hausdorff distances are calculated for each pairwise combination of structures as the distance between two point clouds. }
+One of \code{"axial"}, \code{"surface"}, \code{"hausdorff"}, \code{"DSC"}, or \code{"EMD"} specifying the comparison between structures. For the \code{"axial"} method (default), the volumetric region of comparison is divided into discrete evenly-spaced voxels and the degree of overlap is measured across each voxel in axial cross-sections. For the \code{"surface"} method, overlap is calculated for each point on each structure's surface. For the \code{"hausdorff"} method, Hausdorff distances are calculated for each pairwise combination of structures as the distance between two point clouds. The \code{"EMD"} method is currently not currently supported (in development), but will return a modified earth mover's distance between two structures, accounting for radiation dose. }
   \item{hausdorff.method}{
 One of \code{"mean"}, \code{"median"}, or \code{"absolute"}, specifying the method to use for Hausdorff distance measurement when \code{method = "hausdorff"}. The \code{"absolute"} Hausdorff distance yields the maximum distance required to connect any point from one point cloud to its closest neighbor in the other. This metric is highly subject to outliers, thus an aggregate metric is implemented by selecting the average (\code{"mean"}) or median (\code{"median"}) distance required to connect all points in one point cloud to their closest neighboring points in the other. Note that the Hausdorff distance between two completely superimposable point clouds is zero. This parameter is ignored for other values of \code{method}.}
   \item{verbose}{

@@ -8,7 +8,7 @@ Function to extract three-dimensional structural and dosimetric data from input 
 }
 \usage{
 read.DICOM.RT(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limit=NULL, 
-	DVH=TRUE, zDVH=FALSE, modality=NULL, ...)
+	DVH=TRUE, zDVH=FALSE, modality="CT", ...)
 }
 \arguments{
   \item{path}{

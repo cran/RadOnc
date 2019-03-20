@@ -55,7 +55,7 @@ setMethod("[", "DVH",
 		if (!validObject(x)) {
 			stop("not a valid object of 'DVH'")
 		}
-		if (!missing("i")) {
+		if (!missing(i)) {
 			if (is.null(i)) return(NULL)
 			if (length(i) < 1) return(numeric())
 			if (is.logical(i)) {

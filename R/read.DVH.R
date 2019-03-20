@@ -1,5 +1,6 @@
-read.DVH <- function (file, type=NA, verbose=TRUE, collapse=TRUE) {
+read.DVH <- function (file, type=NA, verbose=TRUE, collapse=TRUE, modality=NULL) {
 	type <- match.arg(tolower(type), choices=c(NA, "aria10", "aria11", "aria13", "aria8", "dicom", "cadplan", "tomo", "monaco", "raystation"), several.ok=TRUE)
+	modality <- match.arg(modality, choices=c("CT", "MR"))
 	if (length(file) < 1) {
 		warning("argument 'file' is missing, with no default")
 		return()
@@ -11,7 +12,7 @@ read.DVH <- function (file, type=NA, verbose=TRUE, collapse=TRUE) {
 			aria8 = return(read.DVH.Aria8(file=file, verbose=verbose)),
 			aria11 = return(read.DVH.Aria11(file=file, verbose=verbose)),
 			aria13 = return(read.DVH.Aria13(file=file, verbose=verbose)),
-			dicom = return(read.DVH.DICOM(path=file, verbose=verbose)),
+			dicom = return(read.DVH.DICOM(path=file, verbose=verbose, modality=modality)),
 			cadplan = return(read.DVH.CadPlan(file=file, verbose=verbose)),
 			tomo = return(read.DVH.TomoTherapy(file=file, verbose=verbose)),
 			monaco = return(read.DVH.Monaco(file=file, verbose=verbose)),
@@ -357,8 +358,8 @@ read.DVH.Aria8 <- function (file, verbose=TRUE) {
 	return()
 }
 
-read.DVH.DICOM <- function(path, verbose=TRUE) {
-	dicom <- read.DICOM.RT(path, verbose=verbose, DVH=TRUE)
+read.DVH.DICOM <- function(path, verbose=TRUE, modality) {
+	dicom <- read.DICOM.RT(path, verbose=verbose, DVH=TRUE, modality=modality)
 	if (is.null(dicom)) return()
 	return(as(dicom$structures, "DVH.list"))
 }

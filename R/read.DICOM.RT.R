@@ -1,5 +1,5 @@
 
-read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limit=NULL, DVH=TRUE, zDVH=FALSE, modality=NULL, ...) {
+read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limit=NULL, DVH=TRUE, zDVH=FALSE, modality="CT", ...) {
 	modality <- match.arg(toupper(modality), choices=c("CT", "MR"))
 	if (length(list.files(path)) == 0 && file.exists(path)) {
     	filenames <- path
@@ -29,21 +29,29 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 ################################	
 
 	CT <- as.numeric(which(modalities == modality))
-	frame.ref.CT <- as.character(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "FrameOfReferenceUID"), "value"])
-	## ASSUMES CONSTANT VOXEL SIZE AND SLICE THICKNESS FOR ALL DICOM FILES IN CT!!!!
-	voxel.size <- as.numeric(unlist(strsplit(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "PixelSpacing"), "value"], " ")))
-	image.position <- as.numeric(unlist(strsplit(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "ImagePositionPatient"), "value"], " ")))
-	z.slices <- unlist(lapply(DICOMs$hdr[CT], function(x) { as.numeric(unlist(strsplit(x[which(x[,"name"] == "ImagePositionPatient"), "value"], " "))[3]) }))
-	voxel.size <- c(voxel.size, as.numeric(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "SliceThickness"), "value"]))
-	patient.name <- as.character(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "PatientsName"), "value"])
-	patient.ID <- as.character(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "PatientID"), "value"])
-	slope <- ifelse(("RescaleSlope" %in% DICOMs$hdr[[CT[1]]][,"name"]), as.numeric(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "RescaleSlope"), "value"]), 1)
-	intercept <- ifelse(("RescaleIntercept" %in% DICOMs$hdr[[CT[1]]][,"name"]), as.numeric(DICOMs$hdr[[CT[1]]][which(DICOMs$hdr[[CT[1]]][,"name"] == "RescaleIntercept"), "value"]), 0)
-	CT <- create3D(list(hdr=DICOMs$hdr[CT], img=DICOMs$img[CT]))
-	CT <- CT*slope + intercept
-	dimnames(CT) <- list((1:dim(CT)[1]-1)*voxel.size[1]+image.position[1], (1:dim(CT)[2]-1)*voxel.size[2]+image.position[2], z.slices) 
-	if (verbose) {
-		cat("FINISHED [", length(z.slices), " slices, ", paste(sprintf("%.*f", 1, voxel.size), collapse="x", sep=""), "mm res]\n", sep="")
+	if (length(CT) >= 1) {
+		hdr.name <- as.character(DICOMs$hdr[[CT[1]]][,"name"])
+		frame.ref.CT <- as.character(DICOMs$hdr[[CT[1]]][which(hdr.name == "FrameOfReferenceUID"), "value"])
+		## ASSUMES CONSTANT VOXEL SIZE AND SLICE THICKNESS FOR ALL DICOM FILES IN CT!!!!
+		voxel.size <- as.numeric(unlist(strsplit(DICOMs$hdr[[CT[1]]][which(hdr.name == "PixelSpacing"), "value"], " ")))
+		image.position <- as.numeric(unlist(strsplit(DICOMs$hdr[[CT[1]]][which(hdr.name == "ImagePositionPatient"), "value"], " ")))
+		z.slices <- unlist(lapply(DICOMs$hdr[CT], function(x) { as.numeric(unlist(strsplit(x[which(x[,"name"] == "ImagePositionPatient"), "value"], " "))[3]) }))
+		voxel.size <- c(voxel.size, as.numeric(DICOMs$hdr[[CT[1]]][which(hdr.name == "SliceThickness"), "value"]))
+		patient.name <- as.character(DICOMs$hdr[[CT[1]]][which(hdr.name == "PatientsName"), "value"])
+		patient.ID <- as.character(DICOMs$hdr[[CT[1]]][which(hdr.name == "PatientID"), "value"])
+		slope <- ifelse(("RescaleSlope" %in% hdr.name), as.numeric(DICOMs$hdr[[CT[1]]][which(hdr.name == "RescaleSlope"), "value"]), 1)
+		intercept <- ifelse(("RescaleIntercept" %in% hdr.name), as.numeric(DICOMs$hdr[[CT[1]]][which(hdr.name == "RescaleIntercept"), "value"]), 0)
+		CT <- create3D(list(hdr=DICOMs$hdr[CT], img=DICOMs$img[CT]))
+		CT <- CT*slope + intercept
+		dimnames(CT) <- list((1:dim(CT)[1]-1)*voxel.size[1]+image.position[1], (1:dim(CT)[2]-1)*voxel.size[2]+image.position[2], z.slices) 
+		if (verbose) {
+			cat("FINISHED [", length(z.slices), " slices, ", paste(sprintf("%.*f", 1, voxel.size), collapse="x", sep=""), "mm res]\n", sep="")
+		}
+	}
+	else {
+		cat("ERROR (no ", modality, " data available)\n", sep="")
+		CT <- NULL
+		frame.ref.CT <- NA
 	}
 	
 	if (length(which(modalities == "RTPLAN")) < 1) {
@@ -115,12 +123,25 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 		}
 		DICOMs$hdr[[i]] <- DICOM.i$hdr
 		frame.ref.CT.i <- as.character(DICOM.i$hdr[which(DICOM.i$hdr[,"name"] == "FrameOfReferenceUID"), "value"])
-		
+
+		if (length(frame.ref.CT.i) > 1) {
+			frame.ref.CT.i <- frame.ref.CT.i[which(frame.ref.CT.i != "")]
+			if (length(unique(frame.ref.CT.i)) > 1) {
+				frame.ref.CT.i <- frame.ref.CT[1]
+				warning("Ambiguous reference frame in dose grid file")
+			}
+		}		
 		if (length(frame.ref.CT.i) < 1) {
 			frame.ref.CT.i <- frame.ref.CT
-			warning("No reference frame in dose grid file")
+			if (verbose) {
+				warning("No reference frame in dose grid file")
+				if (is.na(frame.ref.CT)) {
+					cat("ERROR\n")
+					next
+				}
+			}
 		}
-		if (frame.ref.CT != frame.ref.CT.i) {
+		if (!is.na(frame.ref.CT) & (frame.ref.CT != frame.ref.CT.i)) {
 			if (verbose) {
 				warning("Reference frame mismatch")
 				cat("ERROR\n")
@@ -263,11 +284,26 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 		structureset.i.ID <- as.character(DICOM.i[which(DICOM.i[,"name"] == "SOPInstanceUID"), "value"])
 #		use.dose.grid <- c(use.dose.grid, !structureset.i.ID %in% structureset.ID)
 		use.dose.grid <- c(use.dose.grid, TRUE) ## CALCULATE DVH FROM DOSE GRID RATHER THAN USING EXISTENT DVHs IN DICOM DOSE FILE
+		if (length(frame.ref.CT.i) > 1) {
+			frame.ref.CT.i <- frame.ref.CT.i[which(frame.ref.CT.i != "")]
+			if (length(unique(frame.ref.CT.i)) > 1) {
+				frame.ref.CT.i <- frame.ref.CT[1]
+				if (verbose) {
+					warning("Ambiguous reference frame in structure set file")
+				}
+			}
+		}		
 		if (length(frame.ref.CT.i) < 1) {
 			frame.ref.CT.i <- frame.ref.CT
-			warning("No reference frame in structure set file")
+			if (verbose) {
+				warning("No reference frame in structure set file")
+				if (is.na(frame.ref.CT)) {
+					cat("ERROR\n")
+					next
+				}
+			}
 		}
-		if (frame.ref.CT != frame.ref.CT.i) {
+		if (!is.na(frame.ref.CT) & (frame.ref.CT != frame.ref.CT.i)) {
 			if (verbose) {
 				warning("Reference frame mismatch")
 				cat("ERROR\n")

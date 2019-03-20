@@ -13,7 +13,7 @@ compareStructures <- function(structures, method=NULL, hausdorff.method=NULL, ve
 		warning("Need at least 2 structures to perform comparison")
 		return()
 	}
-	method <- match.arg(method, choices=c("axial", "surface", "hausdorff", "grid", "DSC"))
+	method <- match.arg(method, choices=c("axial", "surface", "hausdorff", "grid", "DSC", "EMD"))
 	hausdorff.method <- match.arg(hausdorff.method, choices=c("mean", "median", "absolute"))
 	switch(method,
 		axial = contours <- compareStructures.axial(structures, pixels=pixels),
@@ -37,7 +37,8 @@ compareStructures <- function(structures, method=NULL, hausdorff.method=NULL, ve
 				}
 			}
 			return(results)
-		}
+		},
+		EMD = return(compareStructures.EMD(structures))
 	)
 	if ((plot) & (method %in% c("axial", "grid"))) {
 		mar.old <- par()$mar
@@ -178,6 +179,10 @@ compareStructures.hausdorff <- function (structures, verbose=TRUE, method=NULL) 
 	return(results)
 }
 
+compareStructures.EMD <- function (structures) {	
+	cat("EMD method currently unavailable (in development) -- will be available in a future release\n")
+	return()
+}
 
 pointInPoly2D <- function (points, poly) {
 	poly <- matrix(unique(poly), ncol=2)

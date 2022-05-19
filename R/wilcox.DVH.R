@@ -8,7 +8,7 @@ setMethod("wilcox.test", "DVH.list",
 		dose <- match.arg(dose)
 		volume <- match.arg(volume)
 		alternative <- match.arg(alternative)
-		if (class(y) != "DVH.list") {
+		if (!inherits(y,"DVH.list")) {
 			y <- new("DVH.list", y)
 		}
 		x <- new("DVH.list", lapply(x, convert.DVH, type=type, dose=dose, volume=volume))

@@ -79,7 +79,7 @@ Objects can be created by calls of the form \code{new("DVH", patient, structure.
 Reid F. Thompson (\email{reid.thompson@gmail.com})
 }
 \seealso{
-\code{\link[RadOnc:DVH.list-class]{DVH.list}}, \code{\link{read.DVH}}, \code{\link[RadOnc:plot.DVH]{plot}}
+\code{\link[RadOnc:DVH.list-class]{DVH.list}}, \code{\link{read.DVH}}
 }
 \examples{
 # Description of structure/slots in class

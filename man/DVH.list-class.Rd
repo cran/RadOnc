@@ -76,7 +76,7 @@ Objects can be created by calls of the form \code{new("DVH.list", structures, ..
 Reid F. Thompson (\email{reid.thompson@gmail.com})
 }
 \seealso{
-\code{\link[RadOnc:DVH-class]{DVH}}, \code{\link[RadOnc:plot.DVH.list]{plot}}
+\code{\link[RadOnc:DVH-class]{DVH}}
 }
 \examples{
 # Description of structure/slots in class

@@ -1,6 +1,6 @@
 #useDynLib(RadOnc)
 
-import(methods, graphics, grDevices, stats, utils, rgl, geometry, oro.dicom, ptinpoly)
+import(methods, graphics, grDevices, stats, utils, oro.dicom, ptinpoly)
 
 exportClasses(
 	DVH,

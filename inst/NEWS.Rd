@@ -3,6 +3,39 @@
 \title{ RadOnc News }
 \encoding{UTF-8}
 
+
+\section{CHANGES IN VERSION 1.1.6}{
+
+  \subsection{NEW FEATURES}{
+    \itemize{
+      \item Added Aria v15 formatted DVH input functionality to \code{read.DVH()}
+      \item Added automatic filetype matching to \code{read.DVH()} in cases where \code{type} not specified
+    }
+  }
+
+  \subsection{BUG FIXES}{
+    \itemize{
+    	\item Fixes error handling structure import in absence of corresponding DICOM image.
+      \item Fixes error important RayStation prescription dose in \code{read.DVH()}
+      \item Fixes error handling empty structure during DICOM import
+     }
+  }
+
+  \subsection{OTHER UPDATES}{
+    \itemize{
+      \item Eliminates use of deprecated \code{rgl} package and \code{plot()} method for structure3D and structure.list objects
+    }
+   }
+
+  \subsection{ACKNOWLEDGEMENTS}{
+    \itemize{
+      \item Thank you to Jahan Mohiuddin for his help in supporting Aria v15 DVH export format.
+      \item Thank you to Gregory Smyth for identifying and reporting bug in structure set import.
+      \item Thank you to Thomas Dilling for his help in supporting RayStation DVH import.
+   }
+  }
+ }
+ 
 \section{CHANGES IN VERSION 1.1.5}{
 
   \subsection{NEW FEATURES}{

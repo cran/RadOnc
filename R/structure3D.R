@@ -44,7 +44,6 @@ setMethod("c", "structure3D",
 	}
 )
 
-
 setMethod("range", "structure3D",
 	function (x, ..., na.rm=TRUE) {
 		if (dim(x$vertices)[1] >= 1) {
@@ -55,31 +54,6 @@ setMethod("range", "structure3D",
 		}
 		dimnames(range) <- list(c("min", "max"), c("x", "y", "z"))
 		return(range)
-	}
-)
-
-
-setMethod("plot", c("structure3D", "missing"),
-	function(x, col="gray", alpha=1, ...) {
-		open3d()
-		if (dim(x$triangles)[2] >= 1) {
-			triangles3d(x$vertices[x$triangles,1], x$vertices[x$triangles,2], x$vertices[x$triangles,3], col=col, alpha=alpha)
-		}
-		else {
-			points3d(x$vertices, col=col, alpha=alpha)
-		}
-	}
-)
-
-setMethod("plot", c("structure3D", "ANY"),
-	function(x, y, col="gray", alpha=1, ...) {
-		open3d()
-		if (dim(x$triangles)[2] >= 1) {
-			triangles3d(x$vertices[x$triangles,1], x$vertices[x$triangles,2], x$vertices[x$triangles,3], col=col, alpha=alpha)
-		}
-		else {
-			points3d(x$vertices, col=col, alpha=alpha)
-		}
 	}
 )
 

@@ -446,7 +446,7 @@ setMethod("initialize",
 		structures = list(),
 		...
 	) {
-		if ((length(structures) == 1) & (class(structures) == "structure3D")) {
+		if ((length(structures) == 1) & inherits(structures,"structure3D")) {
 			structures <- list(structures)
 		}
 		structs <- which(unlist(lapply(structures, class)) == "structure3D")
@@ -500,16 +500,16 @@ setMethod("initialize",
 		...
 	) {
 		.Object@name <- name
-		if (class(CT) != "array") {
+		if (!inherits(CT,"array")) {
 			CT <- array(dim=c(0,0,0))
 		}
 		.Object@CT <- CT
-		if (class(dose) != "array") {
+		if (!inherits(dose,"array")) {
 			dose <- array(dim=c(0,0,0))
 		}
 		.Object@dose <- dose
 		attr(.Object@dose, "dose.units") <- character()
-		if (class(structures) == "structure.list") {
+		if (inherits(structures,"structure.list")) {
 			.Object@structures <- structures
 		}
 		else {
@@ -521,13 +521,13 @@ setMethod("initialize",
 
 setValidity("RTdata",
 	function(object) {
-		if (class(object@CT) != "array") return(FALSE)
+		if (!inherits(object@CT,"array")) return(FALSE)
 		if (length(dim(object@CT)) != 3) return(FALSE)
-		if (class(object@dose) != "array") return(FALSE)
+		if (!inherits(object@dose,"array")) return(FALSE)
 		if (length(dim(object@dose)) != 3) return(FALSE)
 		if (is.null(attr(object@dose, "dose.units"))) return(FALSE)
 		if (any(dim(object@dose) > 0) & (!attr(object@dose, "dose.units") %in% c("cGy", "Gy"))) return(FALSE)
-		if (class(object@structures) != "structure.list") return(FALSE)
+		if (!inherits(object@structures,"structure.list")) return(FALSE)
 		return(TRUE)
 	}
 )

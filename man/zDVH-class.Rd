@@ -13,7 +13,6 @@
 \alias{min,zDVH-method}
 \alias{names,zDVH-method}
 \alias{names<-,zDVH-method}
-\alias{plot,zDVH-method}
 \alias{print,zDVH-method}
 \alias{show,zDVH-method}
 \title{Class \code{"zDVH"}}
@@ -60,7 +59,6 @@ Objects can be created by calls of the form \code{new("zDVH", patient, structure
     \item{min}{Extract minimum dose from \code{zDVH} object }
     \item{names}{Extract structure name from \code{zDVH} object }
     \item{names<-}{Assign structure name to \code{zDVH} object }
-    \item{plot}{Plot \code{zDVH} object}
     \item{print}{Display summary of \code{zDVH} object }
     \item{range}{Extract dose range from \code{zDVH} object }
     \item{show}{Display summary of \code{zDVH} object }
@@ -71,7 +69,7 @@ Objects can be created by calls of the form \code{new("zDVH", patient, structure
 Reid F. Thompson (\email{reid.thompson@gmail.com})
 }
 \seealso{
-\code{\link[RadOnc:DVH-class]{DVH}}, \code{\link[RadOnc:DVH.list-class]{DVH.list}}, \code{\link{read.DVH}}, \code{\link[RadOnc:plot.DVH]{plot}}
+\code{\link[RadOnc:DVH-class]{DVH}}, \code{\link[RadOnc:DVH.list-class]{DVH.list}}, \code{\link{read.DVH}}
 }
 \examples{
 # Description of structure/slots in class

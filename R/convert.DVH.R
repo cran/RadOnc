@@ -99,7 +99,7 @@ convert.DVH <- function(..., type=NULL, dose=NULL, volume=NULL, dose.units=NULL)
 				temp.doses <- x@doses - diff(c(-x@doses[1], x@doses))/2
 				x@doses <- c(temp.doses, (2*x@doses - temp.doses)[length(temp.doses)])
 				if (volume == "relative") {
-					if (class(x) == "DVH") {
+					if (inherits(x,"DVH")) {
 						x@volumes <- diffinv(-x@volumes, xi=100)
 					}
 					else {
@@ -110,7 +110,7 @@ convert.DVH <- function(..., type=NULL, dose=NULL, volume=NULL, dose.units=NULL)
 					}
 				}
 				else {
-					if (class(x) == "DVH") {
+					if (inherits(x,"DVH")) {
 						x@volumes <- diffinv(-x@volumes, xi=x@structure.volume)
 					}
 					else {
@@ -123,7 +123,7 @@ convert.DVH <- function(..., type=NULL, dose=NULL, volume=NULL, dose.units=NULL)
 				x@type <- "cumulative"
 			}
 			else {
-				if (class(x) == "DVH") {
+				if (inherits(x,"DVH")) {
 					x@volumes <- -diff(x@volumes)
 				}
 				else {

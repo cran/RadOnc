@@ -8,8 +8,6 @@
 \alias{dim,structure3D-method}
 \alias{names,structure3D-method}
 \alias{names<-,structure3D-method}
-\alias{plot,structure3D,ANY-method}
-\alias{plot,structure3D,missing-method}
 \alias{print,structure3D-method}
 \alias{range,structure3D-method}
 \alias{show,structure3D-method}
@@ -42,7 +40,6 @@ Objects can be created by calls of the form \code{new("structure3D", name, volum
     \item{dim}{Extract dimensions (number of vertices and axial slices) from \code{structure3D} object }
     \item{names}{Extract structure name from \code{structure3D} object  }
     \item{names<-}{Assign structure name to a \code{structure3D} object }
-    \item{plot}{Plot \code{structure3D} object}
     \item{print}{ Display summary of \code{structure3D} object }
     \item{range}{ Extract coordinate range from \code{structure3D} object }
     \item{show}{ Display summary of \code{structure3D} object }
@@ -58,8 +55,5 @@ Reid F. Thompson (\email{reid.thompson@gmail.com})
 # Description of structure/slots in class
 showClass("structure3D")
 
-# data(list="RadOnc", package="RadOnc")
-# plot(mandible)
-# points3d(range(mandible), col="red")
 }
 \keyword{classes}

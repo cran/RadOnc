@@ -32,12 +32,6 @@ setMethod("plot", c("DVH", "missing"),
 	}
 )
 
-setMethod("plot", c("zDVH", "missing"),
-	function(x, ...) {
-		plot.zDVH(x, ...)
-	}
-)
-
 setMethod("plot", c("DVH", "DVH"),
 	function(x, y, ...) {
 		plot.DVH(new("DVH.list",list(x)), new("DVH.list",list(y)), ...)
@@ -593,21 +587,6 @@ plot.DVH.groups <- function(x, ..., col="black", lty ="solid", lwd=1, line.trans
 		col <- col2rgb(col)/255
 		legend(legend, legend=if (length(legend.labels) >= N) {legend.labels[1:N]} else {paste("Group", 1:N)}, lty=lty, lwd=lwd, col=rgb(col[1,],col[2,],col[3,],line.transparency), fill=if (fill) {rgb(col[1,],col[2,],col[3,],fill.transparency)} else {NULL}, density=density, angle=angle)
 	}	
-}
-
-
-plot.zDVH <- function(x, ..., col="black", front=NULL, back=front, new=TRUE, dose=NULL, dose.units=NULL, volume=NULL, type=NULL, main="") {
-	dose.units <- match.arg(dose.units, choices=c(NA, "cGy", "Gy"))
-	type <- match.arg(type, choices=c(NA, "cumulative", "differential"))
-	volume <- match.arg(volume, choices=c(NA, "relative", "absolute"))
-	dose <- match.arg(dose, choices=c(NA, "absolute", "relative"))
-	front <- match.arg(front, choices=c("filled", "lines", "points", "culled"))
-	back <- match.arg(back, choices=c("filled", "lines", "points", "culled"))
-	x <- convert.DVH(x, type=type, dose=dose, dose.units=dose.units, volume=volume)
-	if (length(unique(diff(x$doses))) > 1) {
-		persp3d(x$doses[2:length(x$doses)], as.numeric(colnames(x$volumes)), x$volumes[2:length(x$doses),], col=col, border=NA, shade=0.5, xlab=paste("Dose (", x$dose.units, ")", sep=""), ylab="z (mm)", zlab=paste("Volume (", if (x$volume.type == "relative") {"%"} else {"cc"}, ")", sep=""), add=!new)
-	}
-	persp3d(x$doses, as.numeric(colnames(x$volumes)), x$volumes, col=col, border=NA, shade=0.5, xlab=paste("Dose (", x$dose.units, ")", sep=""), ylab="z (mm)", zlab=paste("Volume (", if (x$volume.type == "relative") {"%"} else {"cc"}, ")", sep=""), add=!new, front=front, back=back)
 }
 
 

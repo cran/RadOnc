@@ -1,18 +1,18 @@
 Package: RadOnc
 Type: Package
 Title: Analytical Tools for Radiation Oncology
-Version: 1.1.5
-Date: 2019-03-18
+Version: 1.1.6
+Date: 2022-05-18
 Author: Reid F. Thompson <reid.thompson@gmail.com>
 Maintainer: Reid F. Thompson <reid.thompson@gmail.com>
 Imports: stats, utils
-Depends: R (>= 3.0.0), graphics, grDevices, methods, rgl, geometry,
-        oro.dicom (>= 0.5.0), ptinpoly
+Depends: R (>= 3.0.0), graphics, grDevices, methods, oro.dicom (>=
+        0.5.0), ptinpoly
 Description: Designed for the import, analysis, and visualization of dosimetric and volumetric data in Radiation Oncology, the tools herein enable import of dose-volume histogram information from multiple treatment planning system platforms and 3D structural representations and dosimetric information from 'DICOM-RT' files.  These tools also enable subsequent visualization and statistical analysis of these data.
 License: GPL (>= 2)
 LazyData: yes
 LazyLoad: yes
 NeedsCompilation: no
-Packaged: 2019-03-20 14:42:20 UTC; thompsre
+Packaged: 2022-05-19 06:27:45 UTC; thompsre
 Repository: CRAN
-Date/Publication: 2019-03-20 15:13:30 UTC
+Date/Publication: 2022-05-19 06:50:11 UTC

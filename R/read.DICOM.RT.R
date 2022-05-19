@@ -10,14 +10,25 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 	if (! is.null(exclude)) {
     	filenames <- grep(exclude, filenames, ignore.case=TRUE, value=TRUE, invert=TRUE)
   	}
-  	if (length(filenames) < 1) {
+  	nfiles <- length(filenames)
+  	if (nfiles < 1) {
   		warning("No files to read from path '", path, "'", sep="")
   		return()
   	}
 	if (verbose) {
-		cat("Reading ", length(filenames), " DICOM files from path: '", path, "' ... ", sep="")
+		cat("Reading ", nfiles, " DICOM files from path: '", path, "' ... ", sep="")
 	}
-	DICOMs <- readDICOM(path, verbose=FALSE, exclude=exclude, recursive=recursive, ...)
+	DICOMs <- list()
+    for (i in 1:nfiles) {
+    	if (grepl("RTSTRUCT", filenames[i])) {
+			dcm <- readDICOMFile(filenames[i], pixelData=FALSE)
+    	}
+    	else {
+			dcm <- readDICOMFile(filenames[i], ...)
+    	}
+        DICOMs$img[[i]] <- dcm$img
+        DICOMs$hdr[[i]] <- dcm$hdr
+    }
 	
 	if (verbose) {
 		cat("FINISHED\nExtracting ", modality, " data ... ", sep="")
@@ -52,6 +63,8 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 		cat("ERROR (no ", modality, " data available)\n", sep="")
 		CT <- NULL
 		frame.ref.CT <- NA
+		patient.name <- NA
+		patient.ID <- NA
 	}
 	
 	if (length(which(modalities == "RTPLAN")) < 1) {
@@ -276,7 +289,7 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 		if (verbose) {
 			cat("Reading structure set from file: '", filenames[i], "' ... ", sep="")
 		}
-		DICOMs$hdr[[i]] <- DICOM.i <- readDICOMFile(filenames[i], skipSequence=FALSE)$hdr
+		DICOMs$hdr[[i]] <- DICOM.i <- readDICOMFile(filenames[i], skipSequence=FALSE, pixelData=FALSE)$hdr
 			
 		structures <- DICOM.i[which(DICOM.i[,"name"] %in% c("ROIName", "ROINumber")),]
 		N <- dim(structures)[1]/2
@@ -287,11 +300,11 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 		if (length(frame.ref.CT.i) > 1) {
 			frame.ref.CT.i <- frame.ref.CT.i[which(frame.ref.CT.i != "")]
 			if (length(unique(frame.ref.CT.i)) > 1) {
-				frame.ref.CT.i <- frame.ref.CT[1]
 				if (verbose) {
 					warning("Ambiguous reference frame in structure set file")
 				}
 			}
+			frame.ref.CT.i <- frame.ref.CT[1]
 		}		
 		if (length(frame.ref.CT.i) < 1) {
 			frame.ref.CT.i <- frame.ref.CT
@@ -356,6 +369,10 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 		for (j in 1:length(contour.seq)) {
 			structures.j <- structures[which(structures > contour.seq[j])]
 			structure.j <- structures.j[which.min(structures.j)]
+			if (length(structure.j) < 1) {
+				warning(paste("Structure formatting error in DICOM file", sep=""))
+				next
+			}
 			data.j <- strsplit(DICOM.i[intersect(contour.seq[j]:structure.j, contours), "value"], " ")
 			struct.ID.j <- which(structure.IDs == as.numeric(DICOM.i[structure.j, "value"]))
 #			if (DVH) {
@@ -389,7 +406,9 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 						return(NA)
 					}
 					x <- cbind(x[1:(length(x)/3)*3-2], x[1:(length(x)/3)*3-1], x[1:(length(x)/3)*3])
-					x[,2] <- sum(range(as.numeric(dimnames(CT)[[2]]))) - x[,2]
+					if (!is.null(CT)) {
+						x[,2] <- sum(range(as.numeric(dimnames(CT)[[2]]))) - x[,2]
+					}
 					return(x)
 				}
 			)			
@@ -447,7 +466,11 @@ read.DICOM.RT <- function(path, exclude=NULL, recursive=TRUE, verbose=TRUE, limi
 	for (i in 1:N) {
 		for (j in 1:length(data$name[[i]])) {
 			struct.i <- data$points[[i]][[j]]
-			if (length(unlist(struct.i, recursive=FALSE)) > limit) {
+			if (length(struct.i) < 1) {
+				struct.list <- c(struct.list, new("structure3D", name=paste(data$name[[i]][j], data$set[[i]])))
+				next
+			}
+			else if (length(unlist(struct.i, recursive=FALSE)) > limit) {
 				if (verbose) {
 					cat("  ", data$set[[i]], ": ", data$name[[i]][j], " [", length(struct.i), " axial slice(s), ", length(unlist(struct.i, recursive=FALSE))/3, " point(s)] ... skipped\n", sep="")
 				}

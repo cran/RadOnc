@@ -14,7 +14,7 @@ read.DVH(file, type=NA, verbose=TRUE, collapse=TRUE, modality=NULL)
 Location of file containing relevant DVH information. One or more files may be specified. If multiple files are specified, all will be imported simultaneously.
 }
   \item{type}{
-Character vector specifying the DVH file format corresonding to each element in \code{file}. Value(s) must be one of \code{"aria8"}, \code{"aria10"}, \code{"aria11"}, \code{"aria13"}, \code{"dicom"}, \code{"cadplan"}, \code{"monaco"}, \code{"raystation"}, or \code{"tomo"} (default is \code{NA}). Note that multiple different types can be processed so long as the length of \code{type} corresponds to the number of files specified.
+Character vector specifying the DVH file format corresonding to each element in \code{file}. Value(s) must be one of \code{"aria8"}, \code{"aria10"}, \code{"aria11"}, \code{"aria13"}, \code{"aria15"}, \code{"dicom"}, \code{"cadplan"}, \code{"monaco"}, \code{"raystation"}, or \code{"tomo"} (default is \code{NA}, which will attempt to guess the appropriate file type for each DVH file). Note that multiple different types can be processed so long as the length of \code{type} corresponds to the number of files specified, or otherwise \code{type=NA}.
 }
   \item{verbose}{
 Single logical value indicating whether or not to output verbose information and status in text

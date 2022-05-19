@@ -8,7 +8,7 @@ setMethod("t.test", "DVH.list",
 		type <- match.arg(type)
 		dose <- match.arg(dose)
 		volume <- match.arg(volume)
-		if (class(y) != "DVH.list") {
+		if (!inherits(y,"DVH.list")) {
 			y <- new("DVH.list", y)
 		}
 		x <- new("DVH.list", lapply(x, convert.DVH, type=type, dose=dose, volume=volume))

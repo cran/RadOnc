@@ -7,7 +7,7 @@ Read DVH data from input file
 Function to extract DVH data from input file(s). Supported file formats include Aria (v8-13), DICOM-RT, CadPlan, Monaco, RayStation, and TomoTherapy.
 }
 \usage{
-read.DVH(file, type=NA, verbose=TRUE, collapse=TRUE, modality=NULL)
+read.DVH(file, type=NA, verbose=TRUE, collapse=TRUE, modality=NULL, encoding="latin1")
 }
 \arguments{
   \item{file}{
@@ -25,7 +25,9 @@ Single logical value indicating whether or not to collapse input from multiple f
   \item{modality}{
 When \code{type="dicom"}, this parameter is used to specify the scan type expected in importing DICOM-RT data (must be one one of \code{"CT"} [default] or \code{"MR"}).
 }
-}
+  \item{encoding}{
+Character value specifying the encoding type for the DVH file (default is \code{"latin1"}).
+}}
 \value{
 Returns a single \code{DVH.list} object containing all DVH information from a single input file. If multiple files are specified, a list of \code{DVH.list} objects will be returned.
 }

@@ -4,6 +4,21 @@
 \encoding{UTF-8}
 
 
+\section{CHANGES IN VERSION 1.1.7}{
+
+  \subsection{OTHER UPDATES}{
+    \itemize{
+      \item Exposes file \code{encoding} parameter for \code{read.DVH()} function
+    }
+   }
+
+  \subsection{ACKNOWLEDGEMENTS}{
+    \itemize{
+      \item Thank you to Tomas Kalibera for his help in supporting file encoding.
+   }
+  }
+ }
+ 
 \section{CHANGES IN VERSION 1.1.6}{
 
   \subsection{NEW FEATURES}{

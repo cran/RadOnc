@@ -1,4 +1,4 @@
-read.DVH <- function (file, type=NA, verbose=TRUE, collapse=TRUE, modality=NULL) {
+read.DVH <- function (file, type=NA, verbose=TRUE, collapse=TRUE, modality=NULL, encoding="latin1") {
 	types <- c("aria10", "aria11", "aria13", "aria15", "dicom", "cadplan", "tomo", "monaco", "raystation", "aria8")
 	type <- match.arg(tolower(type), choices=c(NA, types), several.ok=TRUE)
 	modality <- match.arg(modality, choices=c("CT", "MR"))
@@ -9,16 +9,16 @@ read.DVH <- function (file, type=NA, verbose=TRUE, collapse=TRUE, modality=NULL)
 	
 	read.DVH.file <- function (file, type, verbose=TRUE) {
 		switch(type, 
-			aria10 = return(read.DVH.Aria10(file=file, verbose=verbose)),
-			aria8 = return(read.DVH.Aria8(file=file, verbose=verbose)),
-			aria11 = return(read.DVH.Aria11(file=file, verbose=verbose)),
-			aria13 = return(read.DVH.Aria13(file=file, verbose=verbose)),
-			aria15 = return(read.DVH.Aria15(file=file, verbose=verbose)),
+			aria10 = return(read.DVH.Aria10(file=file, verbose=verbose, encoding=encoding)),
+			aria8 = return(read.DVH.Aria8(file=file, verbose=verbose, encoding=encoding)),
+			aria11 = return(read.DVH.Aria11(file=file, verbose=verbose, encoding=encoding)),
+			aria13 = return(read.DVH.Aria13(file=file, verbose=verbose, encoding=encoding)),
+			aria15 = return(read.DVH.Aria15(file=file, verbose=verbose, encoding=encoding)),
 			dicom = return(read.DVH.DICOM(path=file, verbose=verbose, modality=modality)),
-			cadplan = return(read.DVH.CadPlan(file=file, verbose=verbose)),
-			tomo = return(read.DVH.TomoTherapy(file=file, verbose=verbose)),
-			monaco = return(read.DVH.Monaco(file=file, verbose=verbose)),
-			raystation = return(read.DVH.RayStation(file=file, verbose=verbose)),
+			cadplan = return(read.DVH.CadPlan(file=file, verbose=verbose, encoding=encoding)),
+			tomo = return(read.DVH.TomoTherapy(file=file, verbose=verbose, encoding=encoding)),
+			monaco = return(read.DVH.Monaco(file=file, verbose=verbose, encoding=encoding)),
+			raystation = return(read.DVH.RayStation(file=file, verbose=verbose, encoding=encoding)),
 			{
 				warning("DVH file format not specified for file '", file, "'")
 				if (verbose) {
@@ -68,8 +68,8 @@ read.DVH <- function (file, type=NA, verbose=TRUE, collapse=TRUE, modality=NULL)
 }
 
 
-read.DVH.Aria10 <- function (file, verbose=TRUE) {
-	if (!(fid <- file(file, open="r"))) {
+read.DVH.Aria10 <- function (file, verbose=TRUE, encoding="latin1") {
+	if (!(fid <- file(file, open="r", encoding=encoding))) {
 		warning(paste("Could not open file '", file, "'", sep=""))		
 		return()
 	}
@@ -214,8 +214,8 @@ read.DVH.Aria10 <- function (file, verbose=TRUE) {
 	return(new("DVH.list", DVH.list))
 }
 
-read.DVH.Aria13 <- function (file, verbose=TRUE) {
-	if (!(fid <- file(file, open="r"))) {
+read.DVH.Aria13 <- function (file, verbose=TRUE, encoding="latin1") {
+	if (!(fid <- file(file, open="r", encoding=encoding))) {
 		warning(paste("Could not open file '", file, "'", sep=""))		
 		return()
 	}
@@ -365,17 +365,17 @@ read.DVH.Aria13 <- function (file, verbose=TRUE) {
 	return(new("DVH.list", DVH.list))	
 }
 
-read.DVH.Aria15 <- function (file, verbose=TRUE) {
-	return(read.DVH.Aria13(file, verbose))
+read.DVH.Aria15 <- function (file, verbose=TRUE, encoding="latin1") {
+	return(read.DVH.Aria13(file, verbose, encoding))
 }
 
 
-read.DVH.Aria11 <- function (file, verbose=TRUE) {
-	return(read.DVH.Aria10(file, verbose))
+read.DVH.Aria11 <- function (file, verbose=TRUE, encoding="latin1") {
+	return(read.DVH.Aria10(file, verbose, encoding))
 }
 
 
-read.DVH.Aria8 <- function (file, verbose=TRUE) {
+read.DVH.Aria8 <- function (file, verbose=TRUE, encoding="latin1") {
 	warning("Aria 8 format not currently supported")
 	return()
 }
@@ -386,8 +386,8 @@ read.DVH.DICOM <- function(path, verbose=TRUE, modality) {
 	return(as(dicom$structures, "DVH.list"))
 }
 
-read.DVH.CadPlan <- function(file, verbose=TRUE) {
-	if (!(fid <- file(file, open="r"))) {
+read.DVH.CadPlan <- function(file, verbose=TRUE, encoding="latin1") {
+	if (!(fid <- file(file, open="r", encoding=encoding))) {
 		warning(paste("Could not open file '", file, "'", sep=""))		
 		return()
 	}
@@ -528,8 +528,8 @@ read.DVH.CadPlan <- function(file, verbose=TRUE) {
 }
 
 
-read.DVH.TomoTherapy <- function (file, verbose=TRUE) {
-	if (!(fid <- file(file, open="r"))) {
+read.DVH.TomoTherapy <- function (file, verbose=TRUE, encoding="latin1") {
+	if (!(fid <- file(file, open="r", encoding=encoding))) {
 		warning(paste("Could not open file '", file, "'", sep=""))		
 		return()
 	}
@@ -565,8 +565,8 @@ read.DVH.TomoTherapy <- function (file, verbose=TRUE) {
 }
 
 
-read.DVH.Monaco <- function (file, verbose=TRUE) {
-	if (!(fid <- file(file, open="r"))) {
+read.DVH.Monaco <- function (file, verbose=TRUE, encoding="latin1") {
+	if (!(fid <- file(file, open="r", encoding=encoding))) {
 		warning(paste("Could not open file '", file, "'", sep=""))		
 		return()
 	}
@@ -625,8 +625,8 @@ read.DVH.Monaco <- function (file, verbose=TRUE) {
 }
 
 
-read.DVH.RayStation <- function (file, verbose=TRUE) {
-	if (!(fid <- file(file, open="r"))) {
+read.DVH.RayStation <- function (file, verbose=TRUE, encoding="latin1") {
+	if (!(fid <- file(file, open="r", encoding=encoding))) {
 		warning(paste("Could not open file '", file, "'", sep=""))		
 		return()
 	}

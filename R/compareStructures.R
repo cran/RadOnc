@@ -14,7 +14,7 @@ compareStructures <- function(structures, method=NULL, hausdorff.method=NULL, ve
 		return()
 	}
 	method <- match.arg(method, choices=c("axial", "surface", "hausdorff", "grid", "DSC", "EMD"))
-	hausdorff.method <- match.arg(hausdorff.method, choices=c("mean", "median", "absolute"))
+	hausdorff.method <- match.arg(hausdorff.method, choices=c("mean", "median", "absolute", "95"))
 	switch(method,
 		axial = contours <- compareStructures.axial(structures, pixels=pixels),
 		grid = {
@@ -155,13 +155,18 @@ compareStructures.hausdorff <- function (structures, verbose=TRUE, method=NULL) 
 			d2 <- max(apply(B, 1, compute.dist, B0=A))
 			return(max(d1, d2, na.rm=TRUE))
 		}
+		else if (method == "95") {
+			d1 <- apply(A, 1, compute.dist, B0=B)
+			d2 <- apply(B, 1, compute.dist, B0=A)
+			return(quantile(c(d1, d2), probs=0.95, na.rm=TRUE))
+		}
 		else {
-			warning("Invalid 'method' argument; must be one of 'mean', 'median', or 'absolute'")
+			warning("Invalid 'method' argument; must be one of 'mean', 'median', 'absolute', or '95'")
 			return(NA)
 		}
 	}
 
-	method <- match.arg(method, choices=c("mean", "median", "absolute"))
+	method <- match.arg(method, choices=c("mean", "median", "absolute", "95"))
 	N <- length(structures)
 	results <- matrix(0, nrow=N, ncol=N, dimnames=list(names(structures), names(structures)))
 	for (i in 1:N) {

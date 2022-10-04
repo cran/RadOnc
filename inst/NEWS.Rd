@@ -3,7 +3,22 @@
 \title{ RadOnc News }
 \encoding{UTF-8}
 
+\section{CHANGES IN VERSION 1.1.8}{
 
+  \subsection{NEW FEATURES}{
+    \itemize{
+      \item Added 95-percentile Hausdorff distance method to \code{compareStructures()}
+    }
+  }
+
+  \subsection{OTHER UPDATES}{
+    \itemize{
+      \item Adds \code{CITATION} file
+    }
+   }
+
+ }
+ 
 \section{CHANGES IN VERSION 1.1.7}{
 
   \subsection{OTHER UPDATES}{

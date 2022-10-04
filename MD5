@@ -1,4 +1,4 @@
-8d715ae3fba66eb3bb8464b4fd89ea1d *DESCRIPTION
+8689e7ab2a456aba095de3598cca42f2 *DESCRIPTION
 d2c35b4ef74fa4b477a7fc75fdf6b99a *NAMESPACE
 973b6a7a626478003c8b5bd766778d8c *R/CLASSES.R
 da60db413599e0844023d46d7a42223d *R/DVH.R
@@ -7,7 +7,7 @@ b79a10f56d5585efed98d509170e4d38 *R/LQE.R
 9f77ef15971c9a5b34ad39780ca8eb8b *R/RTdata.R
 8b3b941dd9dda3062561814dabc6eac8 *R/approx3D.R
 038267920faebb7e7e3e6fad6eb721a0 *R/calculate.DVH.R
-ec99e857cbe2a9bd2510e48363da9f6a *R/compareStructures.R
+151fac6db05aa8f75e903a42f91954e2 *R/compareStructures.R
 9a2f0eb33a7ab0864d408f91bb8399f1 *R/convert.DVH.R
 ae21ab08d9230ddb93e47e7fb61121b8 *R/gEUD.R
 abf77ff4acbba91f2b0dd24be7cd41be *R/get.HU.R
@@ -21,16 +21,17 @@ a06195f783c784cca314a9f66c4c529e *R/structure.list.R
 4b2923fa529d03ac86ac0ba968c93101 *R/t.test.DVH.R
 ccb15a96f07b029cd488ad4d02626b10 *R/wilcox.DVH.R
 ff1c2b182b4429eabe15d93ad3dcdbd4 *R/zDVH.R
-b034d4f331545993a8dce97ea589a572 *build/partial.rdb
+766e54351770ce193bcf8eab4893980c *build/partial.rdb
 91c46b2e67cf0d49492e863e84f97c2d *build/vignette.rds
 b918c9e89071b7e6760e0d7bbb85bd9f *data/RadOnc.RData
 f7d70b80eb399800485a3d1327cf8ea2 *data/datalist
 87ffc5c7930c03df651c3b5615c59acc *demo/00Index
 b5a1e8c78211b03cb3de9deea6da7f5a *demo/RadOnc.R
-d445a343d13793fe64e76b31f98c40c5 *inst/NEWS.Rd
+dcc7202fd41e044644eb5c7d87d1caa9 *inst/CITATION
+927bce0567914b072ab536576a04dbb2 *inst/NEWS.Rd
 d26bde44ebda5902776618ca5ba9be12 *inst/doc/RadOnc.R
 ef2d7f7c5b318847d2d1e8da0080e716 *inst/doc/RadOnc.Rnw
-b0e8c4f0744ac50a5ec242bd0c329919 *inst/doc/RadOnc.pdf
+179ab71ee05197d5eeb2a5663a6a412c *inst/doc/RadOnc.pdf
 c35a5d09bf19e85d0b28ba8df2faede3 *inst/extdata/Jane_Doe.dvh
 8dd86d5c83bb6438166134b868326392 *inst/extdata/John_Doe.dvh
 5e3efc1c1030f79f3a29379de0cb9754 *man/DVH-class.Rd
@@ -40,7 +41,7 @@ c35a5d09bf19e85d0b28ba8df2faede3 *inst/extdata/Jane_Doe.dvh
 26941c38d73ae6344c546377b316be5e *man/RadOnc-package.Rd
 c68cbd084e88a84a9f499fd5f9505be1 *man/RadOnc.Rd
 cc308dafcdf8a7584560d4bcd6e33179 *man/calculate.DVH.Rd
-c676b1e756a70a9d3019c9e0ff7da75c *man/compareStructures.Rd
+c17374e721f9e8516b0a56b0623db9bd *man/compareStructures.Rd
 4b4d4461323228aab4033e28916ee6b1 *man/gEUD.Rd
 9c17e202ad30410105908c435856975a *man/get.HU.Rd
 695ce828b27ee54971936bc3e780ecf3 *man/plot-methods.Rd

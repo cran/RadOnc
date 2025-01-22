@@ -36,7 +36,7 @@ Logical value (default is \code{FALSE}) indicating whether or not to extract axi
 Parameter used to specify the scan type expected in importing DICOM-RT data (must be one one of \code{"CT"} [default] or \code{"MR"}).
 }
   \item{\dots}{
-Additional parameters passed to \code{\link{readDICOM}} function
+Additional parameters passed to \code{\link[oro.dicom]{readDICOM}} function
 }
 }
 \value{
@@ -46,6 +46,6 @@ Returns a single \code{\link[RadOnc:structure.list-class]{structure.list}} objec
 Reid F. Thompson (\email{reid.thompson@gmail.com})
 }
 \seealso{
-\code{\link{readDICOM}}, \code{\link[RadOnc:structure.list-class]{structure.list}}, \code{\link[RadOnc:structure3D-class]{structure3D}}
+\code{\link[oro.dicom]{readDICOM}}, \code{\link[RadOnc:structure.list-class]{structure.list}}, \code{\link[RadOnc:structure3D-class]{structure3D}}
 }
 \keyword{ file }

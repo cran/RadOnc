@@ -18,7 +18,7 @@ setAs("list", "structure.list",
 setMethod("lapply", "structure.list",
 	function (X, FUN, ...) {
     	X <- as.list(X)
-    	.Internal(lapply(X, FUN))
+    	lapply(X, FUN, ...)
 	}
 )
 

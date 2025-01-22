@@ -36,7 +36,7 @@ setAs("list", "DVH.list",
 setMethod("lapply", "DVH.list",
 	function (X, FUN, ...) {
     	X <- as.list(X)
-    	.Internal(lapply(X, FUN))
+    	lapply(X, FUN, ...)
 	}
 )
 

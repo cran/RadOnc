@@ -1,16 +1,14 @@
 citHeader("To cite RadOnc in publications use:")
 
-citEntry(
-  entry    = "Article",
+bibentry(
+  bibtype  = "Article",
   title    = "RadOnc: An R Package for Analysis of Dose-Volume Histogram and Three-Dimensional Structural Data",
   author   = "Thompson, R.F.",
   journal  = "Journal of Radiation Oncology Informatics",
-  year     = 2014,
-  volume   = 6,
-  number   = 1,
+  year     = "2014",
+  volume   = "6",
+  number   = "1",
   pages    = "98-110",
   url      = "https://doi.org/10.5166/jroi-6-1-25",
-  textVersion = paste(
-
-  )
+  textVersion = paste("Thompson, R.F. (2014). RadOnc: An R Package for Analysis of Dose-Volume Histogram and Three-Dimensional Structural Data. ", "Journal of Radiation Oncology Informatics, 6(1), 98-110. Available at https://doi.org/10.5166/jroi-6-1-25")
 )

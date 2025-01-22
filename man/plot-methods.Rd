@@ -95,7 +95,7 @@
 			Alternatively, a string of up to 8 characters (from c(1:9, "A":"F")) may be given, giving the length of line segments which are alternatively drawn and skipped (see \code{\link{par}} for more details). Note that this paramater can also represent a list of different line types, with length corresponding to the number of \code{DVH} or \code{DVH.list} objects (if \code{plot.type="individual"}, number of line types should correspond to number of individual \code{DVH} objects).
 		}
 		\item{\code{lwd}}{
-			The line width, a emph{positive} number, defaulting to \code{1}. The interpretation is device-specific, and some devices do not implement line widths less than one (see the help on the device for details of the interpretation). Note that this paramater can also represent a list of different line widths, with length of the list corresponding to the number of \code{DVH} or \code{DVH.list} objects (if \code{plot.type="individual"}, number of line widths should correspond to number of individual \code{DVH} objects).
+			The line width, a \emph{positive} number, defaulting to \code{1}. The interpretation is device-specific, and some devices do not implement line widths less than one (see the help on the device for details of the interpretation). Note that this paramater can also represent a list of different line widths, with length of the list corresponding to the number of \code{DVH} or \code{DVH.list} objects (if \code{plot.type="individual"}, number of line widths should correspond to number of individual \code{DVH} objects).
 		}
 		\item{\code{main}}{
 			An overall title for the plot (see \code{\link{title}}, default is \code{""}).

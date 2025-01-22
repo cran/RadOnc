@@ -1,10 +1,12 @@
 Package: RadOnc
 Type: Package
 Title: Analytical Tools for Radiation Oncology
-Version: 1.1.8
-Date: 2022-10-04
-Author: Reid F. Thompson <reid.thompson@gmail.com>
-Maintainer: Reid F. Thompson <reid.thompson@gmail.com>
+Version: 1.1.9
+Date: 2025-01-21
+Authors@R: person(given = c("Reid", "F."),
+                    family = "Thompson",
+                    role = c("aut", "cre"),
+                    email = "reid.thompson@gmail.com")
 Imports: stats, utils
 Depends: R (>= 3.0.0), graphics, grDevices, methods, oro.dicom (>=
         0.5.0), ptinpoly
@@ -13,6 +15,8 @@ License: GPL (>= 2)
 LazyData: yes
 LazyLoad: yes
 NeedsCompilation: no
-Packaged: 2022-10-04 22:38:56 UTC; thompsre
+Packaged: 2025-01-22 05:08:41 UTC; thompsre
+Author: Reid F. Thompson [aut, cre]
+Maintainer: Reid F. Thompson <reid.thompson@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-10-04 23:00:02 UTC
+Date/Publication: 2025-01-22 05:20:02 UTC
